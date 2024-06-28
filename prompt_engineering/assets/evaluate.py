@@ -1,14 +1,15 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from datasets import load_dataset
+from datasets import load_from_disk
 import torch
 
 # Load the dataset
-dataset = load_dataset("ought/raft", "tai_safety_research")
+dataset = load_from_disk("raft/tai_safety_research")
 
 # Load the tokenizer and model
 model_name = "bigscience/bloom-560m"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name)
+
+tokenizer = AutoTokenizer.from_pretrained("bloom-560m/tokenizer")
+model = AutoModelForCausalLM.from_pretrained("bloom-560m/model")
 
 class_names = ["TAI safety research", "not TAI safety research"]
 

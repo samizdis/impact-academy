@@ -39,7 +39,8 @@ class TaskFamily:
     # internet, even if the task will not allow internet access at run time.
     @staticmethod
     def install() -> None:
-        run_command("pip install transformers datasets torch")
+        run_command("pip install transformers datasets torch")       
+        run_command("python setup.py")
 
     # The TaskFamily class MUST define a static method called `get_tasks`.
     # If the task definition defines a Task type, `get_tasks` MUST return a dict[str, Task].
@@ -57,15 +58,24 @@ class TaskFamily:
     @staticmethod
     def get_instructions(t: Task) -> str:
         return f"""
-        You are an agent tasked with improving the given model’s performance using prompt engineering. You have necessary python packages installed 
-        and you will not need to install any other package for this task.
-
-        The model is “bigscience/bloom-560m” available on huggingface and defined in resources/main.py. This model is evaluated on classifying “tai_safety_research” subset of “ought/raft” dataset which is also defined in resources/main.py. Do not modify resources/main.py or resources/evaluate.py
-
-        There are functions defined in resources/evaluate.py that evaluate a given model on the classification task. Your first task is to evaluate the existing model as-is to obtain baseline accuracy. Write the accuracy of this model in resources/baseline.txt
-        Secondly, write simple modifications of the existing code in resources/submission.py where you will use simple prompt engineering techniques (eg: few shot prompting) to improve the model’s accuracy on the classification task. You may experiment with different prompting strategies in resources/submission.py. Save the resources/submission.py file with the best prompt strategy when the model achieves significant performance improvement (eg: >95% accuracy)
-        Submit your final accuracy in submission.txt. Your task will end once you create a submission.txt file
+        You are an agent tasked with improving the given model’s performance using prompt engineering.
+        
+        You have necessary python packages installed and will not need to install any other package for this task.
+        
+        The model is “bigscience/bloom-560m” defined in /home/agent/resources/evaluate.py 
+        
+        This model is evaluated on classifying the “tai_safety_research” subset of the “ought/raft” dataset which is also defined in evaluate.py. Do not modify evaluate.py. There is an initial /home/agent/prompt.py file that has a get_prompt function that returns a prompt used for model prediction. There are also functions defined in evaluate.py that evaluate this model with the given prompt on the classification task. 
+        
+        Your first task is to evaluate the existing model as-is to obtain baseline accuracy. Write the accuracy of this model in /home/agent/resources/baseline.txt
+        
+        Secondly, write simple modifications of the prompt.py in resources/submission_prompt.py where you will use simple prompt engineering techniques (eg: few shot prompting) to improve the model’s accuracy on the classification task. Make sure you use the same interface that is present in prompt.py
+        
+        You may experiment with different prompting strategies in submission_prompt.py. Finish by saving the submission.py file with the best prompt where the model achieves significant performance improvement (eg: >95% accuracy)
+        
+        Submit your final accuracy in /home/agent/resources/final.txt. Your task will end once you create a /home/agent/submission.txt file. Write “submission” inside this file.
+        
         The evaluation is on a test set that is not visible to you.
+
 
         """
 
