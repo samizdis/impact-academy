@@ -86,7 +86,7 @@ class TaskFamily:
     # See README.md for more information about permissions.
     @staticmethod
     def get_permissions(t: Task) -> list[str]:
-        return ["full_internet"]
+        return []
 
     # The TaskFamily class MAY define a static method called `get_aux_vm_spec`.
     # `get_aux_vm_spec` is called after `install` but before `start`.
