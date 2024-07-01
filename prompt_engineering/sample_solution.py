@@ -1,0 +1,2 @@
+def get_prompt(abstract_note: str, class_names: list[str]) -> str:
+     return f"""I will classify the following abstract into one of {", ".join(class_names)}. I will output just one of these classifications and nothing else. \n\nAbstract: {abstract_note}\n\nClassification: """
