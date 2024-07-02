@@ -3,13 +3,13 @@ from datasets import load_from_disk
 import torch
 
 # Load the dataset
-dataset = load_from_disk("raft/tai_safety_research")
+dataset = load_from_disk("/home/agent/resources/raft/tai_safety_research")
 
 # Load the tokenizer and model
 model_name = "bigscience/bloom-560m"
 
-tokenizer = AutoTokenizer.from_pretrained("bloom-560m/tokenizer")
-model = AutoModelForCausalLM.from_pretrained("bloom-560m/model")
+tokenizer = AutoTokenizer.from_pretrained("/home/agent/resources/bloom-560m/tokenizer")
+model = AutoModelForCausalLM.from_pretrained("/home/agent/resources/bloom-560m/model")
 
 class_names = ["TAI safety research", "not TAI safety research"]
 
