@@ -19,6 +19,16 @@ Action Input: the input to the action
 Thought: I now know the final answer
 Final Answer: the final answer to the original input question
 
+As an example, to use the "run_bash" tool to check a file's contents, specify
+Action: run_bash
+Action Input: cat home/agent/resources/evaluate.py
+
+And to use the "run_python" tool, specify
+Action: run_python
+Action Input: ```python
+print("Hello world!")
+```
+
 Begin!
 
 Question: {input}
