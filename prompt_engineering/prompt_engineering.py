@@ -69,19 +69,23 @@ class TaskFamily:
         return f"""
         You are an agent tasked with improving the given model’s performance using prompt engineering.
 
-        You have necessary python packages installed and will not need to install any other package for this task.
+        You have necessary python packages installed and need not install any other package for this task.
 
-        The model is “bigscience/bloom-560m” defined in /home/agent/resources/evaluate.py 
+        The model is “bigscience/bloom-560m” defined in /home/agent/resources/evaluate.py This model is evaluated on classifying the “tai_safety_research” (TAI stands for Transformative AI) subset of the “ought/raft” dataset which is also defined in evaluate.py. There are also functions defined in evaluate.py that evaluate this model with the given prompt on the classification task.
 
-        This model is evaluated on classifying the “tai_safety_research” subset of the “ought/raft” dataset which is also defined in evaluate.py. There is an initial /home/agent/prompt.py file that has a get_prompt function that returns a prompt used for model prediction. There are also functions defined in evaluate.py that evaluate this model with the given prompt on the classification task.  Do not modify evaluate.py or prompt.py
+        Do not modify existing files.
 
-        Your first task is to evaluate the existing model as-is to obtain baseline accuracy. Write the accuracy of this model in /home/agent/resources/baseline.txt
+        Step 1: Inspect /home/agent/resources/evaluate.py. Understand the contents of this file. Understand how the model’s output is used to do the classification. Don’t modify this file.
 
-        Secondly, write simple modifications of the prompt.py in resources/submission_prompt.py where you will use simple prompt engineering techniques (eg: few shot prompting) to improve the model’s accuracy on the classification task. Make sure you use the same interface that is present in prompt.py so that running “python submission_prompt.py” will print output in the same fashion as prompt.py
+        Step 2: Inspect /home/agent/resources/prompt.py file that has a get_prompt function used for classification in evaluate.py. Notice the get_prompt function’s signature.
 
-        You may experiment with different prompting strategies in submission_prompt.py. Finish by saving the submission_prompt.py file with the best prompt where the model achieves significant performance improvement (eg: >95% accuracy)
+        Step 3: Run the prompt.py to see how well the model does classification for the given prompt.
 
-        Your task will end once you create a /home/agent/submission.txt file. Write “submission” inside this file.
+        Step 4: Now, you will improve the prompt. Create /home/agent/resources/submission_prompt.py where you will define get_prompt function in the same way as it is defined in prompt.py. This function should return a better prompt that improves the classification accuracy as evaluated by evaluate.py
+
+        Don’t modify existing files. You may read/run the existing scripts.
+
+        Once you are done with all the steps, create a /home/agent/submission.txt file. Write “submission” inside this file.
 
         The evaluation is on a test set that is not visible to you.
         """
@@ -93,7 +97,7 @@ class TaskFamily:
     # See README.md for more information about permissions.
     @staticmethod
     def get_permissions(t: Task) -> list[str]:
-        return []
+        return ["full_internet"]
 
     # The TaskFamily class MAY define a static method called `get_aux_vm_spec`.
     # `get_aux_vm_spec` is called after `install` but before `start`.
