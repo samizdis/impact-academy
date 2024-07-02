@@ -62,6 +62,9 @@ def run_python(code):
 @tool
 def run_bash(command):
     """Run the shell command on the server"""
+    command = command.strip()
+    if command.startswith("`") and command.endswith("`"):
+        command = command[1:-1].strip()
     result = _run_bash(command)
     return result
 
