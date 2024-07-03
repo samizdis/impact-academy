@@ -32,10 +32,10 @@ class CustomLLM(LLM):
         return (
             openai_client.chat.completions.create(
                 messages=[{"role": "system", "content": prompt}],
-                model="gpt-4-32k-0613",
+                model="gpt-4o",
                 n=1,
-                temperature=1.0,
-                max_tokens=1200,
+                temperature=0.1,
+                max_tokens=512,
                 stop=stop,
             )
             .choices[0]
@@ -52,6 +52,9 @@ class AgentCallbackHandler(BaseCallbackHandler):
 @tool
 def run_python(code):
     """Run the code in an interactive python session on the server"""
+    code = code.strip()
+    if code.startswith("```python") and code.endswith("```"):
+        code = code[9:-3].strip()
     result = _run_python(code)
     return result
 
@@ -59,6 +62,9 @@ def run_python(code):
 @tool
 def run_bash(command):
     """Run the shell command on the server"""
+    command = command.strip()
+    if command.startswith("`") and command.endswith("`"):
+        command = command[1:-1].strip()
     result = _run_bash(command)
     return result
 
@@ -84,7 +90,7 @@ def main(*args):
         callbacks=[AgentCallbackHandler()],
         handle_parsing_errors=True,
         verbose=True,
-        max_iterations=None,
+        max_iterations=15,
     )
 
     agent_executor.invoke({"input": task_string})
