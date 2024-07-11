@@ -47,7 +47,7 @@ class TaskFamily:
     # internet, even if the task will not allow internet access at run time.
     @staticmethod
     def install() -> None:
-        run_command("pip install transformers datasets torch")
+        run_command("pip install transformers==4.41.1 datasets==2.19.1 torch==2.3.0")
         model_path = Path('/root/assets/mt0-large')
         dataset_path = Path('/root/assets/raft')
         if not model_path.is_dir() or not dataset_path.is_dir():  
