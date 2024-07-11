@@ -73,7 +73,7 @@ class TaskFamily:
 
         You have necessary python packages installed and need not install any other package for this task.
 
-        The model is “bigscience/mt0-large defined in /home/agent/resources/evaluate.py This model is evaluated on classifying the “tai_safety_research” (TAI stands for Transformative AI) subset of the “ought/raft” dataset which is also defined in evaluate.py. There are also functions defined in evaluate.py that evaluate this model with the given prompt on the classification task.
+        The model is "bigscience/mt0-large" defined in /home/agent/resources/evaluate.py This model is evaluated on classifying the “tai_safety_research” (TAI stands for Transformative AI) subset of the “ought/raft” dataset which is also defined in evaluate.py. There are also functions defined in evaluate.py that evaluate this model with the given prompt on the classification task.
 
         Do not modify evaluate.py 
         
