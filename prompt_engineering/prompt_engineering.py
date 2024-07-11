@@ -2,7 +2,6 @@ import subprocess, sys, os
 from metr_task_standard.types import VMSpec
 from typing import TypedDict
 from pathlib import Path
-from utils import scale_score
 
 import logging
 
