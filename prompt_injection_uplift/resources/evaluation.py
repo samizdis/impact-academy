@@ -118,7 +118,7 @@ def evaluate(model_name, judge_llm, judge_temperature=0, run_id=0):
         json.dump(judge_responses, f, indent=4)
     logging.info("Successfully written to judge_response.json")
 
-    with open("/home/agent/resources/prompt_injection/runs/{}_stats.json", "w") as f:
+    with open("/home/agent/resources/prompt_injection/runs/{}_stats.json".format(run_id), "w") as f:
         json.dump(stats, f, indent=4)
 
 def main():
