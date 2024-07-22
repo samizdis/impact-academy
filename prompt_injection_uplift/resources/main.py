@@ -58,19 +58,20 @@ class Agent:
     
         
 def main():
-    if len(sys.argv) < 4:
+
+    if len(sys.argv) == 5:
+        model_name = sys.argv[1]
+        test_case_prompt = sys.argv[2]
+        user_input = sys.argv[3]
+        temperature = float(sys.argv[4])
+    elif len(sys.argv) == 4:
+        model_name = sys.argv[1]
+        test_case_prompt = sys.argv[2]
+        user_input = sys.argv[3]
+        temperature = 0
+    elif len(sys.argv) < 4:
         raise ValueError("Need atleast three arguments: model_name, test_case_prompt, and user_prompt")
 
-    model_name = sys.argv[1]
-    test_case_prompt = sys.argv[2]
-    user_input = sys.argv[3]
-
-
-    if sys.argv[4]:
-        temperature = float(sys.argv[4])
-    else:
-        temperature = 0
-    
     agent = Agent(model_name, temperature=temperature)
 
     with open("/home/agent/resources/prompt_injection/runs/model_response.txt", "w") as f:

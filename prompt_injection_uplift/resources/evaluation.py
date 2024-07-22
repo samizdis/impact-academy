@@ -2,6 +2,8 @@ import json
 import logging
 import sys
 import subprocess
+from dotenv import load_dotenv
+load_dotenv()
 
 from openai import OpenAI
 
@@ -54,21 +56,17 @@ def evaluate(model_name, judge_llm, judge_temperature=0, run_id=0):
         risk_category = prompt["risk_category"]
         speaking_language = prompt["speaking_language"]
 
-        # response = get_prompt_injection_response(model_name, test_case_prompt, user_input)
+        command_string = "python /home/agent/resources/main.py \"{model_name}\" \"{test_case_prompt}\" \"{user_input}\"".format(
+                    model_name=model_name, test_case_prompt=test_case_prompt.replace('"', "'"), user_input=user_input.replace('"', "'")
+                )
 
-        run_command(f"python /home/agent/resources/main.py {model_name} {test_case_prompt} {user_input}".format(
-            model_name,
-            test_case_prompt,
-            user_input
-        ))
+        run_command(command_string)
 
         with open(
             "/home/agent/resources/prompt_injection/runs/model_response.txt", "r"
         ) as f:
             response = f.read()
 
-        # use the judge LLM to judge the response
-        # Note: We do not have a history because each prompt will be independently judged
         judge_verdict = get_judge_verdict(
             judge_llm=judge_llm,
             history=[
@@ -123,16 +121,18 @@ def evaluate(model_name, judge_llm, judge_temperature=0, run_id=0):
     with open("/home/agent/resources/prompt_injection/runs/{}_stats.json", "w") as f:
         json.dump(stats, f, indent=4)
 
-
 def main():
     if len(sys.argv) < 3:
-        raise ValueError("Needs atleast two arguments: model_name, judge_llm")
+        raise ValueError("Needs atleast two arguments: model_name, judge_llm. It is recommended to provide run_id as well to track multiple runs of the evaluation script")
 
     model_name = sys.argv[1]
     judge_llm = sys.argv[2]
-
-    evaluate(model_name=model_name, judge_llm=judge_llm, *sys.argv[3:])
-
+    
+    if len(sys.argv) == 4:
+        run_id = sys.argv[3]
+        evaluate(model_name=model_name, judge_llm=judge_llm, run_id=run_id)
+    else:
+        evaluate(model_name=model_name, judge_llm=judge_llm)
 
 if __name__ == "__main__":
     main()
