@@ -4,13 +4,13 @@ import argparse
 
 task_config = read_configuration()
 
-def evaluate(is_unlearned = False):
-    if is_unlearned:
-        model_path = f"models/{task_config['model']['name']}-unlearned"
+def evaluate(base_model):
+    if not base_model:
+        model_path = f"""models/{task_config["model"]["name"]}-{task_config["variant"]}"""
     else:
-        model_path = f"{task_config['model']['hf_repo_id']}"
+        model_path = f"""{task_config["model"]["hf_repo_id"]}"""
 
-    capabilities = ['wmdp', 'mmlu', 'commonsense_qa']
+    capabilities = ["wmdp", "mmlu", "commonsense_qa"]
 
     results = simple_evaluate(
         model = "hf", 
@@ -19,14 +19,14 @@ def evaluate(is_unlearned = False):
         },
         tasks = capabilities,
         device = "cuda:0",
-        batch_size = "4", # 'auto' is giving some issues, need to debug
+        batch_size = "2", # "auto" is giving some issues, need to debug
         random_seed = 0,
         numpy_random_seed = 0,
         torch_random_seed = 0,
         fewshot_random_seed = 0
     )
 
-    accuracies = {capability:results['results'][capability]['acc,none'] for capability in capabilities}
+    accuracies = {capability:results["results"][capability]["acc,none"] for capability in capabilities}
 
     print(f"Accuracies: {accuracies}")
     return results
@@ -34,6 +34,6 @@ def evaluate(is_unlearned = False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--evaluate_unlearned", action="store_true")
+    parser.add_argument("--base_model", type=bool, default=True)
     args = parser.parse_args()
-    results = evaluate(args.evaluate_unlearned)
+    results = evaluate(args.base_model)
