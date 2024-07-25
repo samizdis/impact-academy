@@ -36,23 +36,23 @@ def forward_with_cache(model, inputs, module, no_grad=True):
 
     return cache[0]
 
-def get_data(forget_corpous, retain_corpous, min_len=50, max_len=2000, batch_size=4):
+def get_data(forget_corpous, retain_corpous, min_len=50, max_len=2000, batch_size=1):
     def get_dataset(name):
         data = []
         if name == "wikitext":
             raw_data = load_dataset("wikitext", "wikitext-2-raw-v1", split="test")
             for x in raw_data:
-                if len(x['text']) > min_len:
-                    data.append(str(x['text']))
+                if len(x["text"]) > min_len:
+                    data.append(str(x["text"]))
         elif name == "cyber-forget-corpus":
             raw_data = load_dataset("cais/wmdp-corpora", "cyber-forget-corpus", split="train")
             for x in raw_data:
-                if len(x['text']) > min_len:
-                    data.append(str(x['text']))
+                if len(x["text"]) > min_len:
+                    data.append(str(x["text"]))
         else:
             for line in open(f"data/{name}.jsonl", "r"):
                 if "bio-forget-corpus" in name:
-                    raw_text = json.loads(line)['text']
+                    raw_text = json.loads(line)["text"]
                 else:
                     raw_text = line
                 if len(raw_text) > min_len:
@@ -148,14 +148,15 @@ def run_rmu(
 
     tokenizer.truncation_side = truncation_side
     # Save model
-    path = f"models/{model_name_or_path}-unlearned"
+    path = f"models/{model_name_or_path}-unlearn"
     updated_model.save_pretrained(path)
     tokenizer.save_pretrained(path)
     print(f"Saved model to {path}")
 
 def get_model_and_tokenizer():
-    model = AutoModelForCausalLM.from_pretrained("HuggingFaceTB/SmolLM-360M")
-    tokenizer = AutoTokenizer.from_pretrained("HuggingFaceTB/SmolLM-360M")
+    # load into gpu
+    model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B", device_map="cuda")
+    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B")
 
     tokenizer.pad_token_id = tokenizer.eos_token_id
     tokenizer.padding_side = "left"
@@ -165,10 +166,10 @@ def get_model_and_tokenizer():
 
     return model, tokenizer
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     updated_model, tokenizer = get_model_and_tokenizer()
     frozen_model, _ = get_model_and_tokenizer()
-    model_name_or_path = "SmolLM-360M"
+    model_name_or_path = "Meta-Llama-3-8B"
     module_str = "{model_name}.model.layers[{layer_id}]"
 
     forget_data, retain_data = get_data(
@@ -184,10 +185,10 @@ if __name__ == '__main__':
         retain_data=retain_data,
         layer_id=5,
         layer_ids=[3,4,5],
-        param_ids=[0,1,2],
+        param_ids=[0],
         lr=0.0005,
         steering_coeff=0.01,
         alpha=10,
-        max_num_batches=20
+        max_num_batches=100
     )
 
