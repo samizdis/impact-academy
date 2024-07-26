@@ -167,7 +167,9 @@ class TaskFamily:
 
         # Split the dataset
         holdout_prompts = shuffled_dataset[:holdout_count]
-        uplift_eval_prompts = shuffled_dataset[holdout_count:]
+        # TODO: This edit introduces a IndexError if holdout_count*2 > len(shuffled_dataset)
+        uplift_eval_prompts = shuffled_dataset[holdout_count:holdout_count*2]
+        # uplift_eval_prompts = shuffled_dataset[holdout_count:]
 
         return [holdout_prompts, uplift_eval_prompts]
 
