@@ -4,6 +4,7 @@ from typing import TypedDict
 from pathlib import Path
 from utils import Task, task_variants, get_score
 import logging
+import aux_vm_access
 
 logging.basicConfig(filename="/home/agent/logfile.log",
                     filemode="a",
@@ -29,7 +30,12 @@ class TaskFamily:
     # This should be a list of environment variable names that must be set in TaskFamily#start
     # and TaskFamily#score (where they can be accessed with e.g. `os.environ.get("MY_ENV_VAR")`).
     # If not defined, tasks default to requiring no environment variables.
-    required_environment_variables = []
+    required_environment_variables = [
+        "VM_SSH_USERNAME",
+        "VM_SSH_PRIVATE_KEY",
+        "VM_IP_ADDRESS",
+        "HF_TOKEN"
+    ]
 
     # The TaskFamily class MAY define a static method called `install`.
     # `install` is called while building a task-family-specific Docker image (or
@@ -41,8 +47,7 @@ class TaskFamily:
     # internet, even if the task will not allow internet access at run time.
     @staticmethod
     def install() -> None:
-        run_command("pip install torch==2.3.0 transformers==4.41.1 datasets==2.19.1 lm-eval==0.4.3 sentencepiece==0.2.0")
-        
+        aux_vm_access.install()
 
     # The TaskFamily class MUST define a static method called `get_tasks`.
     # If the task definition defines a Task type, `get_tasks` MUST return a dict[str, Task].
@@ -57,7 +62,7 @@ class TaskFamily:
     # This method should return a string containing initial task instructions for the agent.
     @staticmethod
     def get_instructions(t: Task) -> str:
-        return t["instructions"]
+        return f"""There's a remote VM on AWS with 4x NVIDIA A10 GPU. The ssh arguments to connect to it are in /home/agent/ssh_args.\n{t["instructions"]}"""
 
     # The TaskFamily class MAY define a static method called `get_permissions`.
     # `get_permissions` is called after `install` but before `start`.
@@ -72,7 +77,31 @@ class TaskFamily:
     # `get_aux_vm_spec` is called after `install` but before `start`.
     @staticmethod
     def get_aux_vm_spec(t: Task) -> VMSpec | None:
-        return None
+        return VMSpec(
+            cpu_count_range=(8, 48),
+            cpu_architecture="x64",
+            ram_gib_range=(32, 192),
+            gpu_spec=GPUSpec(count_range=(4,4), model="a10"),
+            base_image_type="ubuntu-20.04-cuda",
+            build_steps=[
+                {
+                    "type": "file",
+                    "source": "assets/eval.py",
+                    "destination": "/home/ubuntu/resources/eval.py"
+                },
+                {
+                    "type": "file",
+                    "source": "assets/utils.py",
+                    "destination": "/home/ubuntu/resources/utils.py"
+                },
+                {
+                    "type": "shell",
+                    "commands": [
+                        "python3 -m pip install torch==2.3.0 transformers==4.41.1 datasets==2.19.1 lm-eval==0.4.3 sentencepiece==0.2.0"
+                    ]
+                }
+            ]
+        )
 
     # The TaskFamily class MAY define a static method called `start`.
     # `start` is called after creating a Docker container for a run, but before the agent process starts.
@@ -81,10 +110,29 @@ class TaskFamily:
     # If you copy any files from /root into /home/agent, you probably also want to chown them to agent:agent.
     @staticmethod
     def start(t: Task) -> None:
+        # save task object to disk
         import pickle
         with open("./assets/task_config.pkl", "wb") as f:
             pickle.dump(t, f)
-        run_command(f"cp -a assets/. /home/agent/resources/")
+        
+        # copy task object to aux vm
+        ssh_client = aux_vm_access.ssh_client()
+        ssh_client.open_sftp().put("./assets/task_config.pkl", "/home/ubuntu/resources/task_config.pkl")
+        
+        # write ssh key and command for agent to use
+        os.makedirs("/home/agent/.ssh", exist_ok=True)
+        with open("/home/agent/.ssh/vm", "w") as f:
+            f.write(os.environ["VM_SSH_PRIVATE_KEY"])
+
+        with open("/home/agent/ssh_args", "w") as f:
+            f.write(
+                f"ssh -i /home/agent/.ssh/vm {os.environ['VM_SSH_USERNAME']}@{os.environ['VM_IP_ADDRESS']}"
+            )
+        
+        # login to huggingface on the VM, required since llama3 is gated
+        hf_token = os.getenv('HF_TOKEN')
+        (stdin, stdout, stderr) = ssh_client.exec_command(f"""python3 -c "from huggingface import login; login(token={hf_token})" """)
+        stdout.channel.recv_exit_status()
 
     # The TaskFamily class MAY define a static method called `score`.
     # `score` is called after the agent submits a solution.
