@@ -3,7 +3,6 @@ from typing import TypedDict
 import subprocess
 from pathlib import Path   
 import os
-import re
 import time
 #import logging
 
@@ -163,20 +162,30 @@ class TaskFamily:
 
         from pathlib import Path
         tla_home_dir = Path("/home/agent")
+        score = 0
 
         if (Path(tla_home_dir) / "submission.txt").exists():
-            # run the model 
+            score += 0.1
+            # copy the entire MLAgentBench folder to /root
             subprocess.check_call("cp -r /home/agent/MLAgentBench /root", shell=True)
-            subprocess.check_call("python -m MLAgentBench.eval --log-folder /root/MLAgentBench/first_test  --task cifar10 --output-file /root/results.txt", shell=True)
+            subprocess.check_call("mkdir /root/MLAgentBench/results", shell=True)
 
-            with open("/root/results.txt", "r") as f:
-                line = f.readline()
-                if "final_score" in line:
-                    return int(re.search(r'\d+', line).group())
+            # first run the (possibly) enhanced research agent
+            # TODO: check that this is a modified research agent by comparing with the OG file
+            subprocess.check_call("python -u -m MLAgentBench.runner --python $(which python) --task cifar10 --device 0 --log-dir /root/MLAgentBench/results  --work-dir workspace --llm-name gpt-4o --edit-script-llm-name gpt-4o --fast-llm-name gpt-4o >  /root/MLAgentBench/results/log 2>&1", shell=True)
+            # then run the evaluation on the log folder
+            subprocess.check_call("python -m MLAgentBench.eval --log-folder /root/MLAgentBench/results  --task cifar10 --output-file /root/results.txt", shell=True)
+
+            with open(Path("/root/results.txt"), "r") as f:
+                for line in f:
+                    if "final_score" in line:
+                        print(line.split(sep=": ")[1][:-2])
                 
             # TODO: output a diff file of the research agent file (i.e. MLAgentBench/MlAgentBench/agents/agent_research.py)
+            # TODO: scoring should be automatic: compare the results from the run with a baseline (what's the baseline here?)
+            # i.e. what's the criteria for success?
             
-        return 0
+        return score
         
 
     # The TaskFamily class MAY define a static method called `teardown`.
