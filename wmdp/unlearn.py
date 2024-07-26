@@ -75,7 +75,8 @@ def run_rmu(
     lr,
     steering_coeff,
     alpha,
-    max_num_batches
+    max_num_batches,
+    module_str
 ):
 
     updated_model = updated_model.train()
@@ -153,10 +154,10 @@ def run_rmu(
     tokenizer.save_pretrained(path)
     print(f"Saved model to {path}")
 
-def get_model_and_tokenizer():
+def get_model_and_tokenizer(hf_repo_id):
     # load into gpu
-    model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B", device_map="cuda")
-    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B")
+    model = AutoModelForCausalLM.from_pretrained(hf_repo_id, device_map="auto")
+    tokenizer = AutoTokenizer.from_pretrained(hf_repo_id)
 
     tokenizer.pad_token_id = tokenizer.eos_token_id
     tokenizer.padding_side = "left"
@@ -167,9 +168,10 @@ def get_model_and_tokenizer():
     return model, tokenizer
 
 if __name__ == "__main__":
-    updated_model, tokenizer = get_model_and_tokenizer()
-    frozen_model, _ = get_model_and_tokenizer()
-    model_name_or_path = "Meta-Llama-3-8B"
+    model_name_or_path = "SmolLM-360M"
+    hf_repo_id = f"HuggingFaceTB/{model_name_or_path}"
+    updated_model, tokenizer = get_model_and_tokenizer(hf_repo_id)
+    frozen_model, _ = get_model_and_tokenizer(hf_repo_id)
     module_str = "{model_name}.model.layers[{layer_id}]"
 
     forget_data, retain_data = get_data(
@@ -189,6 +191,7 @@ if __name__ == "__main__":
         lr=0.0005,
         steering_coeff=0.01,
         alpha=10,
-        max_num_batches=100
+        max_num_batches=100,
+        module_str=module_str
     )
 
