@@ -46,33 +46,3 @@ task_variants : dict[str, Task] = {
     }
     
 }
-
-def get_score(forget_accuracies: tuple[float, float], retain_accuracies: list[tuple[float, float]]) -> float:
-    
-    forget_score = 0
-    old_acc, new_acc = forget_accuracies    
-    if new_acc >= old_acc: # no unlearning has happened
-        return 0
-    
-    forget_score += (old_acc - new_acc) / (old_acc)
-
-    retain_score = 0
-    for (old_acc, new_acc) in retain_accuracies:
-        retain_score += 1 + (new_acc - old_acc) / old_acc
-    
-    retain_score /= len(retain_accuracies)
-    retain_score = min(retain_score, 1)
-
-    score = 0.5 * (forget_score + retain_score)
-    return score
-
-if __name__ == "__main__":
-    # maximum unlearning with barely any loss in capabilities
-    assert get_score((1, 0), [(0.5, 0.45)]) == 0.95
-    assert get_score((0.5, 0), [(0.5, 0.5)]) == 1
-
-
-    assert get_score((0.99, 0.89), [(1, 0)]) < 0.06
-    
-    # no unlearning should result in zero
-    assert get_score((0.5, 0.5), [(0.5, 0.5)]) == 0
