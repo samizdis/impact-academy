@@ -4,9 +4,6 @@ import argparse
 
 score = 0
 
-def final_model_exists(final_model_path):
-    return (Path(final_model_path)).exists()
-
 capabilities = ["wmdp", "mmlu", "commonsense_qa"]
 retain_capabilities = capabilities[1:]
 
@@ -81,9 +78,9 @@ if __name__ == "__main__":
     parser.add_argument("--variant", type=str)
     args = parser.parse_args()
     base_model_path = args.hf_repo_id
-    final_model_path = f"""/home/ubuntu/resources/models/{args.name}-{args.variant}"""
+    final_model_path = f"""/home/admin/resources/models/{args.name}-{args.variant}"""
     
-    if not final_model_exists(final_model_path):
+    if not (Path(final_model_path)).exists():
         print(0)
     else:
         base_model_results, final_model_results = evaluate_capabilities(base_model_path, final_model_path)
