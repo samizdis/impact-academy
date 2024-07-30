@@ -73,13 +73,12 @@ class TaskFamily:
     # `get_aux_vm_spec` is called after `install` but before `start`.
     @staticmethod
     def get_aux_vm_spec(t: Task) -> VMSpec | None:
-        
         return VMSpec(
-            cpu_count_range=(1, 2),
+            cpu_count_range=(4, 4),
             cpu_architecture="x64",
-            ram_gib_range=(1, 4),
-            # gpu_spec=GPUSpec(count_range=(1,1), model="a10"),
-            base_image_type="debian-12",
+            ram_gib_range=(16, 16),
+            gpu_spec=GPUSpec(count_range=(1,1), model="a10"),
+            base_image_type="ubuntu-20.04-cuda",
             build_steps=[
                 {
                     "type": "shell",
@@ -87,16 +86,22 @@ class TaskFamily:
                         "sudo apt update -y"
                     ]
                 },
+                {
+                    "type": "shell",
+                    "commands": [
+                        "sudo apt install -y python3-pip python3-venv"
+                    ]
+                },
+                {
+                    "type": "shell",
+                    "commands": [
+                        "python3 -m venv myenv"
+                    ]
+                },
                 # {
                 #     "type": "shell",
                 #     "commands": [
-                #         "sudo apt install -y python3-pip python3-torch python3-transformers python3-hugginface_hub"
-                #     ]
-                # },
-                # {
-                #     "type": "shell",
-                #     "commands": [
-                #         "python3 -m pip install torch==2.3.0 transformers==4.41.1 datasets==2.19.1 lm-eval==0.4.3 sentencepiece==0.2.0 --user"
+                #         "python3 -m pip install torch==2.3.0 transformers==4.41.1 datasets==2.19.1 lm-eval==0.4.3 sentencepiece==0.2.0"
                 #     ]
                 # },
                 {
@@ -130,13 +135,16 @@ class TaskFamily:
             )
         
         # login to huggingface on the VM, required since llama3 is gated
-        hf_token = os.getenv('HF_TOKEN')
-        (stdin, stdout, stderr) = ssh_client.exec_command(f"""python3 -c "from huggingface import login; login(token={hf_token})" """)
-        exit_status = stdout.channel.recv_exit_status()
-        if exit_status == 0:
-            print("Logged in to huggingface.")
+        hf_token = os.environ['HF_TOKEN']
+        if hf_token is None or len(hf_token) == 0:
+            logging.error("Environment variable HF_TOKEN is not set. Please set it to your huggingface token.")
         else:
-            print(f"Failed to log in to huggingface. Error: {stderr.readlines()}")
+            (stdin, stdout, stderr) = ssh_client.exec_command(f"""python3 -c "from huggingface import login; login(token={hf_token})" """)
+            exit_status = stdout.channel.recv_exit_status()
+            if exit_status == 0:
+                logging.info("Logged in to huggingface.")
+            else:
+                logging.info(f"Failed to log in to huggingface. Error: {stderr.readlines()}")
         
         
 
@@ -163,10 +171,10 @@ class TaskFamily:
                 score = float(lines[-1].strip())
                 assert 0 <= score <= 1
             else:
-                print(f"Error running score script on aux vm. Error: {stderr.readlines()}")
+                logging.info(f"Error running score script on aux vm. Error: {stderr.readlines()}")
                 score = 0
         except:
-            print("Error running score script on aux vm")
+            logging.info("Error running score script on aux vm")
             score = 0
         
         return score
