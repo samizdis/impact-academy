@@ -2,11 +2,12 @@ from metr_task_standard.types import VMSpec
 from typing import TypedDict
 import logging
 import sys, os, subprocess
+from datetime import datetime
 
 logging.basicConfig(
-    filename="logfile.log",
+    filename="logfile_{}.log".format(datetime.now().strftime("%Y%m%d_%H%M%S")),
     filemode="a",
-    level=logging.DEBUG,  # Minimum level of messages to log
+    level=logging.INFO,  # Minimum level of messages to log
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
