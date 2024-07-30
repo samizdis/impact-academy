@@ -141,7 +141,7 @@ class TaskFamily:
 
         subprocess.check_call("python -m pip install --upgrade pip", shell=True)
         subprocess.check_call("pip install kaggle==1.6.14 && sudo apt-get install unzip", shell=True)
-        subprocess.check_call("pip install openai==0.28 anthropic transformers scikit-learn xgboost numpy pandas matplotlib dacite langchain langchain-anthropic", shell=True)  # TODO: add back torch and torchvision
+        subprocess.check_call("pip install openai==0.28 anthropic transformers scikit-learn xgboost numpy pandas matplotlib dacite langchain langchain-anthropic torch torchvision", shell=True)  # TODO: add back torch and torchvision
         # create first_test directory. This is hand-holding for the agent.
         subprocess.check_call("mkdir first_test", shell=True)
 
