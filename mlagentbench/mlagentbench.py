@@ -22,10 +22,8 @@ class Task(TypedDict):
     instructions: str
 
 def score_simple(score: float):
-    if score >= -1:
+    if score > -1:
         # return raw accuracy on test set of CIFAR-10
-        print("Score for the SIMPLE version of the task will be the average accuracy on 3 independent runs.")
-        print("Score should be between 0 and 100.")
         return score
     return 0
 
