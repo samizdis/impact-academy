@@ -2,7 +2,7 @@ import subprocess, sys, os
 from metr_task_standard.types import VMSpec, GPUSpec
 from typing import TypedDict
 from pathlib import Path
-from utils import Task, task_variants, get_score
+from utils import Task, task_variants
 import logging
 import aux_vm_access
 
@@ -73,43 +73,51 @@ class TaskFamily:
     # `get_aux_vm_spec` is called after `install` but before `start`.
     @staticmethod
     def get_aux_vm_spec(t: Task) -> VMSpec | None:
+        
         return VMSpec(
-            cpu_count_range=(8, 48),
+            cpu_count_range=(1, 2),
             cpu_architecture="x64",
-            ram_gib_range=(32, 192),
-            gpu_spec=GPUSpec(count_range=(4,4), model="a10"),
-            base_image_type="ubuntu-20.04-cuda",
+            ram_gib_range=(1, 4),
+            # gpu_spec=GPUSpec(count_range=(1,1), model="a10"),
+            base_image_type="debian-12",
             build_steps=[
-                {
-                    "type": "file",
-                    "source": "assets/eval.py",
-                    "destination": "/home/ubuntu/resources/eval.py"
-                },
-                {
-                    "type": "file",
-                    "source": "assets/utils.py",
-                    "destination": "/home/ubuntu/resources/utils.py"
-                },
                 {
                     "type": "shell",
                     "commands": [
-                        "python3 -m pip install torch==2.3.0 transformers==4.41.1 datasets==2.19.1 lm-eval==0.4.3 sentencepiece==0.2.0"
+                        "sudo apt update -y"
                     ]
-                }
+                },
+                # {
+                #     "type": "shell",
+                #     "commands": [
+                #         "sudo apt install -y python3-pip python3-torch python3-transformers python3-hugginface_hub"
+                #     ]
+                # },
+                # {
+                #     "type": "shell",
+                #     "commands": [
+                #         "python3 -m pip install torch==2.3.0 transformers==4.41.1 datasets==2.19.1 lm-eval==0.4.3 sentencepiece==0.2.0 --user"
+                #     ]
+                # },
+                {
+                    "type": "file",
+                    "source": "./assets",
+                    "destination": "resources"
+                },
             ]
         )
 
     # `start` is called after creating a Docker container for a run, but before the agent process starts.
     @staticmethod
-    def start(t: Task) -> None:
-        # save task object to disk
+    def start(t: Task) -> None:   
+        ssh_client = aux_vm_access.ssh_client()
+        sftp_client = ssh_client.open_sftp()
+        
+        # copy task object to aux vm
         import pickle
         with open("./assets/task_config.pkl", "wb") as f:
             pickle.dump(t, f)
-        
-        # copy task object to aux vm
-        ssh_client = aux_vm_access.ssh_client()
-        ssh_client.open_sftp().put("./assets/task_config.pkl", "/home/ubuntu/resources/task_config.pkl")
+        sftp_client.put("./assets/task_config.pkl", "resources/task_config.pkl")
         
         # write ssh key and command for agent to use
         os.makedirs("/home/agent/.ssh", exist_ok=True)
@@ -118,13 +126,19 @@ class TaskFamily:
 
         with open("/home/agent/ssh_args", "w") as f:
             f.write(
-                f"ssh -i /home/agent/.ssh/vm {os.environ['VM_SSH_USERNAME']}@{os.environ['VM_IP_ADDRESS']}"
+                f"ssh -o StrictHostKeyChecking=accept-new -i /home/agent/.ssh/vm {os.environ['VM_SSH_USERNAME']}@{os.environ['VM_IP_ADDRESS']}"
             )
         
         # login to huggingface on the VM, required since llama3 is gated
         hf_token = os.getenv('HF_TOKEN')
         (stdin, stdout, stderr) = ssh_client.exec_command(f"""python3 -c "from huggingface import login; login(token={hf_token})" """)
-        stdout.channel.recv_exit_status()
+        exit_status = stdout.channel.recv_exit_status()
+        if exit_status == 0:
+            print("Logged in to huggingface.")
+        else:
+            print(f"Failed to log in to huggingface. Error: {stderr.readlines()}")
+        
+        
 
     # The TaskFamily class MAY define a static method called `score`.
     # `score` is called after the agent submits a solution.
@@ -137,16 +151,20 @@ class TaskFamily:
         name = t["model"]["name"]
         
         ssh_client = aux_vm_access.ssh_client()
-        ssh_client.open_sftp().put("./score.py", "/home/ubuntu/resources/score.py")
+        ssh_client.open_sftp().put("./score.py", "resources/score.py")
         
         try:
             (stdin, stdout, stderr) = ssh_client.exec_command(
-                f"python3 /home/ubuntu/resources/score.py --hf_repo_id {hf_repo_id} --name {name} --variant {variant}"
+                f"python3 resources/score.py --hf_repo_id {hf_repo_id} --name {name} --variant {variant}"
                 )
-            stdout.channel.recv_exit_status()
-            lines = stdout.readlines()
-            score = float(lines[-1].strip())
-            assert 0 <= score <= 1
+            exit_status = stdout.channel.recv_exit_status()
+            if exit_status == 0:
+                lines = stdout.readlines()
+                score = float(lines[-1].strip())
+                assert 0 <= score <= 1
+            else:
+                print(f"Error running score script on aux vm. Error: {stderr.readlines()}")
+                score = 0
         except:
             print("Error running score script on aux vm")
             score = 0
