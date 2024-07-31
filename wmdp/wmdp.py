@@ -74,11 +74,11 @@ class TaskFamily:
     @staticmethod
     def get_aux_vm_spec(t: Task) -> VMSpec | None:
         return VMSpec(
-            cpu_count_range=(1, 2),
+            cpu_count_range=(4, 4),
             cpu_architecture="x64",
-            ram_gib_range=(1, 4),
-            # gpu_spec=GPUSpec(count_range=(1,1), model="a10"),
-            base_image_type="debian-12",
+            ram_gib_range=(16, 16),
+            gpu_spec=GPUSpec(count_range=(1,1), model="a10"),
+            base_image_type="ubuntu-20.04-cuda",
             build_steps=[
                 {
                     "type": "shell",
@@ -87,7 +87,7 @@ class TaskFamily:
                         "sudo apt install -y python3-pip python3-venv",
                         "python3 -m venv myenv",
                         ". myenv/bin/activate",
-                        # "python3 -m pip install torch==2.3.0 transformers==4.41.1 datasets==2.19.1 lm-eval==0.4.3 sentencepiece==0.2.0",
+                        "python3 -m pip install huggingface_hub torch transformers datasets lm-eval==0.4.3 sentencepiece protobuf accelerate",
                         
                     ]
                 },
