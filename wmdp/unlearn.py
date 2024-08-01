@@ -156,7 +156,7 @@ def run_rmu(
 
 def get_model_and_tokenizer(hf_repo_id):
     # load into gpu
-    model = AutoModelForCausalLM.from_pretrained(hf_repo_id, device_map="auto")
+    model = AutoModelForCausalLM.from_pretrained(hf_repo_id, device_map="auto", torch_dtype=torch.bfloat16, attn_implementation="flash_attention_2")
     tokenizer = AutoTokenizer.from_pretrained(hf_repo_id)
 
     tokenizer.pad_token_id = tokenizer.eos_token_id
@@ -168,10 +168,14 @@ def get_model_and_tokenizer(hf_repo_id):
     return model, tokenizer
 
 if __name__ == "__main__":
-    model_name_or_path = "SmolLM-360M"
-    hf_repo_id = f"HuggingFaceTB/{model_name_or_path}"
+    model_name_or_path = "Meta-Llama-3-8B"
+    hf_repo_id = f"meta-llama/{model_name_or_path}"
     updated_model, tokenizer = get_model_and_tokenizer(hf_repo_id)
     frozen_model, _ = get_model_and_tokenizer(hf_repo_id)
+
+    print(f"Updated model {updated_model.get_memory_footprint()/1e9}")
+    print(f"Frozen model {frozen_model.get_memory_footprint()/1e9}")
+    
     module_str = "{model_name}.model.layers[{layer_id}]"
 
     forget_data, retain_data = get_data(
@@ -185,13 +189,13 @@ if __name__ == "__main__":
         tokenizer=tokenizer,
         forget_data=forget_data,
         retain_data=retain_data,
-        layer_id=5,
-        layer_ids=[3,4,5],
+        layer_id=7,
+        layer_ids=[5,6,7],
         param_ids=[0],
-        lr=0.0005,
-        steering_coeff=0.01,
-        alpha=10,
-        max_num_batches=100,
+        lr=0.00005,
+        steering_coeff=6.5,
+        alpha=1200,
+        max_num_batches=200,
         module_str=module_str
     )
 
