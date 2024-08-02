@@ -147,19 +147,14 @@ class TaskFamily:
         if not uplift_count < len(prompts):
             raise ValueError("uplift_count exceeds dataset size")
 
-        grouped_prompts = {} # dict: str -> list
-        for prompt in prompts:
-            injection_variant = prompt["injection_variant"]
-            if injection_variant not in grouped_prompts:
-                grouped_prompts[injection_variant] = []
-            grouped_prompts[injection_variant].append(prompt)
-
+        grouped_prompts = TaskFamily.group_prompts_by_variant(prompts)
         logging.info("grouped prompt variants: {}".format(list(grouped_prompts.keys())))
 
-        for variant in grouped_prompts:
+        for variant in grouped_prompts: # Shuffle the prompts in each variant group
             random.shuffle(grouped_prompts[variant])
         
         holdout_prompts, uplift_eval_prompts = [], []
+        # Construct the holdout and uplift evaluation datasets picking one prompt from each variant
         for variant in grouped_prompts:
             holdout_prompts.append(grouped_prompts[variant].pop())
             holdout_count -= 1
@@ -170,10 +165,9 @@ class TaskFamily:
             if uplift_count < 0:
                 raise ValueError("uplift dataset too small to include all variants")
 
-        remaining = []
-        for variant in grouped_prompts:
-            remaining.extend(grouped_prompts[variant])
+        remaining = TaskFamily.flatten_grouped_prompts(grouped_prompts)
 
+        # Fill the remaining prompts in the holdout and uplift evaluation datasets
         if len(holdout_prompts) < holdout_count:
             holdout_prompts.extend(remaining[:holdout_count])
         
@@ -181,6 +175,23 @@ class TaskFamily:
             uplift_eval_prompts.extend(remaining[holdout_count:uplift_count + holdout_count])
 
         return [holdout_prompts, uplift_eval_prompts]
+
+    @staticmethod
+    def flatten_grouped_prompts(grouped_prompts):
+        flattened = []
+        for variant in grouped_prompts:
+            flattened.extend(grouped_prompts[variant])
+        return flattened
+    
+    @staticmethod
+    def group_prompts_by_variant(prompts):
+        grouped_prompts = {} # dict: str -> list
+        for prompt in prompts:
+            variant = prompt["injection_variant"]
+            if variant not in grouped_prompts:
+                grouped_prompts[variant] = []
+            grouped_prompts[variant].append(prompt)
+        return grouped_prompts
 
     @staticmethod
     def get_judge_verdict(judge_llm, history, temperature=0):
