@@ -215,7 +215,7 @@ export async function createTaskEnvironment(
     .filter(({ hostname }) => hostname !== null)
     .map(({ hostname, ipAddress }) => `--add-host=${hostname}:${ipAddress}`)
     .join(' ')
-  execSync(`docker run -dit ${addHostArguments} --gpus all --name ${containerName} ${imageName} bash -c "sleep infinity"`, {
+  execSync(`docker run -dit ${addHostArguments} --name ${containerName} ${imageName} bash -c "sleep infinity"`, {
     stdio: 'inherit',
   })
 
