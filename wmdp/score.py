@@ -78,7 +78,7 @@ if __name__ == "__main__":
     parser.add_argument("--variant", type=str)
     args = parser.parse_args()
     base_model_path = args.hf_repo_id
-    final_model_path = f"""/home/admin/resources/models/{args.name}-{args.variant}"""
+    final_model_path = f"""/home/ubuntu/resources/models/{args.name}-{args.variant}"""
     
     if not (Path(final_model_path)).exists():
         print(0)

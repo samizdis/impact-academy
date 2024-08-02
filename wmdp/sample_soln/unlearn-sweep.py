@@ -4,7 +4,12 @@ from transformers import AdamW
 import tqdm
 from datasets import load_dataset
 import json
+import wandb
 from transformers import AutoTokenizer, AutoModelForCausalLM
+from lm_eval.evaluator import simple_evaluate
+from lm_eval.models.huggingface import HFLM
+
+wandb.login()
 
 def get_params(model, layer_ids, param_ids):
     params = []
@@ -76,12 +81,18 @@ def run_rmu(
     steering_coeff,
     alpha,
     max_num_batches,
-    module_str
+    module_str,
+    epochs
 ):
 
     updated_model = updated_model.train()
     frozen_model = frozen_model.eval()
     params = get_params(updated_model, layer_ids, param_ids)
+    if params == []:
+        print("No parameters found")
+        return
+    else:
+        print(f"Found {len(params)} parameters")
     optimizer = AdamW(params, lr=lr)
     frozen_module = eval(
         module_str.format(model_name="frozen_model", layer_id=layer_id)
@@ -102,8 +113,10 @@ def run_rmu(
     truncation_side = tokenizer.truncation_side
     tokenizer.truncation_side="right"
 
-    for epoch in range(1):
+    for epoch in range(epochs):
         print(f"======= Epoch {epoch} =======")
+        train_loss_forget = 0.0
+        train_loss_retain = 0.0
         with tqdm.tqdm(total=num_batches) as pbar:
             for idx in range(num_batches):
                 unlearn_batch = forget_data[idx]
@@ -118,13 +131,14 @@ def run_rmu(
                     updated_model, unlearn_inputs, module=updated_module, no_grad=False
                 ).to(updated_model.device)
 
-                unlearn_loss = torch.nn.functional.mse_loss(
+                forget_loss = torch.nn.functional.mse_loss(
                     updated_forget_activations, control_vec
                 )
+                train_loss_forget += forget_loss.item()
 
                 # Retain loss
                 retain_inputs = tokenizer(
-                    retain_batch, return_tensors="pt", padding=True, truncation=True, max_length=512
+                    retain_batch, return_tensors="pt", padding=True, truncation=True, max_length=max_length
                 ).to(updated_model.device)
                 updated_retain_activations = forward_with_cache(
                     updated_model, retain_inputs, module=updated_module, no_grad=False
@@ -136,23 +150,53 @@ def run_rmu(
                 retain_loss = torch.nn.functional.mse_loss(
                     updated_retain_activations, frozen_retain_activations
                 )
-                retain_loss *= alpha
+                train_loss_retain += retain_loss.item()
 
                 # Update model
-                loss = unlearn_loss + retain_loss
+                loss = forget_loss + alpha * retain_loss
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
-                print(f"loss: {loss.item():.4g} | unlearn_loss: {unlearn_loss.item():.4g} | retain_loss: {retain_loss.item():.4g} | param_change: {params[0].grad.abs().mean().item():.4g}")
+                print(f"loss: {loss.item():.4g} | unlearn_loss: {forget_loss.item():.4g} | retain_loss: {retain_loss.item():.4g} | param_change: {params[0].grad.abs().mean().item():.4g}")
                 
                 pbar.update(1)
 
+        train_loss = train_loss_forget + alpha * train_loss_retain
+        
+        mmlu_accuracy, wmdp_accuracy = get_val_acc(updated_model, tokenizer)
+        
+        wandb.log({
+            "epoch": epoch,
+            "train_loss": train_loss / num_batches,
+            "train_loss_forget": train_loss_forget / num_batches,
+            "train_loss_retain": train_loss_retain / num_batches,
+            "mmlu_acc": mmlu_accuracy,
+            "wmdp_acc": wmdp_accuracy,
+            "diff_acc": mmlu_accuracy - wmdp_accuracy
+        })
+
     tokenizer.truncation_side = truncation_side
     # Save model
-    path = f"models/{model_name_or_path}-unlearn"
-    updated_model.save_pretrained(path)
-    tokenizer.save_pretrained(path)
-    print(f"Saved model to {path}")
+    # path = f"models/{model_name_or_path}-unlearn"
+    # updated_model.save_pretrained(path)
+    # tokenizer.save_pretrained(path)
+    # print(f"Saved model to {path}")
+
+def get_val_acc(model, tokenizer):
+    results = simple_evaluate(
+        HFLM(model, tokenizer=tokenizer),
+        tasks=["wmdp", "mmlu"],
+        device="cuda:0",
+        limit=0.2,
+        random_seed = 0,
+        numpy_random_seed = 0,
+        torch_random_seed = 0,
+        fewshot_random_seed = 0
+    )
+    wmdp_accuracy = results["results"]["wmdp"]["acc,none"]
+    mmlu_accuracy = results["results"]["mmlu"]["acc,none"]
+    
+    return mmlu_accuracy, wmdp_accuracy
 
 def get_model_and_tokenizer(hf_repo_id):
     # load into gpu
@@ -167,7 +211,8 @@ def get_model_and_tokenizer(hf_repo_id):
 
     return model, tokenizer
 
-if __name__ == "__main__":
+def main():
+    run = wandb.init()
     model_name_or_path = "Meta-Llama-3-8B"
     hf_repo_id = f"meta-llama/{model_name_or_path}"
     updated_model, tokenizer = get_model_and_tokenizer(hf_repo_id)
@@ -182,6 +227,24 @@ if __name__ == "__main__":
         "cyber-forget-corpus", "wikitext"
     )
     
+    # run_rmu(
+    #     model_name_or_path=model_name_or_path,
+    #     updated_model=updated_model,
+    #     frozen_model=frozen_model,
+    #     tokenizer=tokenizer,
+    #     forget_data=forget_data,
+    #     retain_data=retain_data,
+    #     layer_id=7,
+    #     layer_ids=[5,6,7],
+    #     param_ids=[6],
+    #     lr=5e-5,
+    #     steering_coeff=20,
+    #     alpha=1200,
+    #     max_num_batches=200,
+    #     module_str=module_str,
+    #     epochs=1
+    # )
+    
     run_rmu(
         model_name_or_path=model_name_or_path,
         updated_model=updated_model,
@@ -189,13 +252,53 @@ if __name__ == "__main__":
         tokenizer=tokenizer,
         forget_data=forget_data,
         retain_data=retain_data,
-        layer_id=7,
-        layer_ids=[5,6,7],
+        layer_id=wandb.config.layer,
+        layer_ids=[wandb.config.layer-2, wandb.config.layer-1, wandb.config.layer],
         param_ids=[0],
-        lr=0.00005,
-        steering_coeff=6.5,
-        alpha=1200,
-        max_num_batches=200,
-        module_str=module_str
+        lr=wandb.config.learning_rate,
+        steering_coeff=wandb.config.steering_coeff,
+        alpha=wandb.config.alpha,
+        max_num_batches=wandb.config.max_num_batches,
+        module_str=module_str,
+        epochs=wandb.config.epochs
     )
 
+sweep_configuration = {
+    "name": "unlearn_llama_3_8b",
+    "run_cap": 5,
+    "method": "bayes",
+    "metric": {
+        "goal": "maximize",
+        "name": "diff_acc"
+    },
+    "parameters":{
+        "learning_rate": {
+            "min": 5e-7,
+            "max": 5e-4 
+        },
+        "alpha":{
+            "min": 200,
+            "max": 2000
+        },
+        "steering_coeff":{
+            "distribution": "uniform",
+            "min": 6,
+            "max": 300,
+        },
+        "layer": {
+            "distribution": "int_uniform",
+            "min": 3,
+            "max": 20,
+        },
+        "epochs": {
+            "value": 3,
+        },
+        "max_num_batches": {
+            "value": 200
+        },
+    }
+}
+
+sweep_id = wandb.sweep(sweep=sweep_configuration, project="unlearn_llama_3_8b")
+
+wandb.agent(sweep_id=sweep_id, function=main, count=5)

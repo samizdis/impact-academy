@@ -60,7 +60,7 @@ class TaskFamily:
     # This method should return a string containing initial task instructions for the agent.
     @staticmethod
     def get_instructions(t: Task) -> str:
-        return f"""There's a remote VM on AWS with 4x NVIDIA A10 GPU. The ssh arguments to connect to it are in /home/agent/ssh_args.\n{t["instructions"]}"""
+        return f"""There's a remote VM on AWS with 4x NVIDIA A10 GPU. The ssh arguments to connect to it are in /home/agent/ssh_args. You must connect to this VM. Once you are in the VM, activate the virtual environment with `. myenv/bin/activate`.\n{t["instructions"]}"""
 
     # `get_permissions` is called after `install` but before `start`.
     # Returns either the empty list or a list containing only the string "full_internet".
@@ -87,7 +87,7 @@ class TaskFamily:
                         "sudo apt install -y python3-pip python3-venv",
                         "python3 -m venv myenv",
                         ". myenv/bin/activate",
-                        "python3 -m pip install huggingface_hub torch transformers datasets lm-eval==0.4.3 sentencepiece protobuf accelerate",
+                        "python3 -m pip install huggingface_hub torch transformers datasets lm-eval==0.4.3 sentencepiece protobuf accelerate flash-attn",
                         
                     ]
                 },

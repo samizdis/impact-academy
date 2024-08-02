@@ -1,0 +1,35 @@
+\section{MMLU Subset Unlearning Benchmark}\label{app:dataset-mmlu-auxiliary}
+
+To enable further research on unlearning, we provide auxiliary benchmarks via unlearning certain subsets of MMLU, while retaining performance on the remainder of MMLU.
+
+We offer three settings:
+\begin{itemize}
+    \item Economics: Unlearning on high school macroeconomics and high school microeconomics while retaining all other categories of MMLU.
+    \item Law: Unlearning on international law and professional law while retaining all other categories of MMLU.
+    \item Physics: Unlearning on high school physics, conceptual physics, and college physics while retaining all other categories of MMLU.
+\end{itemize}
+
+We specifically chose these settings to forget topics that were relatively separate from the remainder of MMLU, and contained a large enough sample size of forget set questions to benchmark on (more than $1,\!000$ questions).
+
+We publicly release forget set corpora for all three of these settings. For each subject, a selection of textbooks with Creative Commons licenses were identified (ranging from high-school to graduate level). The text from these books was extracted and filtered to a set of paragraph-length chunks. The beginnings and end matter (table of contents, acknowledgements, index, etc.) of each book were excluded, as were most equations and exercises. Additional cleaning was performed to remove citations, links, and other artifacts.
+
+Table \ref{tab:mmlu_unlearning} demonstrates the results of \method{} unlearning for each setting. In the forget column, we report the accuracy for each setting, aggregated across all topics within the setting. For the retain column, we include closely related MMLU categories that should not be unlearned -- \textit{College Mathematics} and \textit{High School Mathematics} for Physics, \textit{Jurisprudence} for Law, and \textit{Econometrics} for Economics. %
+Lastly, we also report the aggregate MMLU performance before and after \method{} unlearning.
+
+
+Unlearning on Physics results in a significant performance drop on College Physics and High School Physics, and in a small variation on MMLU and Math related areas scores. Similar considerations hold for the forget, retain and MMLU performance after unlearning on Economics. However, we observe significant degradation in the Retain set performance while unlearning on Law, demonstrating the potential for future methods to improve unlearning precision.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|cc|cc|cc}
+        Category & \multicolumn{2}{|c}{Forget} & \multicolumn{2}{|c}{Retain} & \multicolumn{2}{|c}{MMLU (Full)} \\
+        & Base & \method{} & Base & \method{} & Base & \method{} \\
+        \hline \noalign{\vspace{0.25ex}} \hline \noalign{\vspace{0.25ex}}
+        Physics & 38.8 & 27.0 & 34.6 & 29.2 & 58.6 & 57.1 \\
+        Law & 56.7 & 27.8 & 71.3 & 37.0 & 58.6 & 54.5 \\
+        Economics & 60.2 & 27.3 & 45.6 & 41.2 & 58.6 & 55.0 \\
+    \end{tabular}
+
+    \caption{Unlearning results on the MMLU auxiliary benchmark for \zephyr{}. \method{} exhibits a decline in retain set performance for some categories, demonstrating the need for future methods to improve unlearning precision.}
+    \label{tab:mmlu_unlearning}
+\end{table}

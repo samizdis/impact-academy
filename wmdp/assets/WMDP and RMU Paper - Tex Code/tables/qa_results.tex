@@ -1,0 +1,35 @@
+
+\begin{table}[b!]\resizebox{.97\textwidth}{!}{%
+    \begin{tabular}{c|c|ccc|ccccc|c} 
+        \multirow{2}{*}{Model} & \multirow{2}{*}{Method} & \multicolumn{3}{c|}{\benchmark{} $(\downarrow)$} & \multicolumn{5}{c|}{MMLU $(\uparrow)$} & \multirow{2}{*}{MT-Bench $(\uparrow)$} \\ 
+        & & \textit{Bio} & \textit{Cyber} &\textit{Chem} & \textit{College Bio} & \textit{Virology} & \textit{College CS} & \textit{Cybersec} & {\textit{All}} & \\ 
+        \hline \noalign{\vspace{0.25ex}} \hline \noalign{\vspace{0.25ex}}
+        \multirow{5}{*}{\zephyr} & Base & 63.7 & 44.0 & 45.8 & 68.1 & 52.4 & 50.0 & 65.0 & 58.1 & 7.33 \\ 
+        \cdashline{2-11} \noalign{\vspace{0.25ex}}
+        & LLMU             & 59.5 & 39.5 & 41.4 & 54.2 & 37.4 & 43.0 & 53.0 & 44.7 & 1.00  \\ 
+        & SCRUB            & 43.8 & 39.3 & 40.4 & 53.5 & 40.3 & 48.0 & 62.0 & 51.2 & 1.43 \\ 
+        & SSD              & 50.2 & 35.0 & \textbf{33.8} & 46.5 & 38.0 & 35.0 & 52.0 & 40.7  & 5.48 \\ 
+        & \method{} (ours) & \textbf{31.2} & \textbf{28.2} & 45.8 & 63.2 & 25.9 & 49.0 & 45.0 & \textbf{57.1} & \textbf{7.10} \\ 
+        \hline \noalign{\vspace{0.25ex}}\hline \noalign{\vspace{0.25ex}}
+        
+        \multirow{2}{*}{\yi} & Base & 75.3 & 49.7 & 58.6 & 88.9 & 57.2 & 63.0 & 84.0 & 72.6 & 7.65 \\ 
+        \cdashline{2-11} \noalign{\vspace{0.25ex}}
+        & \method{} (ours) & 30.7 & 29.0 & 55.4 & 84.0 & 22.3 & 57.0 & 46.0 & 70.6 & 7.59 \\ 
+        \hline \noalign{\vspace{0.25ex}}\hline \noalign{\vspace{0.25ex}}
+        \multirow{2}{*}{\mixtral} & Base & 74.8 & 52.0 & 55.2 & 82.6 & 50.0 & 64.0 & 80.0 & 68.2 & 8.30 \\ 
+        \cdashline{2-11} \noalign{\vspace{0.25ex}}
+        & \method{} (ours) & 34.0 & 30.8 & 54.7 & 81.3 & 34.3 & 67.0 & 58.0 & 67.1 & 8.17 \\ 
+        \hline \noalign{\vspace{0.25ex}}\hline \noalign{\vspace{0.25ex}}
+        \gpt{} & Base & 82.2 & 55.3 & 64.7 & 93.9 & 58.2 & 69.0 & 84.5 & 83.4 & 9.13 
+    \end{tabular}%
+    } 
+    \caption{Comparing base models and unlearning methods on question-answer evaluation (\benchmark{}, MMLU) and fluency (MT-Bench). All \benchmark{} and MMLU scores are percentage points. All unlearning methods were applied on removing \benchmark{}-Bio and \benchmark{}-Cyber.} 
+    \label{tab:main} 
+    \vspace{-10pt} 
+\end{table}
+
+
+
+
+
+
