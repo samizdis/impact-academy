@@ -1,0 +1,260 @@
+\documentclass{article}
+
+
+
+
+
+
+
+\usepackage[final]{neurips_2023}
+
+\setcitestyle{round}
+
+
+
+
+\usepackage[utf8]{inputenc} %
+\usepackage[T1]{fontenc}    %
+\usepackage{hyperref}       %
+\hypersetup{
+    colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=blue,
+	citecolor=black,
+	pdfinfo={
+        Title={The WMDP Benchmark: Measuring and Reducing Malicious Use with Unlearning},
+        Subject={ml safety, benchmarks and datasets},
+        Keywords={ai safety, ml safety, language models, malicious use, misuse, machine unlearning, unlearning, datasets and benchmarks},
+    }
+}
+\usepackage{url}            %
+\usepackage{booktabs}       %
+\usepackage{amsfonts}       %
+\usepackage{nicefrac}       %
+\usepackage{microtype}      %
+\usepackage{xcolor}         %
+\usepackage{enumitem}
+\usepackage{comment}
+\usepackage{float}
+
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{subcaption}
+\usepackage{booktabs} %
+\usepackage{arydshln}
+\setlength{\arrayrulewidth}{0.2pt}
+
+\usepackage{multirow}
+\usepackage{svg}
+\usepackage{amsmath}
+\providecommand{\norm}[1]{\lVert#1\rVert}
+\usepackage{url}
+\def\UrlBreaks{\do\/\do-}
+\usepackage{listings}
+\lstset{
+    basicstyle=\small\ttfamily,
+    columns=flexible,
+    breaklines=true,
+    breakindent=0em
+}
+
+
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+
+
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{hhline}
+\usepackage{wrapfig}
+\usepackage[capitalize,noabbrev]{cleveref}
+
+\usepackage[affil-it]{authblk}
+\renewcommand\Authands{, } %
+\renewcommand\Authfont{\normalsize\bfseries\linespread{1.25}} %
+
+\makeatletter
+\renewcommand\AB@affilsepx{, \protect\Affilfont}
+\makeatother
+
+\renewcommand\Affilfont{\small\normalfont\linespread{1.1}} %
+
+\let\svthefootnote\thefootnote
+\newcommand\freefootnote[1]{%
+  \let\thefootnote\relax%
+  \footnotetext{#1}%
+  \let\thefootnote\svthefootnote%
+}
+\newcommand{\authorspace}{\author[ ]{\vspace*{-2.5em}}}
+
+\usepackage{algorithm}
+\usepackage{algcompatible}
+\algnewcommand\algorithmicreturn{\textbf{return}}
+\algnewcommand\RETURN{\State \algorithmicreturn}%
+\algnewcommand\algorithmicfunction{\textbf{function}}
+\algdef{SE}[FUNCTION]{Function}{EndFunction}%
+   [2]{\algorithmicfunction\ \text{#1}\ifthenelse{\equal{#2}{}}{}{(#2)}}%
+   {\algorithmicend\ \algorithmicfunction}%
+\newcommand{\AlgComment}[1]{\hfill$\triangleright$ \textit{#1}}
+
+
+
+\definecolor{lightred}{rgb}{.4,0,0}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\usepackage{titlesec}
+\usepackage{titletoc}
+\usepackage[noorphans,vskip=-0.3ex]{quoting}
+
+\usepackage[textsize=tiny]{todonotes}
+
+\newcommand{\method}{\textsc{RMU}}
+\newcommand{\oldmethod}{\textsc{Cut}}
+
+\newcommand{\fullmethod}{\textbf{R}epresentation \textbf{M}isdirection for \textbf{U}nlearning }
+\newcommand{\benchmark}{\textsc{WMDP}}
+\newcommand{\totalquestions}{$3,\!668$}
+\newcommand{\infohazardquestions}{$122$}
+\newcommand{\zephyr}{\textsc{zephyr-7b}}
+\newcommand{\zephyrfull}{\textsc{zephyr-7b-beta}}
+\newcommand{\yi}{\textsc{Yi-34b}}
+\newcommand{\yifull}{\textsc{Yi-34b-Chat}}
+\newcommand{\mixtral}{\textsc{Mixtral-8x7B}}
+\newcommand{\mixtralfull}{\textsc{Mixtral-8x7B-Instruct-v0.1}}
+
+
+\newcommand{\gpt}{\textsc{GPT-4}}
+\renewcommand{\paragraph}{\textbf}
+
+\definecolor{darkred}{rgb}{0.8, 0, 0}
+\definecolor{darkyellow}{rgb}{0.85, 0.75, 0}
+\definecolor{darkgreen}{rgb}{0, 0.7, 0}
+
+
+
+\author[1,2]{Nathaniel Li${}^*$}
+\author[2]{Alexander Pan${}^*$}
+\author[3,4]{\authorcr Anjali Gopal${}^{\dagger}$}
+\author[5]{Summer Yue${}^\dagger$}
+\author[5]{Daniel Berrios${}^\dagger$}
+\author[1]{\authorcr Alice Gatti${}^{\ddagger}$}
+\author[1,6]{Justin D. Li${}^{\ddagger}$}
+\author[1]{Ann-Kathrin Dombrowski${}^{\ddagger}$}
+\author[1,7]{Shashwat Goel${}^{\ddagger}$}
+\author[1]{Long Phan${}^{\ddagger}$}
+\author[8]{Gabriel Mukobi}
+\author[4]{Nathan Helm-Burger}
+\author[4]{Rassin Lababidi}
+\author[3,4]{Lennart Justen}
+\author[4,9]{\authorcr Andrew B. Liu}
+\author[1]{Michael Chen}
+\author[1]{Isabelle Barrass}
+\author[1]{Oliver Zhang}
+\author[10]{Xiaoyuan Zhu}
+\author[11,13]{\authorcr Rishub Tamirisa}
+\author[12,13]{Bhrugu Bharathi}
+\author[1,2]{Adam Khoja}
+\author[14]{Zhenqi Zhao}
+\author[9,15]{\authorcr Ariel Herbert-Voss}
+\author[8]{Cort B. Breuer}
+\author[16]{Samuel Marks}
+\author[9]{Oam Patel}
+\author[1,17]{Andy Zou}
+\author[1,11]{\authorcr Mantas Mazeika}
+\author[1]{Zifan Wang}
+\author[17]{Palash Oswal} %
+\author[17]{Weiran Lin} %
+\author[17]{Adam A. Hunt} %
+\author[15]{\authorcr Justin Tienken-Harder} %
+\author[8]{Kevin Y. Shih} %
+\author[18]{Kemper Talley} %
+\author[2]{John Guan}
+\author[5]{Russell Kaplan}
+\author[5]{\authorcr Ian Steneker}
+\author[5]{David Campbell}
+\author[5]{Brad Jokubaitis}
+\author[5]{Alex Levinson}
+\author[5]{Jean Wang}
+\author[5]{\authorcr William Qian}
+\author[19]{Kallol Krishna Karmakar} %
+\author[1]{Steven Basart}
+\author[20]{Stephen Fitz} %
+\author[21]{Mindy Levine} %
+\author[7]{\authorcr Ponnurangam Kumaraguru} %
+\author[19]{Uday Tupakula} %
+\author[19]{Vijay Varadharajan} %
+\author[22]{\authorcr Ruoyu Wang} %
+\author[22]{Yan Shoshitaishvili} %
+\author[23]{Jimmy Ba} %
+\author[3]{Kevin M. Esvelt}
+\author[5]{\authorcr Alexandr Wang${}^{**}$}
+\author[1]{Dan Hendrycks${}^{**}$}
+
+\affil[1]{Center for AI Safety}
+\affil[2]{University of California, Berkeley}
+\affil[3]{Massachusetts Institute of Technology}
+\affil[4]{SecureBio}
+\affil[5]{Scale AI}
+\affil[6]{New York University}
+\affil[7]{IIIT Hyderabad}
+\affil[8]{Stanford University}
+\affil[9]{Harvard University}
+\affil[10]{University of Southern California}
+\affil[11]{University of Illinois Urbana-Champaign}
+\affil[12]{University of California, Los Angeles}
+\affil[13]{Lapis Labs}
+\affil[14]{California Institute of Technology}
+\affil[15]{Sybil}
+\affil[16]{Northeastern University}
+\affil[17]{Carnegie Mellon University}
+\affil[18]{RTX BBN Technologies}
+\affil[19]{University of Newcastle}
+\affil[20]{Keio University}
+\affil[21]{Ariel University}
+\affil[22]{Arizona State University}
+\affil[23]{xAI}
+
+\title{The WMDP Benchmark: Measuring and Reducing \\Malicious Use With Unlearning}
+    
+
+\begin{document}
+
+\maketitle
+
+\freefootnote{$*$ First co-authors. \quad $\dagger$ Second co-authors. \quad $\ddagger$ Third co-authors. \quad $**$ Equal advising. \\ Correspondence to \url{wmdp@safe.ai}.}
+\vspace{-12pt}
+\input{sections/0-abstract}
+\input{sections/1-intro}
+\input{sections/2-related_work}
+\input{sections/3-dataset}
+\input{sections/4-method}
+\input{sections/5-results}
+\input{sections/6-discussion}
+\input{sections/7-conclusion}
+\input{sections/8-acknowledgements}
+
+\bibliography{main}
+\bibliographystyle{plainnat}
+\newpage
+\appendix
+\input{appendix/dataset}
+\input{appendix/experiments}
+\input{appendix/mmlu_carving}
+\input{appendix/broader_impacts}
+\input{appendix/xrisk_sheet}
+
+\end{document}

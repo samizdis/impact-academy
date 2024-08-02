@@ -1,0 +1,26 @@
+program: train.py
+name: unlearn_llama_3_8b
+run_cap: 10
+method: random
+metric:
+  goal: minimize
+  name: validation_loss
+parameters:
+  learning_rate:
+    min: !!float 5e-7
+    max: !!float 5e-3
+  alpha:
+    min: 10
+    max: 1200
+  steering_coeff:
+    distribution: uniform
+    min: 6
+    max: 300
+  layer:
+    distribution: int_uniform
+    min: 3
+    max: 25
+  epochs:
+    value: 1
+  max_num_batches:
+    value: 200

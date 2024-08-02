@@ -1,0 +1,37 @@
+
+\section{Discussion}\label{sec:discussion}
+
+We discuss how unlearning on \benchmark{} can tie in with other strategies to mitigate malicious use, such as structured API access. See \cref{app:broader-impact} for a fuller discussion of the broader impacts of \benchmark{}.
+
+\subsection{How \benchmark{} Mitigates Risk}
+Unlearning on \benchmark{} mitigates risk for both closed-source and open-source models. 
+
+For closed-source models, unlearning reduces risk from malicious API finetuning~\citep{zhan2023removing,qi2023fine,pelrine2023exploiting}, as hazardous knowledge can be removed prior to serving the model. %
+Furthermore, unlearning is a countermeasure against jailbreaks---even if they are jailbroken, unlearned models lack the knowledge necessary to empower malicious users (\cref{fig:pipeline}). 
+
+For open-source models, unlearning can expunge hazardous knowledge before such models are publicly released, limiting adversaries from repurposing open-source models out of the box. However, unlearning  on \benchmark{} does not address the threat model of relearning in open source models %
+We encourage future work towards mitigating risk in this pathway.%
+
+
+
+\subsection{Structured API Access}\label{subsec:structured-access}
+\benchmark{} complements the safety benefits of \emph{structured API access}~\citep{shevlane2022structured}, where model developers provide an API for users to query and finetune models without full weight access. In this framework, ordinary users may query and finetune models with an API, but the model provider applies safety mechanisms, such as unlearning, prior to serving the model. However, approved users could obtain API access to the \emph{base model} with full capabilities under strict guidelines, empowering the use of LLMs for benign or defensive applications while mitigating potential vectors of malicious use. For instance, OpenAI allows access of GPT-4 variants with fewer guardrails for red-teaming and biological malicious use experiments~\citep{openai2023gpt4,openaiBuildingEarly}. Structured access mitigates the concern that unlearning dual-use information will harm defenders.
+
+
+Structured access requires model developers to solve the ``Know Your Customer'' (KYC) challenge, which involves verifying the identity and intentions of customers before allowing them privileged interactions. For structured access, implementing KYC-like procedures can help mitigate the risks associated with malicious use by ensuring that only verified and trustworthy individuals or organizations are given the full capabilities of the model. 
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+

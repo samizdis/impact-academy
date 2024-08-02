@@ -15,7 +15,7 @@ def evaluate(base_model):
     results = simple_evaluate(
         model = "hf", 
         model_args = {
-            "pretrained": model_path,
+            "pretrained": model_path
         },
         tasks = capabilities,
         device = "cuda:0",
@@ -34,6 +34,6 @@ def evaluate(base_model):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--base_model", type=bool, default=True)
+    parser.add_argument("--base_model", store_action=True)
     args = parser.parse_args()
     results = evaluate(args.base_model)

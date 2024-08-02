@@ -1,0 +1,487 @@
+\begin{thebibliography}{102}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[01-ai(2023)]{githubGitHub01aiYi}
+01-ai.
+\newblock {G}it{H}ub - 01-ai/{Y}i: {A} series of large language models trained from scratch by developers @01-ai --- github.com.
+\newblock \url{https://github.com/01-ai/Yi}, 2023.
+
+\bibitem[Anthropic(2023)]{anthropicAnthropicsResponsible}
+Anthropic.
+\newblock {A}nthropic's {R}esponsible {S}caling {P}olicy --- anthropic.com.
+\newblock \url{https://www.anthropic.com/index/anthropics-responsible-scaling-policy}, 2023.
+
+\bibitem[Bai et~al.(2022)Bai, Kadavath, Kundu, Askell, Kernion, Jones, Chen, Goldie, Mirhoseini, McKinnon, et~al.]{bai2022constitutional}
+Yuntao Bai, Saurav Kadavath, Sandipan Kundu, Amanda Askell, Jackson Kernion, Andy Jones, Anna Chen, Anna Goldie, Azalia Mirhoseini, Cameron McKinnon, et~al.
+\newblock Constitutional ai: Harmlessness from ai feedback.
+\newblock \emph{arXiv preprint arXiv:2212.08073}, 2022.
+
+\bibitem[Belrose et~al.(2023)Belrose, Schneider-Joseph, Ravfogel, Cotterell, Raff, and Biderman]{belrose2023leace}
+Nora Belrose, David Schneider-Joseph, Shauli Ravfogel, Ryan Cotterell, Edward Raff, and Stella Biderman.
+\newblock Leace: Perfect linear concept erasure in closed form.
+\newblock \emph{NeurIPS}, 2023.
+
+\bibitem[Bhatt et~al.(2023)Bhatt, Chennabasappa, Nikolaidis, Wan, Evtimov, Gabi, Song, Ahmad, Aschermann, Fontana, Frolov, Giri, Kapil, Kozyrakis, LeBlanc, Milazzo, Straumann, Synnaeve, Vontimitta, Whitman, and Saxe]{bhatt2023purple}
+Manish Bhatt, Sahana Chennabasappa, Cyrus Nikolaidis, Shengye Wan, Ivan Evtimov, Dominik Gabi, Daniel Song, Faizan Ahmad, Cornelius Aschermann, Lorenzo Fontana, Sasha Frolov, Ravi~Prakash Giri, Dhaval Kapil, Yiannis Kozyrakis, David LeBlanc, James Milazzo, Aleksandar Straumann, Gabriel Synnaeve, Varun Vontimitta, Spencer Whitman, and Joshua Saxe.
+\newblock Purple llama cyberseceval: A secure coding benchmark for language models, 2023.
+
+\bibitem[Boiko et~al.(2023)Boiko, MacKnight, Kline, and Gomes]{boiko2023autonomous}
+Daniil~A Boiko, Robert MacKnight, Ben Kline, and Gabe Gomes.
+\newblock Autonomous chemical research with large language models.
+\newblock \emph{Nature}, 624\penalty0 (7992):\penalty0 570--578, 2023.
+
+\bibitem[Burns et~al.(2022)Burns, Ye, Klein, and Steinhardt]{burns2022discovering}
+Collin Burns, Haotian Ye, Dan Klein, and Jacob Steinhardt.
+\newblock Discovering latent knowledge in language models without supervision, 2022.
+
+\bibitem[Cao and Yang(2015)]{Cao2015Unlearning}
+Yinzhi Cao and Junfeng Yang.
+\newblock Towards making systems forget with machine unlearning.
+\newblock In \emph{IEEE S\&P}, 2015.
+
+\bibitem[CCPA(2018)]{CCPA2018}
+CCPA.
+\newblock California consumer privacy act, 2018.
+\newblock \newline\url{https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=201720180AB375}.
+
+\bibitem[Chao et~al.(2023)Chao, Robey, Dobriban, Hassani, Pappas, and Wong]{chao2023jailbreaking}
+Patrick Chao, Alexander Robey, Edgar Dobriban, Hamed Hassani, George~J. Pappas, and Eric Wong.
+\newblock Jailbreaking black box large language models in twenty queries, 2023.
+
+\bibitem[Choi and Na(2023)]{choi2023machine}
+Dasol Choi and Dongbin Na.
+\newblock Towards machine unlearning benchmarks: Forgetting the personal identities in facial recognition systems, 2023.
+
+\bibitem[{Council of European Union}(2014)]{GDPR2018}
+{Council of European Union}.
+\newblock Council regulation ({EU}) no 269/2014, 2014.
+\newblock \newline\url{http://eur-lex.europa.eu/legal-content/EN/TXT/?qid=1416170084502&uri=CELEX:32014R0269}.
+
+\bibitem[Deshpande et~al.(2023)Deshpande, Murahari, Rajpurohit, Kalyan, and Narasimhan]{deshpande2023toxicity}
+Ameet Deshpande, Vishvak Murahari, Tanmay Rajpurohit, Ashwin Kalyan, and Karthik Narasimhan.
+\newblock Toxicity in chatgpt: Analyzing persona-assigned language models.
+\newblock \emph{arXiv preprint arXiv:2304.05335}, 2023.
+
+\bibitem[Devlin et~al.(2018)Devlin, Chang, Lee, and Toutanova]{devlin2018bert}
+Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova.
+\newblock Bert: Pre-training of deep bidirectional transformers for language understanding.
+\newblock \emph{arXiv preprint arXiv:1810.04805}, 2018.
+
+\bibitem[EAR(2024)]{EAR}
+EAR.
+\newblock Export administration regulations (ear), 15 cfr parts 730-774.
+\newblock \url{https://www.ecfr.gov/current/title-15/subtitle-B/chapter-VII/subchapter-C}, 2024.
+
+\bibitem[Eldan and Russinovich(2023)]{eldan2023s}
+Ronen Eldan and Mark Russinovich.
+\newblock Who's harry potter? approximate unlearning in llms.
+\newblock \emph{arXiv preprint arXiv:2310.02238}, 2023.
+
+\bibitem[Esvelt(2018)]{Esvelt2018-hw}
+Kevin~M Esvelt.
+\newblock Inoculating science against potential pandemics and information hazards.
+\newblock \emph{PLoS Pathog.}, 14\penalty0 (10):\penalty0 e1007286, October 2018.
+
+\bibitem[Esvelt(2022)]{esvelt2022}
+Kevin~M. Esvelt.
+\newblock {Delay, Detect, Defend: Preparing for a Future in which Thousands Can Release New Pandemics}.
+\newblock \url{https://dam.gcsp.ch/files/doc/gcsp-geneva-paper-29-22}, 2022.
+
+\bibitem[Fang et~al.(2024)Fang, Bindu, Gupta, Zhan, and Kang]{fang2024llm}
+Richard Fang, Rohan Bindu, Akul Gupta, Qiusi Zhan, and Daniel Kang.
+\newblock Llm agents can autonomously hack websites, 2024.
+
+\bibitem[Forum(2024)]{weforum2024outlook}
+World~Economic Forum.
+\newblock Global cybersecurity outlook 2024, 2024.
+\newblock URL \url{https://www3.weforum.org/docs/WEF_Global_Cybersecurity_Outlook_2024.pdf}.
+
+\bibitem[Foster et~al.(2024)Foster, Schoepf, and Brintrup]{foster2023fast}
+Jack Foster, Stefan Schoepf, and Alexandra Brintrup.
+\newblock Fast machine unlearning without retraining through selective synaptic dampening.
+\newblock \emph{AAAI}, 2024.
+
+\bibitem[Gao et~al.(2021)Gao, Tow, Biderman, Black, DiPofi, Foster, Golding, Hsu, McDonell, Muennighoff, Phang, Reynolds, Tang, Thite, Wang, Wang, and Zou]{eval-harness}
+Leo Gao, Jonathan Tow, Stella Biderman, Sid Black, Anthony DiPofi, Charles Foster, Laurence Golding, Jeffrey Hsu, Kyle McDonell, Niklas Muennighoff, Jason Phang, Laria Reynolds, Eric Tang, Anish Thite, Ben Wang, Kevin Wang, and Andy Zou.
+\newblock A framework for few-shot language model evaluation, September 2021.
+
+\bibitem[Gehman et~al.(2020)Gehman, Gururangan, Sap, Choi, and Smith]{gehman2020realtoxicityprompts}
+Samuel Gehman, Suchin Gururangan, Maarten Sap, Yejin Choi, and Noah~A Smith.
+\newblock Realtoxicityprompts: Evaluating neural toxic degeneration in language models.
+\newblock \emph{arXiv preprint arXiv:2009.11462}, 2020.
+
+\bibitem[Goel et~al.(2023)Goel, Prabhu, Sanyal, Lim, Torr, and Kumaraguru]{goel2023adversarial}
+Shashwat Goel, Ameya Prabhu, Amartya Sanyal, Ser-Nam Lim, Philip Torr, and Ponnurangam Kumaraguru.
+\newblock Towards adversarial evaluations for inexact machine unlearning, 2023.
+
+\bibitem[Goel et~al.(2024)Goel, Prabhu, Torr, Kumaraguru, and Sanyal]{goel2024corrective}
+Shashwat Goel, Ameya Prabhu, Philip Torr, Ponnurangam Kumaraguru, and Amartya Sanyal.
+\newblock Corrective machine unlearning, 2024.
+
+\bibitem[Golatkar et~al.(2020)Golatkar, Achille, and Soatto]{golatkar2020ntk}
+Aditya Golatkar, Alessandro Achille, and Stefano Soatto.
+\newblock Forgetting outside the box: Scrubbing deep networks of information accessible from input-output observations.
+\newblock In \emph{ECCV}, 2020.
+
+\bibitem[Google(2023)]{Google_2023}
+Google.
+\newblock Neurips 2023 machine unlearning challenge, 2023.
+\newblock URL \url{https://unlearning-challenge.github.io/}.
+
+\bibitem[Gopal et~al.(2023)Gopal, Helm-Burger, Justen, Soice, Tzeng, Jeyapragasan, Grimm, Mueller, and Esvelt]{gopal2023releasing}
+Anjali Gopal, Nathan Helm-Burger, Lennart Justen, Emily~H. Soice, Tiffany Tzeng, Geetha Jeyapragasan, Simon Grimm, Benjamin Mueller, and Kevin~M. Esvelt.
+\newblock Will releasing the weights of future large language models grant widespread access to pandemic agents?, 2023.
+
+\bibitem[Guembe et~al.(2022)Guembe, Azeta, Misra, Osamor, Fernandez-Sanz, and Pospelova]{guembe2022aicyberattacks}
+Blessing Guembe, Ambrose Azeta, Sanjay Misra, Victor~Chukwudi Osamor, Luis Fernandez-Sanz, and Vera Pospelova.
+\newblock The emerging threat of ai-driven cyber attacks: A review.
+\newblock \emph{Applied Artificial Intelligence}, 36\penalty0 (1):\penalty0 2037254, 2022.
+
+\bibitem[Guo et~al.(2021)Guo, Sablayrolles, Jégou, and Kiela]{guo2021gradientbased}
+Chuan Guo, Alexandre Sablayrolles, Hervé Jégou, and Douwe Kiela.
+\newblock Gradient-based adversarial attacks against text transformers, 2021.
+
+\bibitem[Hendrycks and Mazeika(2022)]{hendrycks2022xrisk}
+Dan Hendrycks and Mantas Mazeika.
+\newblock X-risk analysis for ai research, 2022.
+
+\bibitem[Hendrycks et~al.(2020{\natexlab{a}})Hendrycks, Burns, Basart, Critch, Li, Song, and Steinhardt]{hendrycks2020aligning}
+Dan Hendrycks, Collin Burns, Steven Basart, Andrew Critch, Jerry Li, Dawn Song, and Jacob Steinhardt.
+\newblock Aligning ai with shared human values.
+\newblock \emph{arXiv preprint arXiv:2008.02275}, 2020{\natexlab{a}}.
+
+\bibitem[Hendrycks et~al.(2020{\natexlab{b}})Hendrycks, Burns, Basart, Zou, Mazeika, Song, and Steinhardt]{hendrycks2020mmlu}
+Dan Hendrycks, Collin Burns, Steven Basart, Andy Zou, Mantas Mazeika, Dawn Song, and Jacob Steinhardt.
+\newblock Measuring massive multitask language understanding.
+\newblock \emph{arXiv preprint arXiv:2009.03300}, 2020{\natexlab{b}}.
+
+\bibitem[Hendrycks et~al.(2021)Hendrycks, Carlini, Schulman, and Steinhardt]{hendrycks2021unsolved}
+Dan Hendrycks, Nicholas Carlini, John Schulman, and Jacob Steinhardt.
+\newblock Unsolved problems in ml safety.
+\newblock \emph{arXiv preprint arXiv:2109.13916}, 2021.
+
+\bibitem[Hu et~al.(2021)Hu, Shen, Wallis, Allen-Zhu, Li, Wang, Wang, and Chen]{hu2021lora}
+Edward~J. Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Lu~Wang, and Weizhu Chen.
+\newblock Lora: Low-rank adaptation of large language models, 2021.
+
+\bibitem[Hutchins et~al.(2011)Hutchins, Cloppert, and Amin]{LMKillChain}
+Eric~M. Hutchins, Michael~J. Cloppert, and Rohan~M. Amin.
+\newblock Intelligence-driven computer network defense informed by analysis of adversary campaigns and intrusion kill chains.
+\newblock Technical report, Lockheed Martin Corporation, 2011.
+
+\bibitem[Ilharco et~al.(2023)Ilharco, Ribeiro, Wortsman, Schmidt, Hajishirzi, and Farhadi]{ilharco2023editing}
+Gabriel Ilharco, Marco~Tulio Ribeiro, Mitchell Wortsman, Ludwig Schmidt, Hannaneh Hajishirzi, and Ali Farhadi.
+\newblock Editing models with task arithmetic.
+\newblock In \emph{The Eleventh International Conference on Learning Representations}, 2023.
+
+\bibitem[Inan et~al.(2023)Inan, Upasani, Chi, Rungta, Iyer, Mao, Tontchev, Hu, Fuller, Testuggine, and Khabsa]{inan2023llama}
+Hakan Inan, Kartikeya Upasani, Jianfeng Chi, Rashi Rungta, Krithika Iyer, Yuning Mao, Michael Tontchev, Qing Hu, Brian Fuller, Davide Testuggine, and Madian Khabsa.
+\newblock Llama guard: Llm-based input-output safeguard for human-ai conversations, 2023.
+
+\bibitem[ITAR(2024)]{ITAR}
+ITAR.
+\newblock International traffic in arms regulations (itar), 22 cfr parts 120-130.
+\newblock \url{https://www.ecfr.gov/current/title-22/chapter-I/subchapter-M}, 2024.
+
+\bibitem[Jang et~al.(2023)Jang, Yoon, Yang, Cha, Lee, Logeswaran, and Seo]{jang-etal-2023-knowledge}
+Joel Jang, Dongkeun Yoon, Sohee Yang, Sungmin Cha, Moontae Lee, Lajanugen Logeswaran, and Minjoon Seo.
+\newblock Knowledge unlearning for mitigating privacy risks in language models.
+\newblock In Anna Rogers, Jordan Boyd-Graber, and Naoaki Okazaki, editors, \emph{ACL}, 2023.
+
+\bibitem[Ji et~al.(2023)Ji, Lee, Frieske, Yu, Su, Xu, Ishii, Bang, Madotto, and Fung]{ji2023survey}
+Ziwei Ji, Nayeon Lee, Rita Frieske, Tiezheng Yu, Dan Su, Yan Xu, Etsuko Ishii, Ye~Jin Bang, Andrea Madotto, and Pascale Fung.
+\newblock Survey of hallucination in natural language generation.
+\newblock \emph{ACM Computing Surveys}, 55\penalty0 (12):\penalty0 1--38, 2023.
+
+\bibitem[Jiang et~al.(2024)Jiang, Sablayrolles, Roux, Mensch, Savary, Bamford, Chaplot, de~las Casas, Hanna, Bressand, Lengyel, Bour, Lample, Lavaud, Saulnier, Lachaux, Stock, Subramanian, Yang, Antoniak, Scao, Gervet, Lavril, Wang, Lacroix, and Sayed]{jiang2024mixtral}
+Albert~Q. Jiang, Alexandre Sablayrolles, Antoine Roux, Arthur Mensch, Blanche Savary, Chris Bamford, Devendra~Singh Chaplot, Diego de~las Casas, Emma~Bou Hanna, Florian Bressand, Gianna Lengyel, Guillaume Bour, Guillaume Lample, Lélio~Renard Lavaud, Lucile Saulnier, Marie-Anne Lachaux, Pierre Stock, Sandeep Subramanian, Sophia Yang, Szymon Antoniak, Teven~Le Scao, Théophile Gervet, Thibaut Lavril, Thomas Wang, Timothée Lacroix, and William~El Sayed.
+\newblock Mixtral of experts, 2024.
+
+\bibitem[Jones et~al.(2023)Jones, Dragan, Raghunathan, and Steinhardt]{jones2023automatically}
+Erik Jones, Anca Dragan, Aditi Raghunathan, and Jacob Steinhardt.
+\newblock Automatically auditing large language models via discrete optimization, 2023.
+
+\bibitem[Kinniment and Sato(2023)]{kinniment2023haoxing}
+Megan Kinniment and Lucas Jun~Koba Sato.
+\newblock Haoxing du, brian goodrich, max hasin, lawrence chan, luke harold miles, tao r. lin, hjalmar wijk, joel burget, aaron ho, elizabeth barnes, and paul christiano. evaluating language-model agents on realistic autonomous tasks.
+\newblock \emph{Evaluating Language-Model Agents on Realistic Autonomous Tasks. Research paper, Alignment Research Center}, 2023.
+
+\bibitem[Kurmanji et~al.(2023)Kurmanji, Triantafillou, and Triantafillou]{kurmanji2023towards}
+Meghdad Kurmanji, Peter Triantafillou, and Eleni Triantafillou.
+\newblock Towards unbounded machine unlearning.
+\newblock \emph{NeurIPS}, 2023.
+
+\bibitem[L{\'a}la et~al.(2023)L{\'a}la, O'Donoghue, Shtedritski, Cox, Rodriques, and White]{lala2023paperqa}
+Jakub L{\'a}la, Odhran O'Donoghue, Aleksandar Shtedritski, Sam Cox, Samuel~G Rodriques, and Andrew~D White.
+\newblock Paperqa: Retrieval-augmented generative agent for scientific research.
+\newblock \emph{arXiv preprint arXiv:2312.07559}, 2023.
+
+\bibitem[Lewis et~al.(2019)Lewis, Millett, Sandberg, Snyder-Beattie, and Gronvall]{Lewis2019-oz}
+Gregory Lewis, Piers Millett, Anders Sandberg, Andrew Snyder-Beattie, and Gigi Gronvall.
+\newblock Information hazards in biotechnology.
+\newblock \emph{Risk Anal.}, 39\penalty0 (5):\penalty0 975--981, May 2019.
+
+\bibitem[Li et~al.(2023)Li, Cheng, Zhao, Nie, and Wen]{li2023halueval}
+Junyi Li, Xiaoxue Cheng, Wayne~Xin Zhao, Jian-Yun Nie, and Ji-Rong Wen.
+\newblock Halueval: A large-scale hallucination evaluation benchmark for large language models.
+\newblock In \emph{Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing}, pages 6449--6464, 2023.
+
+\bibitem[Lin et~al.(2021)Lin, Hilton, and Evans]{lin2021truthfulqa}
+Stephanie Lin, Jacob Hilton, and Owain Evans.
+\newblock Truthfulqa: Measuring how models mimic human falsehoods.
+\newblock \emph{arXiv preprint arXiv:2109.07958}, 2021.
+
+\bibitem[Liu et~al.(2020)Liu, Ma, Liu, Liu, Jiang, Ma, Yu, and Ren]{liu2021masking}
+Yang Liu, Zhuo Ma, Ximeng Liu, Jian Liu, Zhongyuan Jiang, Jianfeng Ma, Philip Yu, and Kui Ren.
+\newblock Learn to forget: Machine unlearning via neuron masking.
+\newblock \emph{arXiv preprint arXiv:2003.10933}, 2020.
+
+\bibitem[{Liu} et~al.(2024){Liu}, {Dou}, {Tan}, {Tian}, and {Jiang}]{liu2024unlearning}
+Zheyuan {Liu}, Guangyao {Dou}, Zhaoxuan {Tan}, Yijun {Tian}, and Meng {Jiang}.
+\newblock {Towards Safer Large Language Models through Machine Unlearning}.
+\newblock \emph{arXiv e-prints}, art. arXiv:2402.10058, February 2024.
+\newblock \doi{10.48550/arXiv.2402.10058}.
+
+\bibitem[Lynch et~al.(2024)Lynch, Guo, Ewart, Casper, and Hadfield-Menell]{lynch2024methods}
+Aengus Lynch, Phillip Guo, Aidan Ewart, Stephen Casper, and Dylan Hadfield-Menell.
+\newblock Eight methods to evaluate robust unlearning in llms, 2024.
+
+\bibitem[Maini et~al.(2024)Maini, Feng, Schwarzschild, Lipton, and Kolter]{maini2024tofu}
+Pratyush Maini, Zhili Feng, Avi Schwarzschild, Zachary~C. Lipton, and J.~Zico Kolter.
+\newblock Tofu: A task of fictitious unlearning for llms, 2024.
+
+\bibitem[Mazeika et~al.(2024)Mazeika, Phan, Yin, Zou, Wang, Mu, Sakhaee, Li, Basart, Li, et~al.]{mazeika2024harmbench}
+Mantas Mazeika, Long Phan, Xuwang Yin, Andy Zou, Zifan Wang, Norman Mu, Elham Sakhaee, Nathaniel Li, Steven Basart, Bo~Li, et~al.
+\newblock Harmbench: A standardized evaluation framework for automated red teaming and robust refusal.
+\newblock \emph{arXiv preprint arXiv:2402.04249}, 2024.
+
+\bibitem[Meng et~al.(2022)Meng, Bau, Andonian, and Belinkov]{meng2022locating}
+Kevin Meng, David Bau, Alex Andonian, and Yonatan Belinkov.
+\newblock Locating and editing factual associations in {GPT}.
+\newblock \emph{Advances in Neural Information Processing Systems}, 35, 2022.
+
+\bibitem[Merity et~al.(2016)Merity, Xiong, Bradbury, and Socher]{merity2016wikitext}
+Stephen Merity, Caiming Xiong, James Bradbury, and Richard Socher.
+\newblock Pointer sentinel mixture models, 2016.
+
+\bibitem[{Mistral AI team}(2023)]{mistral}
+{Mistral AI team}.
+\newblock Mistral 7b.
+\newblock \emph{Mistral}, 2023.
+\newblock URL \url{https://mistral.ai/news/announcing-mistral-7b/}.
+
+\bibitem[Mouton et~al.(2024)Mouton, Lucas, and Guest]{rand_biorisk_2024}
+Christopher~A. Mouton, Caleb Lucas, and Ella Guest.
+\newblock \emph{The Operational Risks of AI in Large-Scale Biological Attacks: Results of a Red-Team Study}.
+\newblock RAND Corporation, Santa Monica, CA, 2024.
+\newblock \doi{10.7249/RRA2977-2}.
+
+\bibitem[Nelson and Rose(2023)]{nelson2023cltr}
+Cassidy Nelson and Sophie Rose.
+\newblock \emph{{Understanding AI-Facilitated Biological Weapon Development}}.
+\newblock Center for Long Term Resilience, 2023.
+
+\bibitem[Ngo et~al.(2021)Ngo, Raterink, de~Ara'ujo, Zhang, Chen, Morisot, and Frosst]{Ngo2021MitigatingHI}
+Helen Ngo, Cooper~D. Raterink, Joao~M. de~Ara'ujo, Ivan Zhang, Carol Chen, Adrien Morisot, and Nick Frosst.
+\newblock Mitigating harm in language models with conditional-likelihood filtration.
+\newblock \emph{ArXiv}, abs/2108.07790, 2021.
+
+\bibitem[NIST(2023)]{nistRiskManagement}
+NIST.
+\newblock {A}{I} {R}isk {M}anagement {F}ramework --- nist.gov.
+\newblock \url{https://www.nist.gov/itl/ai-risk-management-framework}, 2023.
+
+\bibitem[OpenAI(2023{\natexlab{a}})]{openai2023gpt4}
+OpenAI.
+\newblock Gpt-4 technical report, 2023{\natexlab{a}}.
+
+\bibitem[OpenAI(2023{\natexlab{b}})]{openaiPreparedness}
+OpenAI.
+\newblock {P}reparedness --- openai.com.
+\newblock \url{https://openai.com/safety/preparedness}, 2023{\natexlab{b}}.
+
+\bibitem[OpenAI(2024)]{openaiBuildingEarly}
+OpenAI.
+\newblock {B}uilding an early warning system for {L}{L}{M}-aided biological threat creation --- openai.com.
+\newblock \url{https://openai.com/research/building-an-early-warning-system-for-llm-aided-biological-threat-creation}, 2024.
+
+\bibitem[Ouyang et~al.(2022)Ouyang, Wu, Jiang, Almeida, Wainwright, Mishkin, Zhang, Agarwal, Slama, Ray, et~al.]{ouyang2022training}
+Long Ouyang, Jeffrey Wu, Xu~Jiang, Diogo Almeida, Carroll Wainwright, Pamela Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, et~al.
+\newblock Training language models to follow instructions with human feedback.
+\newblock \emph{Advances in Neural Information Processing Systems}, 35:\penalty0 27730--27744, 2022.
+
+\bibitem[Pan et~al.(2023)Pan, Chan, Zou, Li, Basart, Woodside, Zhang, Emmons, and Hendrycks]{pan2023rewards}
+Alexander Pan, Jun~Shern Chan, Andy Zou, Nathaniel Li, Steven Basart, Thomas Woodside, Hanlin Zhang, Scott Emmons, and Dan Hendrycks.
+\newblock Do the rewards justify the means? measuring trade-offs between rewards and ethical behavior in the machiavelli benchmark.
+\newblock In \emph{International Conference on Machine Learning}, pages 26837--26867. PMLR, 2023.
+
+\bibitem[Pan et~al.(2024)Pan, Jones, Jagadeesan, and Steinhardt]{pan2024feedback}
+Alexander Pan, Erik Jones, Meena Jagadeesan, and Jacob Steinhardt.
+\newblock Feedback loops with language models drive in-context reward hacking.
+\newblock \emph{arXiv preprint arXiv:2402.06627}, 2024.
+
+\bibitem[Park et~al.(2023)Park, Goldstein, O'Gara, Chen, and Hendrycks]{park2023ai}
+Peter~S Park, Simon Goldstein, Aidan O'Gara, Michael Chen, and Dan Hendrycks.
+\newblock Ai deception: A survey of examples, risks, and potential solutions.
+\newblock \emph{arXiv preprint arXiv:2308.14752}, 2023.
+
+\bibitem[Pawelczyk et~al.(2023)Pawelczyk, Neel, and Lakkaraju]{pawelczyk2023context}
+Martin Pawelczyk, Seth Neel, and Himabindu Lakkaraju.
+\newblock In-context unlearning: Language models as few shot unlearners.
+\newblock \emph{arXiv preprint arXiv:2310.07579}, 2023.
+
+\bibitem[Pelrine et~al.(2023)Pelrine, Taufeeque, Zając, McLean, and Gleave]{pelrine2023exploiting}
+Kellin Pelrine, Mohammad Taufeeque, Michał Zając, Euan McLean, and Adam Gleave.
+\newblock Exploiting novel gpt-4 apis, 2023.
+
+\bibitem[Phuong et~al.(2024)Phuong, Aitchison, Catt, Cogan, Kaskasoli, Krakovna, Lindner, Rahtz, Assael, Hodkinson, Howard, Lieberum, Kumar, Raad, Webson, Ho, Lin, Farquhar, Hutter, Deletang, Ruoss, El-Sayed, Brown, Dragan, Shah, Dafoe, and Shevlane]{phuong2024evaluating}
+Mary Phuong, Matthew Aitchison, Elliot Catt, Sarah Cogan, Alexandre Kaskasoli, Victoria Krakovna, David Lindner, Matthew Rahtz, Yannis Assael, Sarah Hodkinson, Heidi Howard, Tom Lieberum, Ramana Kumar, Maria~Abi Raad, Albert Webson, Lewis Ho, Sharon Lin, Sebastian Farquhar, Marcus Hutter, Gregoire Deletang, Anian Ruoss, Seliem El-Sayed, Sasha Brown, Anca Dragan, Rohin Shah, Allan Dafoe, and Toby Shevlane.
+\newblock Evaluating frontier models for dangerous capabilities, 2024.
+
+\bibitem[Qi et~al.(2023)Qi, Zeng, Xie, Chen, Jia, Mittal, and Henderson]{qi2023fine}
+Xiangyu Qi, Yi~Zeng, Tinghao Xie, Pin-Yu Chen, Ruoxi Jia, Prateek Mittal, and Peter Henderson.
+\newblock Fine-tuning aligned language models compromises safety, even when users do not intend to!
+\newblock \emph{arXiv preprint arXiv:2310.03693}, 2023.
+
+\bibitem[Rafailov et~al.(2023)Rafailov, Sharma, Mitchell, Ermon, Manning, and Finn]{rafailov2023direct}
+Rafael Rafailov, Archit Sharma, Eric Mitchell, Stefano Ermon, Christopher~D. Manning, and Chelsea Finn.
+\newblock Direct preference optimization: Your language model is secretly a reward model, 2023.
+
+\bibitem[Rein et~al.(2023)Rein, Hou, Stickland, Petty, Pang, Dirani, Michael, and Bowman]{rein2023gpqa}
+David Rein, Betty~Li Hou, Asa~Cooper Stickland, Jackson Petty, Richard~Yuanzhe Pang, Julien Dirani, Julian Michael, and Samuel~R Bowman.
+\newblock Gpqa: A graduate-level google-proof q\&a benchmark.
+\newblock \emph{arXiv preprint arXiv:2311.12022}, 2023.
+
+\bibitem[Sandbrink(2023)]{sandbrink2023artificial}
+Jonas~B. Sandbrink.
+\newblock Artificial intelligence and biological misuse: Differentiating risks of language models and biological design tools, 2023.
+
+\bibitem[Scheurer et~al.(2023)Scheurer, Balesni, and Hobbhahn]{scheurer2023technical}
+J{\'e}r{\'e}my Scheurer, Mikita Balesni, and Marius Hobbhahn.
+\newblock Technical report: Large language models can strategically deceive their users when put under pressure.
+\newblock \emph{arXiv preprint arXiv:2311.07590}, 2023.
+
+\bibitem[Schwinn et~al.(2024)Schwinn, Dobre, Xhonneux, Gidel, and Gunnemann]{schwinn2024soft}
+Leo Schwinn, David Dobre, Sophie Xhonneux, Gauthier Gidel, and Stephan Gunnemann.
+\newblock Soft prompt threats: Attacking safety alignment and unlearning in open-source llms through the embedding space, 2024.
+
+\bibitem[Sclar et~al.(2023)Sclar, Choi, Tsvetkov, and Suhr]{sclar2023quantifying}
+Melanie Sclar, Yejin Choi, Yulia Tsvetkov, and Alane Suhr.
+\newblock Quantifying language models' sensitivity to spurious features in prompt design or: How i learned to start worrying about prompt formatting, 2023.
+
+\bibitem[Shevlane(2022)]{shevlane2022structured}
+Toby Shevlane.
+\newblock Structured access: an emerging paradigm for safe ai deployment, 2022.
+
+\bibitem[Shevlane et~al.(2023)Shevlane, Farquhar, Garfinkel, Phuong, Whittlestone, Leung, Kokotajlo, Marchal, Anderljung, Kolt, et~al.]{shevlane2023arcevals}
+Toby Shevlane, Sebastian Farquhar, Ben Garfinkel, Mary Phuong, Jess Whittlestone, Jade Leung, Daniel Kokotajlo, Nahema Marchal, Markus Anderljung, Noam Kolt, et~al.
+\newblock Model evaluation for extreme risks.
+\newblock \emph{arXiv preprint arXiv:2305.15324}, 2023.
+
+\bibitem[Strom et~al.(2020)Strom, Applebaum, Miller, Nickels, Pennington, and Thomas]{MITRE}
+Blake~E. Strom, Andy Applebaum, Doug~P. Miller, Kathryn~C. Nickels, Adam~G. Pennington, and Cody~B. Thomas.
+\newblock Mitre att\&ck: Design and philosophy.
+\newblock Technical report, MITRE Corporation, 2020.
+
+\bibitem[Tunstall et~al.(2023)Tunstall, Beeching, Lambert, Rajani, Rasul, Belkada, Huang, von Werra, Fourrier, Habib, Sarrazin, Sanseviero, Rush, and Wolf]{tunstall2023zephyr}
+Lewis Tunstall, Edward Beeching, Nathan Lambert, Nazneen Rajani, Kashif Rasul, Younes Belkada, Shengyi Huang, Leandro von Werra, Clémentine Fourrier, Nathan Habib, Nathan Sarrazin, Omar Sanseviero, Alexander~M. Rush, and Thomas Wolf.
+\newblock Zephyr: Direct distillation of lm alignment, 2023.
+
+\bibitem[Turner et~al.(2023)Turner, Thiergart, Udell, Leech, Mini, and MacDiarmid]{turner2023activation}
+Alexander~Matt Turner, Lisa Thiergart, David Udell, Gavin Leech, Ulisse Mini, and Monte MacDiarmid.
+\newblock Activation addition: Steering language models without optimization, 2023.
+
+\bibitem[{UK AI Safety Summit}(2023)]{ukaisi2023declaration}
+{UK AI Safety Summit}.
+\newblock {T}he {B}letchley {D}eclaration by {C}ountries {A}ttending the {A}{I} {S}afety {S}ummit, 1-2 {N}ovember 2023 --- gov.uk.
+\newblock \url{https://www.gov.uk/government/publications/ai-safety-summit-2023-the-bletchley-declaration/the-bletchley-declaration-by-countries-attending-the-ai-safety-summit-1-2-november-2023}, 2023.
+
+\bibitem[{UK Cabinet Office}(2023)]{UK_NRR2023}
+{UK Cabinet Office}.
+\newblock National risk register.
+\newblock Technical report, {UK Cabinet Office}, 2023.
+
+\bibitem[Urbina et~al.(2022)Urbina, Lentzos, Invernizzi, and Ekins]{urbina2022dual}
+Fabio Urbina, Filippa Lentzos, C{\'e}dric Invernizzi, and Sean Ekins.
+\newblock Dual use of artificial-intelligence-powered drug discovery.
+\newblock \emph{Nature Machine Intelligence}, 4\penalty0 (3):\penalty0 189--191, 2022.
+
+\bibitem[Vaswani et~al.(2017)Vaswani, Shazeer, Parmar, Uszkoreit, Jones, Gomez, Kaiser, and Polosukhin]{vaswani2017attention}
+Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan~N Gomez, {\L}ukasz Kaiser, and Illia Polosukhin.
+\newblock Attention is all you need.
+\newblock \emph{Advances in neural information processing systems}, 30, 2017.
+
+\bibitem[Wallace et~al.(2019)Wallace, Feng, Kandpal, Gardner, and Singh]{wallace2019universal}
+Eric Wallace, Shi Feng, Nikhil Kandpal, Matt Gardner, and Sameer Singh.
+\newblock Universal adversarial triggers for attacking and analyzing nlp.
+\newblock \emph{arXiv preprint arXiv:1908.07125}, 2019.
+
+\bibitem[Wang et~al.(2022)Wang, Variengien, Conmy, Shlegeris, and Steinhardt]{wang2022interpretability}
+Kevin Wang, Alexandre Variengien, Arthur Conmy, Buck Shlegeris, and Jacob Steinhardt.
+\newblock Interpretability in the wild: a circuit for indirect object identification in gpt-2 small.
+\newblock \emph{arXiv preprint arXiv:2211.00593}, 2022.
+
+\bibitem[Wei et~al.(2023)Wei, Haghtalab, and Steinhardt]{wei2023jailbroken}
+Alexander Wei, Nika Haghtalab, and Jacob Steinhardt.
+\newblock Jailbroken: How does llm safety training fail?
+\newblock \emph{arXiv preprint arXiv:2307.02483}, 2023.
+
+\bibitem[{White House}(2023)]{biden2023}
+The {White House}.
+\newblock {Executive Order on the Safe, Secure, and Trustworthy Development and Use of Artificial Intelligence}.
+\newblock \url{https://www.whitehouse.gov/briefing-room/presidential-actions/2023/10/30/executive-order-on-the-safe-secure-and-trustworthy-development-and-use-of-artificial-intelligence/}, 2023.
+
+\bibitem[Yang et~al.(2023)Yang, Wang, Zhang, Petzold, Wang, Zhao, and Lin]{yang2023shadow}
+Xianjun Yang, Xiao Wang, Qi~Zhang, Linda Petzold, William~Yang Wang, Xun Zhao, and Dahua Lin.
+\newblock Shadow alignment: The ease of subverting safely-aligned language models, 2023.
+
+\bibitem[Yao et~al.(2023{\natexlab{a}})Yao, Zhang, Harris, and Carlsson]{yao2023fuzzllm}
+Dongyu Yao, Jianshu Zhang, Ian~G. Harris, and Marcel Carlsson.
+\newblock Fuzzllm: A novel and universal fuzzing framework for proactively discovering jailbreak vulnerabilities in large language models, 2023{\natexlab{a}}.
+
+\bibitem[Yao et~al.(2023{\natexlab{b}})Yao, Xu, and Liu]{yao2023large}
+Yuanshun Yao, Xiaojun Xu, and Yang Liu.
+\newblock Large language model unlearning.
+\newblock \emph{arXiv preprint arXiv:2310.10683}, 2023{\natexlab{b}}.
+
+\bibitem[Yuan et~al.(2023)Yuan, Jiao, Wang, tse Huang, He, Shi, and Tu]{yuan2023gpt4}
+Youliang Yuan, Wenxiang Jiao, Wenxuan Wang, Jen tse Huang, Pinjia He, Shuming Shi, and Zhaopeng Tu.
+\newblock Gpt-4 is too smart to be safe: Stealthy chat with llms via cipher, 2023.
+
+\bibitem[Zhan et~al.(2023)Zhan, Fang, Bindu, Gupta, Hashimoto, and Kang]{zhan2023removing}
+Qiusi Zhan, Richard Fang, Rohan Bindu, Akul Gupta, Tatsunori Hashimoto, and Daniel Kang.
+\newblock Removing rlhf protections in gpt-4 via fine-tuning, 2023.
+
+\bibitem[Zhang et~al.(2023)Zhang, Li, Cui, Cai, Liu, Fu, Huang, Zhao, Zhang, Chen, et~al.]{zhang2023siren}
+Yue Zhang, Yafu Li, Leyang Cui, Deng Cai, Lemao Liu, Tingchen Fu, Xinting Huang, Enbo Zhao, Yu~Zhang, Yulong Chen, et~al.
+\newblock Siren's song in the ai ocean: A survey on hallucination in large language models.
+\newblock \emph{arXiv preprint arXiv:2309.01219}, 2023.
+
+\bibitem[Zheng et~al.(2023{\natexlab{a}})Zheng, Chiang, Sheng, Zhuang, Wu, Zhuang, Lin, Li, Li, Xing, et~al.]{zheng2023mtbench}
+Lianmin Zheng, Wei-Lin Chiang, Ying Sheng, Siyuan Zhuang, Zhanghao Wu, Yonghao Zhuang, Zi~Lin, Zhuohan Li, Dacheng Li, Eric Xing, et~al.
+\newblock Judging llm-as-a-judge with mt-bench and chatbot arena.
+\newblock \emph{arXiv preprint arXiv:2306.05685}, 2023{\natexlab{a}}.
+
+\bibitem[Zheng et~al.(2023{\natexlab{b}})Zheng, Chiang, Sheng, Zhuang, Wu, Zhuang, Lin, Li, Li, Xing, Zhang, Gonzalez, and Stoica]{zheng2023judging}
+Lianmin Zheng, Wei-Lin Chiang, Ying Sheng, Siyuan Zhuang, Zhanghao Wu, Yonghao Zhuang, Zi~Lin, Zhuohan Li, Dacheng Li, Eric~P. Xing, Hao Zhang, Joseph~E. Gonzalez, and Ion Stoica.
+\newblock Judging llm-as-a-judge with mt-bench and chatbot arena, 2023{\natexlab{b}}.
+
+\bibitem[Ziegler et~al.(2020)Ziegler, Stiennon, Wu, Brown, Radford, Amodei, Christiano, and Irving]{ziegler2020finetuning}
+Daniel~M. Ziegler, Nisan Stiennon, Jeffrey Wu, Tom~B. Brown, Alec Radford, Dario Amodei, Paul Christiano, and Geoffrey Irving.
+\newblock Fine-tuning language models from human preferences, 2020.
+
+\bibitem[Zou et~al.(2023{\natexlab{a}})Zou, Phan, Chen, Campbell, Guo, Ren, Pan, Yin, Mazeika, Dombrowski, et~al.]{zou2023representation}
+Andy Zou, Long Phan, Sarah Chen, James Campbell, Phillip Guo, Richard Ren, Alexander Pan, Xuwang Yin, Mantas Mazeika, Ann-Kathrin Dombrowski, et~al.
+\newblock Representation engineering: A top-down approach to ai transparency.
+\newblock \emph{arXiv preprint arXiv:2310.01405}, 2023{\natexlab{a}}.
+
+\bibitem[Zou et~al.(2023{\natexlab{b}})Zou, Wang, Kolter, and Fredrikson]{zou2023universal}
+Andy Zou, Zifan Wang, J~Zico Kolter, and Matt Fredrikson.
+\newblock Universal and transferable adversarial attacks on aligned language models.
+\newblock \emph{arXiv preprint arXiv:2307.15043}, 2023{\natexlab{b}}.
+
+\end{thebibliography}

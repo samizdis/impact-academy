@@ -1,0 +1,177 @@
+
+
+\section{Experimental Results}\label{sec:experiments}
+We examine the performance of \method{} and other unlearning methods. We describe the experimental setup (\cref{subsec:results-setup}) and provide quantitative (\cref{subsec:results-quantitative-evaluation}) and robustness (\cref{subsec:results-robustness-evaluation}) evaluations. We also check if unlearning on \benchmark{} generalizes to more hazardous information (\cref{subsec:results-generalization}). Finally, we report plots for how \method{} scales activations on hazardous and benign data in Appendix~\ref{app:activation_norms}. \method{} markedly improves upon existing baselines, but future work is necessary to improve the precision of unlearning hazardous knowledge while fully maintaining general capabilities.
+\begin{figure}[b!]
+    \centering
+    \begin{minipage}[b]{0.48\textwidth}
+    \includegraphics[width=0.98\textwidth]{figures/main_results.pdf}
+    \caption{\method{} drops \zephyr{}'s accuracy on \benchmark{}-Bio and \benchmark{}-Cyber to nearly random while maintaining its accuracy on MMLU.}
+    \label{fig:main_results}
+    \end{minipage}
+    \hfill 
+  \begin{minipage}[b]{0.5\textwidth}
+  
+  \resizebox{0.98\textwidth}{!}{
+  \begin{tabular}{lccccc} 
+\toprule
+ \multirow{2}[0]{*}{Model}  & \multicolumn{2}{c}{\benchmark{} ($\downarrow$)} & \multirow{2}[0]{*}{MMLU ($\uparrow$)} & \multirow{2}[0]{*}{MT-Bench ($\uparrow$)}\\
+ & Bio  & Cyber  & \\
+\midrule
+\zephyr{} & $63.7$ & $44.0$ & $58.1$ & $7.33$ \\ \cdashline{1-5} \noalign{\vspace{0.25ex}}
+$+$ LLMU & $59.5$ & $39.5$ & $44.7$ & $1.00$ \\
+$+$ SCRUB & $43.8$ & $39.3$ & $51.2$ & $1.43$ \\
+$+$ SSD & $50.2$ & $35.0$ & $40.7$ & $5.48$ \\
+$+$ \method{} (ours) & $\mathbf{31.2}$ & $\mathbf{28.2}$ & $\mathbf{57.1}$ & $\mathbf{7.10}$ \\
+ \noalign{\vspace{0.25ex}} \hline \noalign{\vspace{0.25ex}}\hline \noalign{\vspace{0.25ex}}
+\yi{} & $75.3$ & $49.7$ & $72.6$ & $7.65$\\\cdashline{1-5} \noalign{\vspace{0.25ex}}
+$+$ \method{} (ours) & $30.7$ & $29.0$ & $70.6$ & $7.59$ \\
+ \noalign{\vspace{0.25ex}} \hline \noalign{\vspace{0.25ex}}\hline \noalign{\vspace{0.25ex}}
+\mixtral{} & $74.8$ & $52.0$ & $68.2$ & $8.30$\\\cdashline{1-5} \noalign{\vspace{0.25ex}}
+$+$ \method{} (ours) & $34.0$ & $30.8$ & $67.1$ & $8.17$ \\
+
+\bottomrule
+
+\end{tabular}%
+
+}
+\captionof{table}{\method{} outperforms baselines, decreasing accuracy on \benchmark{} while maintaining general capabilities; detailed results in \cref{tab:main}. \benchmark{} and MMLU scores are percents; 25\% is random.}
+\label{tab:main_results_short}
+  \end{minipage}
+  \end{figure}
+\subsection{Setup}\label{subsec:results-setup}
+We describe the benchmarks we use for evaluations, the models we use for unlearning, and the baselines we use for comparisons. We only conduct unlearning experiments on \benchmark{}-Bio and \benchmark{}-Cyber, as discussed in \cref{sec:method}.
+
+\paragraph{Benchmarks.} We evaluate removal of hazardous knowledge with \benchmark{}. To evaluate the preservation of general knowledge, we use MMLU~\citep{hendrycks2020mmlu}, focusing on topics similar to biosecurity (college biology, virology) and cybersecurity (college computer science, computer security). Finally, to evaluate the fluency of models, we use MT-Bench, a multi-turn conservation and instruction-following benchmark~\citep{zheng2023judging}. %
+
+
+\paragraph{Models.} We remove knowledge of biosecurity and cybersecurity on \zephyrfull{}~\citep{tunstall2023zephyr}, \yifull{}~\citep{githubGitHub01aiYi}, and \mixtralfull{}~\citep{jiang2024mixtral}, three of the most performant open-source generative language models at their respective sizes. Additionally, we report the performance of \gpt{}~\citep{openai2023gpt4} as an upper bound on benchmark performance.%
+
+
+
+
+
+
+
+
+\paragraph{Baselines.} We benchmark \method{} against three unlearning baselines: %
+SCRUB~\citep{kurmanji2023towards}, SSD~\citep{foster2023fast}, and LLMU~\citep{yao2023large}, on \zephyr{}. Because we found low performance on \zephyr{}, we did not benchmark the baselines on \yi{} or \mixtral{}. See Appendix~\ref{app:baselines} for our implementation of the baselines.%
+\input{tables/probe_results}
+
+
+
+
+\subsection{Quantitative Evaluation}\label{subsec:results-quantitative-evaluation}
+To assess the efficacy of the methods, we examine the forget performance and retain performance of the unlearned models. We see that \method{} is able to unlearn \benchmark{}-Bio and \benchmark{}-Cyber while maintaining performance on MMLU (\cref{fig:main_results}). 
+
+
+\paragraph{Forget performance.} We measure forget performance by evaluating the knowledge of models on \benchmark{} with both question-answering (QA) and probing.
+
+\textit{QA evaluation.} In the future, LLMs may be used by adversaries as knowledge engines for developing weapons. Under an API-access threat model, adversaries only receive output tokens and logits, without access to internal activations. Hence, we evaluate the QA accuracy of models on \benchmark{}. We use a zero-shot question-answer format (\cref{app:sample-questions}), taking the top logit between \texttt{A}, \texttt{B}, \texttt{C}, and \texttt{D} as the answer choice. For comparison, we also benchmark \gpt{} zero-shot on each of these tasks. As language models are sensitive to the prompting scheme~\citep{sclar2023quantifying}, we use \texttt{lm-evaluation-harness v0.4.2}~\citep{eval-harness} to standardize prompts.
+
+\textit{QA results.} We assess whether \method{} is able to reduce QA accuracy on \benchmark{} in \cref{tab:main_results_short}. For both \zephyr{} and \yi{}, \method{} is able to drop performance to near random accuracy on \benchmark{}-Bio and \benchmark{}-Cyber, while other baselines struggle to drop accuracy on \benchmark{}-Bio and \benchmark{}-Cyber without crippling model performance on MMLU. We provide a more comprehensive table of results in \cref{tab:main}.%
+
+\textit{Probing evaluation.} While evaluating QA accuracy measures the primary risk of the API-access threat model, it fails to assess whether knowledge has been fully removed from the models. Models may possess more knowledge than is revealed in their output logits~\citep{burns2022discovering}; for instance, the unlearned model may still retain hazardous knowledge, but refuse to answer. Thus, we test whether unlearned models can be probed to recall unlearned information. We train a 4-way linear probe on the unlearned \method{} models. We use half of \benchmark{}-Bio and \benchmark{}-Cyber for training and hold out the other half for evaluation. We apply probing and report results for all layers of the model.
+
+\textit{Probing results.} We assess whether probes are able to recover knowledge from a model unlearned with \method{} in Figure~\ref{fig:probe}. Across both categories and model sizes, linear probing only achieves slightly better than random accuracy. Linear probes are unable to extract unlearned information from the model, suggesting that \method{} does not merely mask or hide the information superficially, but rather causes a substantial alteration that prevents the recall of the unlearned information.
+
+
+
+\paragraph{Retain performance.} We measure the retain performance by evaluating models' knowledge on MMLU and their fluency on MT-Bench.
+
+\textit{MMLU evaluation.} To be practical, unlearning methods must maintain general knowledge while removing hazardous knowledge. To evaluate whether models retain general knowledge after unlearning, we reuse the earlier QA evaluation setup for MMLU. 
+
+\textit{MMLU results.} We report accuracy on subject-specific areas in MMLU (Figure~\ref{fig:zoomed_in}). In contrast to other baselines which either fail to reduce performance on \benchmark{} or greatly reduce performance on MMLU (\cref{fig:pareto}), \method{} reduces performance on \benchmark{} while maintaining overall MMLU accuracy. Moreover, \cref{fig:zoomed_in} shows that \method{} retains performance on MMLU topics related to biology (college biology) and computer science (college CS), suggesting greater unlearning precision than the baselines. However, \method{} greatly drops performance on the most similar topics to biosecurity (virology) and cybersecurity (computer security), suggesting the possibility for future work to improve retention of general capabilities during unlearning. As we use Wikitext as the retain set, \method{} cannot determine exactly what knowledge to unlearn and retain. Thus, we encourage future work to employ our subject-specific biology and cyber retain sets (\cref{subsec:method-loss}) to improve unlearning precision.
+
+\begin{figure}[t!]
+    \centering
+    \begin{minipage}[b]{0.48\textwidth}
+    \includegraphics[width=0.98\textwidth]{figures/pareto.pdf}
+    \caption{\zephyr{} unlearning across a hyperparameter search. \method{} is most capable of reducing \benchmark{} accuracy while preserving MMLU accuracy. Results obtained with the initial release of \benchmark{} and unlearning method.}
+    \label{fig:pareto}
+    \end{minipage}
+    \hfill 
+  \begin{minipage}[b]{0.49\textwidth}
+  \includegraphics[width=0.98\textwidth]{figures/mmlu_zoomed_in.pdf}
+\caption{MMLU accuracy of \zephyr{} with \method{}. \method{} preserves general biology and computer science knowledge. However, it unlearns too much: it removes introductory virology and computer security knowledge, indicating unlearning methods have room for future improvement.}
+\label{fig:zoomed_in}
+  \end{minipage}
+\end{figure} 
+
+\textit{MT-Bench evaluation.} Beyond retaining performance on academic multiple-choice questions, unlearned models should still maintain general conversational and assistant abilities. We evaluate \method{} and all baselines on MT-Bench, a widely used metric for language model conversational fluency and helpfulness. We again evaluate \gpt{} as an upper bound for benchmark performance.
+
+\textit{MT-Bench results.} We report the MT-Bench performance of all models in \cref{tab:main_results_short}. \method{} roughly maintains performance on MT-Bench, with the score only decreasing $0.23$ on \zephyr{}, $0.06$ points on \yi{}, and $0.13$ points on \mixtral{} (out of a total possible of $9$). Because \method{} still exhibits some degradation on MT-bench, particularly with \zephyr{}, there is a need for further development of unlearning methods that can retain general assistant capabilities.
+
+
+
+
+
+
+
+
+
+
+\subsection{Robustness Evaluation}\label{subsec:results-robustness-evaluation}
+
+A primary motivation for unlearning is ensuring that knowledge is irrecoverable, even when subject to optimization pressure~\citep{schwinn2024soft,lynch2024methods}. If unlearning is not resilient, the adversary can still jailbreak the model to access hazardous information after unlearning.%
+
+We conduct a qualitative experiment using the GCG adversarial attack~\citep{zou2023universal} to measure whether dangerous knowledge is recoverable after performing \method{}. We sample a single prompt from each of the \benchmark{}-Bio and \benchmark{}-Cyber datasets, slightly modify it such that the base \yi{} models refuse to answer, and identify whether GCG can jailbreak the base and unlearned \yi{} models to extract the correct answer (\cref{app:results-robustness}).
+
+GCG can jailbreak the base \yi{} models to answer these prompts in less than 50 gradient steps, while the unlearned models output gibberish even after $2,\!500$ steps, or over 7 hours of optimization on an NVIDIA A100 GPU (\cref{fig:qualitative_jailbreak.png}). This is a signal towards the resilience of \method{}, suggesting that unlearning persists even under optimization pressure. %
+
+Because we empirically only unlearn knowledge from three layers, \method{} perhaps obfuscates knowledge more than unlearns it from the model. Thus, we investigate whether \method{} is robust to finetuning in Appendix~\ref{app:results-relearning}. We emphasize, however, that finetuning after unlearning is not covered by our threat model, as closed-source LLM providers can always choose to apply unlearning immediately before model serving (Figure~\ref{fig:pipeline}).
+
+\begin{figure*}[t!]
+    \centering
+        \includegraphics[width=1.0\textwidth]{figures/jailbreaks.pdf}
+    \caption{After applying \method{} on \yi{}, the GCG adversarial attack~\citep{zou2023universal} cannot extract hazardous knowledge within $2,\!500$ optimization steps, despite eliciting the same knowledge from base models in less than 50 steps.}
+    \label{fig:qualitative_jailbreak.png}
+\end{figure*}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Generalization of \benchmark{} to Hazardous Knowledge}\label{subsec:results-generalization}
+We evaluate if unlearning on \benchmark{} generalizes to unlearning especially hazardous knowledge.
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+
+\includegraphics[width=0.49\textwidth]{figures/infohazard_results_4.pdf}
+    \caption{Unlearning on \benchmark{}-Bio correlates with unlearning especially   hazardous biology knowledge. This suggests that \benchmark{} is a reasonable proxy measurement for hazardous knowledge.}
+    \label{fig:correlate}
+\vspace{-10pt}
+\end{wrapfigure}
+ During our dataset generation process, we identified \infohazardquestions{} questions in biosecurity that contained sensitive information and removed them from \benchmark{}-Bio. We treat these as a held-out set of private questions with especially hazardous knowledge. We can evaluate whether \benchmark{} is a proxy for hazardous knowledge by examining if performance on \benchmark{} correlates with performance on the private set.
+
+
+
+
+
+We follow the QA evaluation described in \cref{subsec:results-quantitative-evaluation} and report the performance of \zephyr{} before and after unlearning with \method{} on this private set in Figure~\ref{fig:correlate}. Before and after unlearning, both models achieve similar accuracy on both the private set and \benchmark{}. This result suggests \benchmark{} is a reasonable proxy for especially hazardous knowledge. 
+
+
+
+
+
