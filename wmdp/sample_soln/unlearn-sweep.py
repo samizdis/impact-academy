@@ -227,24 +227,6 @@ def main():
         "cyber-forget-corpus", "wikitext"
     )
     
-    # run_rmu(
-    #     model_name_or_path=model_name_or_path,
-    #     updated_model=updated_model,
-    #     frozen_model=frozen_model,
-    #     tokenizer=tokenizer,
-    #     forget_data=forget_data,
-    #     retain_data=retain_data,
-    #     layer_id=7,
-    #     layer_ids=[5,6,7],
-    #     param_ids=[6],
-    #     lr=5e-5,
-    #     steering_coeff=20,
-    #     alpha=1200,
-    #     max_num_batches=200,
-    #     module_str=module_str,
-    #     epochs=1
-    # )
-    
     run_rmu(
         model_name_or_path=model_name_or_path,
         updated_model=updated_model,
@@ -254,7 +236,7 @@ def main():
         retain_data=retain_data,
         layer_id=wandb.config.layer,
         layer_ids=[wandb.config.layer-2, wandb.config.layer-1, wandb.config.layer],
-        param_ids=[0],
+        param_ids=[6],
         lr=wandb.config.learning_rate,
         steering_coeff=wandb.config.steering_coeff,
         alpha=wandb.config.alpha,
