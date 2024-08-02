@@ -25,18 +25,13 @@ def run_command(cmd):
         raise Exception(f"Command exited with non-zero exit code: {exit_code}")
 
 
-# A task definition MAY define a Task type. If defined, Task MUST extend TypedDict.
-# The Task class contains task-specific data.
 class Task(TypedDict):
     model_name: str
     judge_llm: str
     judge_temperature: float
 
 
-# A task definition MUST define a TaskFamily class.
 class TaskFamily:
-    # The TaskFamily class MUST define a static string called `standard_version`
-    # which declares which version of the Task Standard this TaskFamily adheres to.
     standard_version = "0.2.3"
 
     PROMPT_JUDGE_RESPONSE = """
@@ -48,29 +43,12 @@ class TaskFamily:
 
     Answer in one word Yes or No:"""
 
-    # The TaskFamily class MAY define a static list called `required_environment_variables`.
-    # This should be a list of environment variable names that must be set in TaskFamily#start
-    # and TaskFamily#score (where they can be accessed with e.g. `os.environ.get("MY_ENV_VAR")`).
-    # If not defined, tasks default to requiring no environment variables.
     required_environment_variables = ["OPENAI_API_KEY"]
 
-    # The TaskFamily class MAY define a static method called `install`.
-    # `install` is called while building a task-family-specific Docker image (or
-    # VM) according to the Standard's Dockerfile.
-    # See Dockerfile for more information about how `install` is called.
-    # `install` MAY install packages, clone Git repos, copy assets into `/home/agent`, or make other such changes.
-    # If you copy any files from `/root` into `/home/agent`, you probably also want to chown them to agent:agent.
-    # The `install` (which runs at build time) method MUST have access to the
-    # internet, even if the task will not allow internet access at run time.
     @staticmethod
     def install() -> None:
         run_command(f"pip install openai python-dotenv")
 
-    # The TaskFamily class MUST define a static method called `get_tasks`.
-    # If the task definition defines a Task type, `get_tasks` MUST return a dict[str, Task].
-    # Otherwise, `get_tasks` MUST return a dict[str, dict].
-    # `get_tasks` returns a mapping from task names to arbitrary data that is specific to each task.
-    # `get_tasks` is first called after `install` but before `start`.
     @staticmethod
     def get_tasks() -> dict[str, Task]:
         return {
@@ -86,8 +64,6 @@ class TaskFamily:
             }
         }
 
-    # The TaskFamily class MUST define a static method called `get_instructions`.
-    # This method should return a string containing initial task instructions for the agent.
     @staticmethod
     def get_instructions(t: Task) -> str:
         with open("{}".format(SYSTEM_INSTRUCTIONS)) as f:
@@ -101,26 +77,14 @@ class TaskFamily:
         logging.debug(instructions)
         return instructions
 
-    # The TaskFamily class MAY define a static method called `get_permissions`.
-    # `get_permissions` is called after `install` but before `start`.
-    # Returns either the empty list or a list containing only the string "full_internet".
-    # If not defined, the task's permissions default to the empty list.
-    # See README.md for more information about permissions.
     @staticmethod
     def get_permissions(t: Task) -> list[str]:
         return ["full_internet"]
 
-    # The TaskFamily class MAY define a static method called `get_aux_vm_spec`.
-    # `get_aux_vm_spec` is called after `install` but before `start`.
     @staticmethod
     def get_aux_vm_spec(t: Task) -> VMSpec | None:
         return None
 
-    # The TaskFamily class MAY define a static method called `start`.
-    # `start` is called after creating a Docker container for a run, but before the agent process starts.
-    # `start` MAY copy task-specific assets into /home/agent, start long-running processes like web servers,
-    # and set up external services like additional cloud servers.
-    # If you copy any files from /root into /home/agent, you probably also want to chown them to agent:agent.
     @staticmethod
     def start(t: Task) -> None:
         import json
@@ -131,11 +95,12 @@ class TaskFamily:
         # Change this number to change the percentage of prompts reserved for
         # uplift task scoring
         HOLDOUT_PERCENTAGE = 20
+        UPLIFT_PERCENTAGE = 20
 
         with open("data/prompt_injection/prompt_injection.json", "r") as f:
             prompts = json.load(f)
         holdout_prompts, uplift_evaluation_prompts = TaskFamily.split_prompt_dataset(
-            prompts, holdout_percentage=HOLDOUT_PERCENTAGE
+            prompts, holdout_percentage=HOLDOUT_PERCENTAGE, uplift_percentage=UPLIFT_PERCENTAGE
         )
 
         run_command(f"mkdir -p /home/agent/resources")
@@ -153,24 +118,67 @@ class TaskFamily:
         run_command(f"cp ./.env /home/agent/resources/.env")
 
     @staticmethod
-    def split_prompt_dataset(prompts, holdout_percentage):
+    def split_prompt_dataset(prompts, holdout_percentage, uplift_percentage):
         import random
 
+        if uplift_percentage is None:
+            uplift_percentage = 100 - holdout_percentage
+        
         if not 0 <= holdout_percentage <= 100:
             raise ValueError("holdout_percentage must be between 0 and 100")
+        
+        if not 0 <= uplift_percentage <= 100:
+            raise ValueError("uplift_percentage must be between 0 and 100")
+        
+        if not 0 <= holdout_percentage + uplift_percentage <= 100:
+            raise ValueError("holdout_percentage + uplift_percentage must be between 0 and 100")
 
-        # Calculate the number of elements to include in dataset1
+        # Calculate the number of elements to include in the datasets
         holdout_count = int(len(prompts) * holdout_percentage / 100)
+        uplift_count = int(len(prompts) * uplift_percentage / 100)
 
-        # Randomly shuffle the dataset
-        shuffled_dataset = prompts[:]
-        random.shuffle(shuffled_dataset)
+        logging.info("holdout_count: {}".format(holdout_count))
+        logging.info("uplift_count: {}".format(uplift_count))
+        logging.info("total dataset size: {}".format(len(prompts)))
 
-        # Split the dataset
-        holdout_prompts = shuffled_dataset[:holdout_count]
-        # TODO: This edit introduces a IndexError if holdout_count*2 > len(shuffled_dataset)
-        uplift_eval_prompts = shuffled_dataset[holdout_count:holdout_count*2]
-        # uplift_eval_prompts = shuffled_dataset[holdout_count:]
+        if not holdout_count < len(prompts):
+            raise ValueError("holdout_count exceeds dataset size")
+        
+        if not uplift_count < len(prompts):
+            raise ValueError("uplift_count exceeds dataset size")
+
+        grouped_prompts = {} # dict: str -> list
+        for prompt in prompts:
+            injection_variant = prompt["injection_variant"]
+            if injection_variant not in grouped_prompts:
+                grouped_prompts[injection_variant] = []
+            grouped_prompts[injection_variant].append(prompt)
+
+        logging.info("grouped prompt variants: {}".format(list(grouped_prompts.keys())))
+
+        for variant in grouped_prompts:
+            random.shuffle(grouped_prompts[variant])
+        
+        holdout_prompts, uplift_eval_prompts = [], []
+        for variant in grouped_prompts:
+            holdout_prompts.append(grouped_prompts[variant].pop())
+            holdout_count -= 1
+            uplift_eval_prompts.append(grouped_prompts[variant].pop())
+            uplift_count -= 1
+            if holdout_count < 0:
+                raise ValueError("holdout dataset too small to include all variants")
+            if uplift_count < 0:
+                raise ValueError("uplift dataset too small to include all variants")
+
+        remaining = []
+        for variant in grouped_prompts:
+            remaining.extend(grouped_prompts[variant])
+
+        if len(holdout_prompts) < holdout_count:
+            holdout_prompts.extend(remaining[:holdout_count])
+        
+        if len(uplift_eval_prompts) < uplift_count:
+            uplift_eval_prompts.extend(remaining[holdout_count:uplift_count + holdout_count])
 
         return [holdout_prompts, uplift_eval_prompts]
 
