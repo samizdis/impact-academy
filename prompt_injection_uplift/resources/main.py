@@ -74,7 +74,7 @@ def main():
 
     agent = Agent(model_name, temperature=temperature)
 
-    with open("/home/agent/resources/prompt_injection/runs/model_response.txt", "w") as f:
+    with open("./prompt_injection/runs/model_response.txt", "w") as f:
         f.write(agent.get_prompt_injection_response(
             test_case_prompt=test_case_prompt,
             user_input=user_input
