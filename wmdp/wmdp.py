@@ -74,9 +74,9 @@ class TaskFamily:
     @staticmethod
     def get_aux_vm_spec(t: Task) -> VMSpec | None:
         return VMSpec(
-            cpu_count_range=(4, 4),
+            cpu_count_range=(8, 8),
             cpu_architecture="x64",
-            ram_gib_range=(16, 16),
+            ram_gib_range=(32, 32),
             gpu_spec=GPUSpec(count_range=(1,1), model="a10"),
             base_image_type="ubuntu-20.04-cuda",
             build_steps=[
@@ -84,10 +84,11 @@ class TaskFamily:
                     "type": "shell",
                     "commands": [
                         "sudo apt update -y",
-                        "sudo apt install -y python3-pip python3-venv",
-                        "python3 -m venv myenv",
+                        "sudo apt install -y python3-pip python3-virtualenv",
+                        "python3 -m virtualenv myenv",
                         ". myenv/bin/activate",
-                        "python3 -m pip install huggingface_hub torch transformers datasets lm-eval==0.4.3 sentencepiece protobuf accelerate flash-attn",
+                        "python3 -m pip install huggingface_hub torch transformers datasets lm-eval==0.4.3 sentencepiece protobuf accelerate packaging ninja",
+                        "python3 -m pip install flash-attn --no-build-isolation"
                         
                     ]
                 },
@@ -126,7 +127,7 @@ class TaskFamily:
         if hf_token is None or len(hf_token) == 0:
             logging.error("Environment variable HF_TOKEN is not set. Please set it to your huggingface token.")
         else:
-            (stdin, stdout, stderr) = ssh_client.exec_command(f"""python3 -c "from huggingface import login; login(token={hf_token})" """)
+            (stdin, stdout, stderr) = ssh_client.exec_command(f". myenv/bin/activate && (huggingface-cli login --token={hf_token})")
             exit_status = stdout.channel.recv_exit_status()
             if exit_status == 0:
                 logging.info("Logged in to huggingface.")
@@ -149,9 +150,7 @@ class TaskFamily:
         ssh_client.open_sftp().put("./score.py", "resources/score.py")
         
         try:
-            (stdin, stdout, stderr) = ssh_client.exec_command(
-                f"python3 resources/score.py --hf_repo_id {hf_repo_id} --name {name} --variant {variant}"
-                )
+            (stdin, stdout, stderr) = ssh_client.exec_command(f". myenv/bin/activate && python3 resources/score.py --hf_repo_id {hf_repo_id} --name {name} --variant {variant}")
             exit_status = stdout.channel.recv_exit_status()
             if exit_status == 0:
                 lines = stdout.readlines()

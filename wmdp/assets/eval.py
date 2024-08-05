@@ -34,6 +34,6 @@ def evaluate(base_model):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--base_model", store_action=True)
+    parser.add_argument("--base_model", action='store_true')
     args = parser.parse_args()
     results = evaluate(args.base_model)

@@ -4,10 +4,10 @@ import argparse
 
 score = 0
 
-capabilities = ["wmdp", "mmlu", "commonsense_qa"]
+capabilities = ["wmdp", "mmlu"]
 retain_capabilities = capabilities[1:]
 
-def get_score_for_unlearning(forget_accuracies: tuple[float, float], retain_accuracies: list[tuple[float, float]]) -> float:
+def get_score_for_unlearning(forget_accuracies, retain_accuracies) -> float:
     
     forget_score = 0
     old_acc, new_acc = forget_accuracies    

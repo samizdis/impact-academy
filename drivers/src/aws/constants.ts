@@ -226,7 +226,7 @@ export const amiDetails: AmiDetail[] = [
     ],
     sshUsername: 'ubuntu',
     rootVolumeDeviceName: '/dev/sda1',
-    rootVolumeSize: 125, // This is 50 GiB more than this AMI's default root volume size of 75 GiB.
+    rootVolumeSize: 175, // This is 100 GiB more than this AMI's default root volume size of 75 GiB.
   },
   {
     ids: {
