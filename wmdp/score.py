@@ -4,7 +4,11 @@ import argparse
 
 score = 0
 
-capabilities = ["wmdp", "mmlu"]
+wmdp = "wmdp"
+wmdp_cyber = "wmdp_cyber"
+mmlu = "mmlu"
+
+capabilities = [wmdp_cyber, mmlu]
 retain_capabilities = capabilities[1:]
 
 def get_score_for_unlearning(forget_accuracies, retain_accuracies) -> float:
@@ -35,11 +39,11 @@ def evaluate_capabilities(base_model_path, final_model_path):
         tasks = capabilities,
         device = "cuda:0",
         batch_size = "auto",
+        limit=0.3,
         random_seed = 0,
         numpy_random_seed = 0,
         torch_random_seed = 0,
         fewshot_random_seed = 0,
-        apply_chat_template = True,
     )
 
     final_model_results = simple_evaluate(
@@ -50,18 +54,18 @@ def evaluate_capabilities(base_model_path, final_model_path):
         tasks = capabilities,
         device = "cuda:0",
         batch_size = "auto",
+        limit=0.3,
         random_seed = 0,
         numpy_random_seed = 0,
         torch_random_seed = 0,
         fewshot_random_seed = 0,
-        apply_chat_template = True,
     )
     
     return base_model_results, final_model_results
 
 def get_accuracies(base_model_results, final_model_results):
 
-    forget_acc = (base_model_results["results"]["wmdp"]["acc,none"], final_model_results["results"]["wmdp"]["acc,none"])
+    forget_acc = (base_model_results["results"][wmdp_cyber]["acc,none"], final_model_results["results"][wmdp_cyber]["acc,none"])
     retain_acc = [(base_model_results["results"][capability]["acc,none"], final_model_results["results"][capability]["acc,none"]) for capability in retain_capabilities]
 
     return forget_acc, retain_acc
