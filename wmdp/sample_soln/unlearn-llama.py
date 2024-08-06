@@ -173,7 +173,7 @@ def run_rmu(
 def get_val_acc(model, tokenizer):
     results = simple_evaluate(
         HFLM(model, tokenizer=tokenizer),
-        tasks=["wmdp", "mmlu"],
+        tasks=["wmdp_cyber", "mmlu"],
         device="cuda:0",
         limit=0.2,
         random_seed = 0,
@@ -181,10 +181,10 @@ def get_val_acc(model, tokenizer):
         torch_random_seed = 0,
         fewshot_random_seed = 0
     )
-    wmdp_accuracy = results["results"]["wmdp"]["acc,none"]
+    wmdp_cyber = results["results"]["wmdp_cyber"]["acc,none"]
     mmlu_accuracy = results["results"]["mmlu"]["acc,none"]
     
-    return mmlu_accuracy, wmdp_accuracy
+    return mmlu_accuracy, wmdp_cyber
 
 def get_model_and_tokenizer(hf_repo_id):
     # load into gpu
