@@ -2,6 +2,7 @@ import subprocess
 import os
 import sys
 import argparse
+import logging
 
 from dotenv import load_dotenv
 import openai
@@ -12,6 +13,7 @@ from environment import Environment
 
 load_dotenv()
 
+logging.basicConfig(level=logging.INFO)
 MODEL = "gpt-3.5-turbo" # TODO: change this later to a more capable LLM
 
 initial_prompt = """You are a helpful research assistant. You have access to the following tools:
@@ -67,7 +69,7 @@ class ResearchAgent(Agent):
         self.initial_prompt = initial_prompt.format(tools_prompt=self.tools_prompt, 
                                                     tool_names=self.prompt_tool_names,  
                                                     task_description=self.instructions, 
-                                                    format_prompt="\n".join([f"{k}: {format_prompt_dict[k]}" for k in self.valid_format_entires]))
+                                                    format_prompt="\n".join([f"{k}: {format_prompt_dict[k]}" for k in self.valid_format_entries]))
         self.history = [{"role": "system", "content": self.initial_prompt}]
 
     def run(self, env):
@@ -106,7 +108,7 @@ class ResearchAgent(Agent):
 
             for idx in range(max(curr_step - last_steps, 0), curr_step):
                 action_string = ""
-                action_string = self.print_action(self.history_steps[idx]["action"], self.valid_format_entires)
+                action_string = self.print_action(self.history_steps[idx]["action"], self.valid_format_entries)
 
                 prompt += anthropic.AI_PROMPT + "\n"+ action_string + "\nObservation:"
                 if curr_step - idx > last_observation_step:
@@ -129,14 +131,14 @@ class ResearchAgent(Agent):
                 completion = complete_text_openai(prompt, log_file, self.args.llm_name)
 
                 try:
-                    entries = self.parse_entries(completion, self.valid_format_entires)
+                    entries = self.parse_entries(completion, self.valid_format_entries)
                     assert entries["Action"].strip() in self.all_tool_names
                     valid_response = True
                 except:
                     print("Step", curr_step, file=sys.stderr)
                     print(anthropic.AI_PROMPT + "\n" + completion + "\nObservation:\n", file=sys.stderr)
                     print("Response is invalid and discarded", file=sys.stderr)
-                    prompt += "\n\n Your response was in incorrect format. Please provide a valid response with all entries: " + ", ".join(self.valid_format_entires) + "\n\n"
+                    prompt += "\n\n Your response was in incorrect format. Please provide a valid response with all entries: " + ", ".join(self.valid_format_entries) + "\n\n"
                 else:
                     break
             if not valid_response:
@@ -165,7 +167,7 @@ class ResearchAgent(Agent):
 
             with open(os.path.join(self.log_dir , "main_log"), "a", 1) as f:
                 f.write("Step " + str(curr_step) + ":\n")
-                f.write(anthropic.AI_PROMPT + "\n" + self.print_action(entries, self.valid_format_entires) + "\nObservation:\n")
+                f.write(anthropic.AI_PROMPT + "\n" + self.print_action(entries, self.valid_format_entries) + "\nObservation:\n")
 
 
             ########################################
@@ -194,7 +196,7 @@ class ResearchAgent(Agent):
                 log_file = os.path.join(self.log_dir , f"step_{curr_step}_summarize_observation_log.log")
 
                 print("Observation is too long. Summarizing...", file=sys.stderr)
-                observation = self.summarize_observation(self.print_action(entries, self.valid_format_entires), observation, log_file)
+                observation = self.summarize_observation(self.print_action(entries, self.valid_format_entries), observation, log_file)
 
             self.history_steps.append({"step_idx": len(env.trace.steps), "action": entries, "observation": observation})
 
@@ -214,7 +216,7 @@ class ResearchAgent(Agent):
                 for _ in range(self.args.max_retries):
                     try:
                         log_file = os.path.join(self.log_dir , f"step_{curr_step}_summary_log.log")
-                        summary_of_last_step = self.summarize_action_and_observation(self.print_action(self.history_steps[-1]["action"], self.valid_format_entires), self.history_steps[-1]["observation"], log_file = log_file)
+                        summary_of_last_step = self.summarize_action_and_observation(self.print_action(self.history_steps[-1]["action"], self.valid_format_entries), self.history_steps[-1]["observation"], log_file = log_file)
                         break
                     except Exception as e:
                         print(e)
