@@ -10,7 +10,7 @@ def evaluate(base_model):
     else:
         model_path = f"""{task_config["model"]["hf_repo_id"]}"""
 
-    capabilities = ["wmdp", "mmlu", "commonsense_qa"]
+    capabilities = ["wmdp_cyber", "mmlu"]
 
     results = simple_evaluate(
         model = "hf", 
@@ -19,7 +19,8 @@ def evaluate(base_model):
         },
         tasks = capabilities,
         device = "cuda:0",
-        batch_size = "2", # "auto" is giving some issues, need to debug
+        batch_size = "auto",
+        limit=0.3,
         random_seed = 0,
         numpy_random_seed = 0,
         torch_random_seed = 0,
