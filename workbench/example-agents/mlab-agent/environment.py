@@ -21,6 +21,9 @@ from high_level_actions import HIGH_LEVEL_ACTIONS
 from utils import Step, Trace, EnvException, TooLongPromptError, LLMError, EnhancedJSONEncoder 
 from utils import complete_text_openai
 from prepare_task import prepare_task, get_task_info
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 class TimeoutException(Exception): pass
 
@@ -82,6 +85,7 @@ class Environment:
         self._trace = self._initialize_trace()
         self._start_time = time.time()
 
+
     ############################## getters ########################################
 
     @property
@@ -123,6 +127,12 @@ class Environment:
     @property
     def start_time(self):
         return self._start_time
+    
+    ############################## setters ########################################
+
+    @research_problem.setter
+    def research_problem(self, instructions):
+        self._research_problem = instructions
     
     ############################## internal functions ########################################
     
@@ -174,10 +184,11 @@ class Environment:
                     ignore_filenames = [n for n in filenames if fnmatch.fnmatch(n, ignore)]
                     self.read_only_files.extend(ignore_filenames)
 
-
+        '''
         # init backup folder and remove all content if it exists
         if os.path.exists(os.path.join(work_dir, "backup")):
             shutil.rmtree(os.path.join(work_dir, "backup"))
+        logging.info("WORKING DIRECTORY", os.getcwd())
         os.mkdir(os.path.join(work_dir, "backup"))
 
         if self.args.resume:
@@ -186,7 +197,7 @@ class Environment:
             print("Restoring workspace ing from {}".format(resume_dir))
             shutil.copytree(resume_dir, work_dir, symlinks=True)
             if not os.path.exists(os.path.join(work_dir, "backup")):
-                os.mkdir(os.path.join(work_dir, "backup"))
+                os.mkdir(os.path.join(work_dir, "backup"))'''
 
 
     def _initialize_interactive_env(self):
