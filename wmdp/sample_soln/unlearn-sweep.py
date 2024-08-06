@@ -163,7 +163,7 @@ def run_rmu(
 
         train_loss = train_loss_forget + alpha * train_loss_retain
         
-        mmlu_accuracy, wmdp_accuracy = get_val_acc(updated_model, tokenizer)
+        mmlu_accuracy, wmdp_cyber_accuracy = get_val_acc(updated_model, tokenizer)
         
         wandb.log({
             "epoch": epoch,
@@ -171,8 +171,8 @@ def run_rmu(
             "train_loss_forget": train_loss_forget / num_batches,
             "train_loss_retain": train_loss_retain / num_batches,
             "mmlu_acc": mmlu_accuracy,
-            "wmdp_acc": wmdp_accuracy,
-            "diff_acc": mmlu_accuracy - wmdp_accuracy
+            "wmdp_cyber_acc": wmdp_cyber_accuracy,
+            "diff_acc": mmlu_accuracy - wmdp_cyber_accuracy
         })
 
     tokenizer.truncation_side = truncation_side
@@ -185,7 +185,7 @@ def run_rmu(
 def get_val_acc(model, tokenizer):
     results = simple_evaluate(
         HFLM(model, tokenizer=tokenizer),
-        tasks=["wmdp", "mmlu"],
+        tasks=["wmdp_cyber", "mmlu"],
         device="cuda:0",
         limit=0.2,
         random_seed = 0,
@@ -193,10 +193,10 @@ def get_val_acc(model, tokenizer):
         torch_random_seed = 0,
         fewshot_random_seed = 0
     )
-    wmdp_accuracy = results["results"]["wmdp"]["acc,none"]
+    wmdp_cyber_accuracy = results["results"]["wmdp_cyber"]["acc,none"]
     mmlu_accuracy = results["results"]["mmlu"]["acc,none"]
     
-    return mmlu_accuracy, wmdp_accuracy
+    return mmlu_accuracy, wmdp_cyber_accuracy
 
 def get_model_and_tokenizer(hf_repo_id):
     # load into gpu
