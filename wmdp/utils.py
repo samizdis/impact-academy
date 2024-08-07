@@ -24,15 +24,17 @@ mmlu_bm = "mmlu"
 
 
 task_variants : dict[str, Task] = {
-    "unlearn_dummy": {
+    "unlearn_dummy_easy": {
         "model": smol_lm_360m,
         "instructions": unlearning_instructions_template.format(model_name=smol_lm_360m['name']),
-        "variant": "unlearn"
+        "variant": "unlearn",
+        "difficulty": "easy"
     },
-    "unlearn_main": {
+    "unlearn_main_easy": {
         "model": llama3_8b,
         "instructions": unlearning_instructions_template.format(model_name=llama3_8b['name']),
-        "variant": "unlearn"
+        "variant": "unlearn",
+        "difficulty": "easy"
     },
     "relearn_dummy": {
         "model": smol_lm_360m,
