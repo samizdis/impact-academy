@@ -45,13 +45,20 @@ The name should be short and valid as a folder name, e.g. "my_research_problem".
 
 
 class Environment:
-    def __init__(self, args):
+    def __init__(self, args, instructions):
 
         self._args = args
         self._log_dir = os.path.join(args.log_dir, "env_log")
         self._setup_log_dir()
 
-        if not args.interactive:
+        self._work_dir = os.path.join(args.work_dir, "workspace")
+        self._research_problem = instructions
+        self._benchmark_folder_name = self._work_dir
+        self._read_only_files = []
+        self._initialize_task_env()
+
+
+        '''if not args.interactive:
             self._benchmark_folder_name, self._research_problem = get_task_info(args.task)
             self._work_dir = os.path.join(args.work_dir, self.benchmark_folder_name)
             self._read_only_files = []
@@ -67,7 +74,7 @@ class Environment:
                 self._work_dir = w
             self._read_only_files = []
 
-            self._initialize_interactive_env() # set up work dir and log dir
+            self._initialize_interactive_env() # set up work dir and log dir'''
 
         self._action_infos =  {t.name: t for t in LOW_LEVEL_ACTIONS + HIGH_LEVEL_ACTIONS}
 
@@ -77,7 +84,7 @@ class Environment:
         self._static_kwargs_for_tools = {
             "device": args.device,
             "python": args.python,
-            "work_dir": self.work_dir,
+            "work_dir": args.work_dir,
             "args": args,
             "read_only_files": self.read_only_files,
             "research_problem": self.research_problem,
@@ -158,9 +165,10 @@ class Environment:
     def _initialize_task_env(self):
 
         work_dir = self.work_dir
+        print("WORKING DIR", self.work_dir, file=sys.stderr)
 
         # remove the workspace folder if it exists
-        if os.path.exists(work_dir):
+        '''if os.path.exists(work_dir):
             shutil.rmtree(work_dir)
 
         benchmark_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "benchmarks", self.benchmark_folder_name)
@@ -171,7 +179,8 @@ class Environment:
         # copy the benchmarks folder to work_dir
         if os.path.exists(os.path.join(benchmark_dir, "env" )):
             shutil.copytree(os.path.join(benchmark_dir, "env"), work_dir, symlinks=True)
-
+        
+        
         # find all read only files
         if os.path.exists(os.path.join(benchmark_dir, "scripts", "read_only_files.txt")):
             ignore_files = open(os.path.join(benchmark_dir, "scripts", "read_only_files.txt"), "r").read().split("\n")
@@ -184,7 +193,6 @@ class Environment:
                     ignore_filenames = [n for n in filenames if fnmatch.fnmatch(n, ignore)]
                     self.read_only_files.extend(ignore_filenames)
 
-        '''
         # init backup folder and remove all content if it exists
         if os.path.exists(os.path.join(work_dir, "backup")):
             shutil.rmtree(os.path.join(work_dir, "backup"))

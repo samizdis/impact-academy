@@ -1,6 +1,5 @@
-setuptools
-python-dotenv
 openai==0.28
+python-dotenv
 anthropic
 dacite
 tiktoken

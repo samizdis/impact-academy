@@ -57,20 +57,20 @@ class ResearchAgent(Agent):
     """A not-so-simple agent based on the research agent introduced in MLAgentBench."""
 
     def __init__(self, args, env):
-        print("STARTING RESEARCH AGENT")
+        print("STARTING RESEARCH AGENT", file=sys.stderr)
         super().__init__(args, env)
         self.valid_format_entries = ["Reflection", "Research Plan and Status", "Fact Check", "Thought", "Action", "Action Input"]
-        if args.valid_format_entries:
-            self.valid_format_entries = args.valid_format_entries
+        '''if args.valid_format_entries:
+            self.valid_format_entries = args.valid_format_entries'''
         
-        assert args.instructions, "Instructions not found. Initialize agent with instructions arg."
-        self.instructions = args.instructions
+        #assert args.instructions, "Instructions not found. Initialize agent with instructions arg."
 
         self.initial_prompt = initial_prompt.format(tools_prompt=self.tools_prompt, 
                                                     tool_names=self.prompt_tool_names,  
-                                                    task_description=self.instructions, 
+                                                    task_description=env.research_problem, 
                                                     format_prompt="\n".join([f"{k}: {format_prompt_dict[k]}" for k in self.valid_format_entries]))
         self.history = [{"role": "system", "content": self.initial_prompt}]
+
 
     def run(self, env):
         last_steps = self.args.max_steps_in_context
@@ -136,6 +136,7 @@ class ResearchAgent(Agent):
                     valid_response = True
                 except:
                     print("Step", curr_step, file=sys.stderr)
+                    print("+++++++++++++++COMPLETION++++++++++++++++++++", completion, file=sys.stderr)
                     print(anthropic.AI_PROMPT + "\n" + completion + "\nObservation:\n", file=sys.stderr)
                     print("Response is invalid and discarded", file=sys.stderr)
                     prompt += "\n\n Your response was in incorrect format. Please provide a valid response with all entries: " + ", ".join(self.valid_format_entries) + "\n\n"
@@ -307,10 +308,11 @@ class ResearchAgent(Agent):
 
 
 def main():
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--task", type=str, default="debug", help="task name")
-    parser.add_argument("--log-dir", type=str, default="first_test", help="log dir")
-    parser.add_argument("--work-dir", type=str, default="workspace", help="work dir")
+    parser.add_argument("--log-dir", type=str, default="/home/agent/logs", help="log dir")
+    parser.add_argument("--work-dir", type=str, default="/home/agent", help="work dir")
     parser.add_argument("--max-steps", type=int, default=50, help="number of steps")
     parser.add_argument("--max-time", type=int, default=5* 60 * 60, help="max time")
     parser.add_argument("--device", type=int, default=0, help="device id")
@@ -321,8 +323,8 @@ def main():
 
     # general agent configs
     parser.add_argument("--agent-type", type=str, default="ResearchAgent", help="agent type")
-    parser.add_argument("--llm-name", type=str, default="gpt-3.5-turbo", help="llm name")
-    parser.add_argument("--fast-llm-name", type=str, default="gpt-3.5-turbo", help="llm name")
+    parser.add_argument("--llm-name", type=str, default="gpt-4o", help="llm name")
+    parser.add_argument("--fast-llm-name", type=str, default="gpt-4o", help="llm name")
     parser.add_argument("--edit-script-llm-name", type=str, default="gpt-3.5-turbo", help="llm name")
     parser.add_argument("--edit-script-llm-max-tokens", type=int, default=4000, help="llm max tokens")
     parser.add_argument("--agent-max-steps", type=int, default=50, help="max iterations for agent")
@@ -341,15 +343,16 @@ def main():
     with open("/home/agent/instructions.txt", "r") as f:
         instructions = f.read()
         
-    with Environment(args) as env:
-        env.research_problem = instructions
-        args.instructions = instructions
+    with Environment(args, instructions=instructions) as env:
+        
+        #env.research_problem = instructions
+        #args.instructions = instructions
         print("=====================================")
         #research_problem, benchmark_folder_name = env.get_task_description()
         #print("Benchmark folder name: ", benchmark_folder_name)
-        print("Research problem: ", instructions)
-        print("Lower level actions enabled: ", [action.name for action in env.low_level_actions])
-        print("High level actions enabled: ", [action.name for action in env.high_level_actions])
+        print("Research problem: ", instructions, file=sys.stderr)
+        print("Lower level actions enabled: ", [action.name for action in env.low_level_actions], file=sys.stderr)
+        print("High level actions enabled: ", [action.name for action in env.high_level_actions], file=sys.stderr)
         print("Read only files: ", env.read_only_files, file=sys.stderr)
         print("=====================================")  
 
