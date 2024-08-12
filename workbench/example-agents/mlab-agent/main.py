@@ -325,7 +325,7 @@ def main():
     parser.add_argument("--agent-type", type=str, default="ResearchAgent", help="agent type")
     parser.add_argument("--llm-name", type=str, default="gpt-4o", help="llm name")
     parser.add_argument("--fast-llm-name", type=str, default="gpt-4o", help="llm name")
-    parser.add_argument("--edit-script-llm-name", type=str, default="gpt-3.5-turbo", help="llm name")
+    parser.add_argument("--edit-script-llm-name", type=str, default="gpt-4o", help="llm name")
     parser.add_argument("--edit-script-llm-max-tokens", type=int, default=4000, help="llm max tokens")
     parser.add_argument("--agent-max-steps", type=int, default=50, help="max iterations for agent")
 

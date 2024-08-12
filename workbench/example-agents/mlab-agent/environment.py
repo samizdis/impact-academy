@@ -346,7 +346,8 @@ class Environment:
                     raise e
                 except Exception as e:
                     # should not happen
-                    print("Step: ", curr_step, file=sys.stderr)
+                    # TODO: change this back to Step:
+                    print("Step (environment error): ", curr_step, file=sys.stderr)
                     print(e, file=sys.stderr)
                     if "Connection aborted." in str(e):
                         raise Exception("Connection aborted for crfm")
