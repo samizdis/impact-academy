@@ -51,7 +51,8 @@ class Environment:
         self._log_dir = os.path.join(args.log_dir, "env_log")
         self._setup_log_dir()
 
-        self._work_dir = os.path.join(args.work_dir, "workspace")
+        #self._work_dir = os.path.join(args.work_dir, "workspace")
+        self._work_dir = args.work_dir
         self._research_problem = instructions
         self._benchmark_folder_name = self._work_dir
         self._read_only_files = []
@@ -165,7 +166,6 @@ class Environment:
     def _initialize_task_env(self):
 
         work_dir = self.work_dir
-        print("WORKING DIR", self.work_dir, file=sys.stderr)
 
         # remove the workspace folder if it exists
         '''if os.path.exists(work_dir):
@@ -192,13 +192,18 @@ class Environment:
                 for ignore in ignore_files:
                     ignore_filenames = [n for n in filenames if fnmatch.fnmatch(n, ignore)]
                     self.read_only_files.extend(ignore_filenames)
-
+        '''
+        print("WORK DIR::::::::::::::::::::: ", work_dir, file=sys.stderr)
+        os.mkdir(work_dir)
         # init backup folder and remove all content if it exists
         if os.path.exists(os.path.join(work_dir, "backup")):
+            print("FOUND BACKUP DIRRRRRRRRRRR", file=sys.stderr)
             shutil.rmtree(os.path.join(work_dir, "backup"))
-        logging.info("WORKING DIRECTORY", os.getcwd())
         os.mkdir(os.path.join(work_dir, "backup"))
+        print("BACKUP DIR", os.path.exists(os.path.join(work_dir, "backup")), file=sys.stderr)
 
+        
+        '''
         if self.args.resume:
             shutil.rmtree(work_dir)
             resume_dir = os.path.join(self.args.resume, "env_log", "traces" , f"step_{self.args.resume_step}_files")
@@ -310,6 +315,11 @@ class Environment:
         action_input = action.args
 
         if action_name == "Final Answer":
+            print("IN ENVIRONMENT", trace.steps[-1].observation, file=sys.stderr)
+            # write the submission.txt file that the scoring script expects
+            submission = str.split(trace.steps[-1].observation, sep=":", maxsplit=1)[1].strip("\n ")
+            with open("/home/agent/submission.txt", "w") as f:
+                f.write(submission)
             observation = "end"
 
         elif self.is_final():
@@ -340,15 +350,12 @@ class Environment:
                 except TypeError as e:
                     print("Step: ", curr_step, file=sys.stderr)
                     print(e, file=sys.stderr)
-                    print(action_input, file=sys.stderr)
                     observation = "EnvError: " + invalid_action_error
                 except TimeoutException as e:
                     raise e
                 except Exception as e:
                     # should not happen
-                    # TODO: change this back to Step:
-                    print("Step (environment error): ", curr_step, file=sys.stderr)
-                    print(e, file=sys.stderr)
+                    print("Step: ", curr_step, ", error: ", e, file=sys.stderr)
                     if "Connection aborted." in str(e):
                         raise Exception("Connection aborted for crfm")
                     observation = f"EnvError: Error executing {action_name}."

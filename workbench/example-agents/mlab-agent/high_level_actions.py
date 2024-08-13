@@ -100,12 +100,8 @@ def edit_script(script_name, edit_instruction, save_name, work_dir = ".", **kwar
 
     # backup all old file with prefix script_name
     backup_name = os.path.join(work_dir,"backup", f"{script_name}_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}")
-
-    exit()
-    print("FILE EXISTS?", os.access(os.path.join(work_dir,script_name), os.R_OK), file=sys.stderr)
     shutil.copyfile(os.path.join(work_dir,script_name), backup_name)
-    print(f"BACKUP FILE IN EDIT SCRIPT FUNCTION  {work_dir} {script_name} {backup_name}", file=sys.stderr)
-
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^ WRITING FILE AFTER BACKUP", file=sys.stderr)
     write_file(save_name, new_content, work_dir = work_dir, **kwargs)
 
     diff = list(difflib.unified_diff(content.splitlines(keepends=True), new_content.splitlines(keepends=True)))

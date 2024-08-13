@@ -231,6 +231,7 @@ class ResearchAgent(Agent):
             self.save(os.path.join(self.log_dir , f"agent_{step_idx}_{curr_step}.json"))
 
         if env.is_final():
+            print(f":::::::::::::::::::::: {observation} ::::::::::::::::::::;", file=sys.stderr)
             return "Finished due to env.is_final() == True"
         else:
             return "Finished due to agent max steps reached"
@@ -312,7 +313,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--task", type=str, default="debug", help="task name")
     parser.add_argument("--log-dir", type=str, default="/home/agent/logs", help="log dir")
-    parser.add_argument("--work-dir", type=str, default="/home/agent", help="work dir")
+    parser.add_argument("--work-dir", type=str, default="/home/agent/workspace", help="work dir")
     parser.add_argument("--max-steps", type=int, default=50, help="number of steps")
     parser.add_argument("--max-time", type=int, default=5* 60 * 60, help="max time")
     parser.add_argument("--device", type=int, default=0, help="device id")
