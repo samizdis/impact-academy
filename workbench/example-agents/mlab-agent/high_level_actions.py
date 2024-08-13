@@ -101,7 +101,6 @@ def edit_script(script_name, edit_instruction, save_name, work_dir = ".", **kwar
     # backup all old file with prefix script_name
     backup_name = os.path.join(work_dir,"backup", f"{script_name}_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}")
     shutil.copyfile(os.path.join(work_dir,script_name), backup_name)
-    print("^^^^^^^^^^^^^^^^^^^^^^^^^^ WRITING FILE AFTER BACKUP", file=sys.stderr)
     write_file(save_name, new_content, work_dir = work_dir, **kwargs)
 
     diff = list(difflib.unified_diff(content.splitlines(keepends=True), new_content.splitlines(keepends=True)))

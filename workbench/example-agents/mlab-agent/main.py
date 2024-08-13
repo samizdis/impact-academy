@@ -136,7 +136,6 @@ class ResearchAgent(Agent):
                     valid_response = True
                 except:
                     print("Step", curr_step, file=sys.stderr)
-                    print("+++++++++++++++COMPLETION++++++++++++++++++++", completion, file=sys.stderr)
                     print(anthropic.AI_PROMPT + "\n" + completion + "\nObservation:\n", file=sys.stderr)
                     print("Response is invalid and discarded", file=sys.stderr)
                     prompt += "\n\n Your response was in incorrect format. Please provide a valid response with all entries: " + ", ".join(self.valid_format_entries) + "\n\n"
@@ -231,7 +230,6 @@ class ResearchAgent(Agent):
             self.save(os.path.join(self.log_dir , f"agent_{step_idx}_{curr_step}.json"))
 
         if env.is_final():
-            print(f":::::::::::::::::::::: {observation} ::::::::::::::::::::;", file=sys.stderr)
             return "Finished due to env.is_final() == True"
         else:
             return "Finished due to agent max steps reached"

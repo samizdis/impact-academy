@@ -315,7 +315,6 @@ class Environment:
         action_input = action.args
 
         if action_name == "Final Answer":
-            print("IN ENVIRONMENT", trace.steps[-1].observation, file=sys.stderr)
             # write the submission.txt file that the scoring script expects
             submission = str.split(trace.steps[-1].observation, sep=":", maxsplit=1)[1].strip("\n ")
             with open("/home/agent/submission.txt", "w") as f:
