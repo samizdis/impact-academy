@@ -2,6 +2,7 @@ import json
 import logging
 import sys
 import subprocess
+import os
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -37,7 +38,7 @@ def run_command(cmd):
         raise Exception(f"Command exited with non-zero exit code: {exit_code}")
 
 
-def evaluate(model_name, judge_llm, judge_temperature=0, run_id=0):
+def evaluate(model_name, judge_llm, run_id, judge_temperature=0):
     # read the prompts
     with open("/home/agent/resources/uplift_evaluation_dataset.json", "r") as f:
         prompts = json.load(f)
@@ -45,6 +46,11 @@ def evaluate(model_name, judge_llm, judge_temperature=0, run_id=0):
     judge_responses = []
     successful, unsuccessful = 0, 0
     total_test_cases = len(prompts)
+
+    try:
+        os.makedirs("/home/agent/resources/prompt_injection/runs/{}".format(run_id), exist_ok=False)
+    except OSError as e:
+        print("Cannot create {} runs directory. Please provide a unique run_id".format(run_id))
 
     for index, prompt in enumerate(prompts):
         # get a response from the RA
@@ -56,14 +62,19 @@ def evaluate(model_name, judge_llm, judge_temperature=0, run_id=0):
         risk_category = prompt["risk_category"]
         speaking_language = prompt["speaking_language"]
 
-        command_string = "python /home/agent/resources/main.py \"{model_name}\" \"{test_case_prompt}\" \"{user_input}\"".format(
-                    model_name=model_name, test_case_prompt=test_case_prompt.replace('"', "'"), user_input=user_input.replace('"', "'")
+        command_string = "python /home/agent/resources/main.py \"{model_name}\" \"{test_case_prompt}\" \"{user_input}\" \"{run_id}\" \"{prompt_index}\"".format(
+                    model_name=model_name, test_case_prompt=test_case_prompt.replace('"', "'"), user_input=user_input.replace('"', "'"),
+                    run_id=run_id,
+                    prompt_index=index
                 )
 
         run_command(command_string)
 
+        print("DEBUG: os.getcwd() from evaluation.py", os.getcwd())
+        model_response_path = "/home/agent/resources/prompt_injection/runs/{run_id}/model_response_{prompt_index}.txt".format(run_id=run_id, prompt_index=index)
+
         with open(
-            "/home/agent/resources/prompt_injection/runs/model_response.txt", "r"
+            model_response_path,
         ) as f:
             response = f.read()
 
@@ -111,28 +122,26 @@ def evaluate(model_name, judge_llm, judge_temperature=0, run_id=0):
         }
     }
 
+
     with open(
-        "/home/agent/resources/prompt_injection/runs/{}_responses.json".format(run_id),
+        "/home/agent/resources/prompt_injection/runs/{}/judge_responses.json".format(run_id),
         "w",
     ) as f:
         json.dump(judge_responses, f, indent=4)
     logging.info("Successfully written to judge_response.json")
 
-    with open("/home/agent/resources/prompt_injection/runs/{}_stats.json".format(run_id), "w") as f:
+    with open("/home/agent/resources/prompt_injection/runs/{}/stats.json".format(run_id), "w") as f:
         json.dump(stats, f, indent=4)
 
 def main():
-    if len(sys.argv) < 3:
-        raise ValueError("Needs atleast two arguments: model_name, judge_llm. It is recommended to provide run_id as well to track multiple runs of the evaluation script")
+    if len(sys.argv) < 4:
+        raise ValueError("Needs three two arguments: model_name, judge_llm, run_id.")
 
     model_name = sys.argv[1]
     judge_llm = sys.argv[2]
+    run_id = sys.argv[3]
     
-    if len(sys.argv) == 4:
-        run_id = sys.argv[3]
-        evaluate(model_name=model_name, judge_llm=judge_llm, run_id=run_id)
-    else:
-        evaluate(model_name=model_name, judge_llm=judge_llm)
+    evaluate(model_name=model_name, judge_llm=judge_llm, run_id=run_id)
 
 if __name__ == "__main__":
     main()

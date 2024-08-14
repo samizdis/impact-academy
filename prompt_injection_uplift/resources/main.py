@@ -1,5 +1,6 @@
 import subprocess
 import sys
+import os
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -58,23 +59,31 @@ class Agent:
     
         
 def main():
+    args = sys.argv
 
-    if len(sys.argv) == 5:
+    if len(args) < 6:
+        raise ValueError("Need atleast five arguments: model_name, test_case_prompt, use_prompt, run_id, prompt_index")
+
+    if len(args) == 7:
         model_name = sys.argv[1]
         test_case_prompt = sys.argv[2]
         user_input = sys.argv[3]
-        temperature = float(sys.argv[4])
-    elif len(sys.argv) == 4:
+        run_id = sys.argv[4]
+        prompt_index = sys.argv[5]
+        temperature = float(sys.argv[6])        
+    elif len(sys.argv) == 6:
         model_name = sys.argv[1]
         test_case_prompt = sys.argv[2]
         user_input = sys.argv[3]
+        run_id = sys.argv[4]
+        prompt_index = sys.argv[5]
         temperature = 0
-    elif len(sys.argv) < 4:
-        raise ValueError("Need atleast three arguments: model_name, test_case_prompt, and user_prompt")
 
     agent = Agent(model_name, temperature=temperature)
 
-    with open("./prompt_injection/runs/model_response.txt", "w") as f:
+    model_response_path = "/home/agent/resources/prompt_injection/runs/{run_id}/model_response_{prompt_index}.txt".format(run_id=run_id, prompt_index=prompt_index)
+
+    with open(model_response_path, "w") as f:
         f.write(agent.get_prompt_injection_response(
             test_case_prompt=test_case_prompt,
             user_input=user_input

@@ -59,7 +59,7 @@ class TaskFamily:
             },
             "gpt3": {
                 "model_name": "gpt-3.5-turbo",
-                "judge_llm": "gpt-4o",
+                "judge_llm": "gpt-3.5-turbo",
                 "judge_temperature": 0,
             },
         }
@@ -233,17 +233,19 @@ class TaskFamily:
         judge_responses = []
         successful, unsuccessful = 0, 0
 
+      
+
         if baseline_agent == None:
             # evaluating improved agent
             REFERENCE_AGENT_RESPONSE_PATH = (
-                "/home/agent/resources/prompt_injection/runs/model_response.txt"
+                "/home/agent/resources/prompt_injection/runs/evaluation"
             )
             REFERENCE_AGENT_PATH = "/home/agent/resources/main.py"
             # TODO: add a log here
         else:
             # evaluating baseline agent
             REFERENCE_AGENT_RESPONSE_PATH = (
-                "/root/utils/prompt_injection/runs/model_response.txt"
+                "/root/utils/prompt_injection/runs/evaluation"
             )
             REFERENCE_AGENT_PATH = baseline_agent
 
@@ -256,16 +258,18 @@ class TaskFamily:
             risk_category = prompt["risk_category"]
             speaking_language = prompt["speaking_language"]
 
-            command_string = 'python {REFERENCE_AGENT_PATH} "{model_name}" "{test_case_prompt}" "{user_input}"'.format(
+            command_string = 'python {REFERENCE_AGENT_PATH} \"{model_name}\" \"{test_case_prompt}\" \"{user_input}\" \"{run_id}\" \"{prompt_index}\"'.format(
                 REFERENCE_AGENT_PATH=REFERENCE_AGENT_PATH,
                 model_name=model_name,
                 test_case_prompt=test_case_prompt.replace('"', "'"),
                 user_input=user_input.replace('"', "'"),
+                run_id="evaluation",
+                prompt_index=index,
             )
 
             run_command(command_string)
 
-            with open(REFERENCE_AGENT_RESPONSE_PATH, "r") as f:
+            with open("{REFERENCE_AGENT_RESPONSE_PATH}/model_response_{prompt_index}.txt".format(REFERENCE_AGENT_RESPONSE_PATH=REFERENCE_AGENT_RESPONSE_PATH, prompt_index=index) , "r") as f:
                 response = f.read()
 
             judge_verdict = TaskFamily.get_judge_verdict(
@@ -376,6 +380,16 @@ class TaskFamily:
         judge_llm = t["judge_llm"]
         judge_temperature = t["judge_temperature"]
 
+        try:
+            os.makedirs("/home/agent/resources/prompt_injection/runs/evaluation/", exist_ok=False)
+        except OSError as e:
+            print("Error: evaluation directory already exists in /home/agent. Running in evaluation mode but directory with run_id evaluation already exists.")
+            
+        try:
+            os.makedirs("/root/prompt_injection/runs/evaluation/", exist_ok=False)
+        except OSError as e:
+            print("Error: evaluation directory already exists in /root. Running in evaluation mode but directory with run_id evaluation already exists.")
+
         with open("/root/utils/prompt_injection_holdout.json", "r") as f:
             prompts = json.load(f)
         total_test_cases = len(prompts)
@@ -396,9 +410,8 @@ class TaskFamily:
                     prompts, model_name, judge_llm, judge_temperature, baseline_agent
                 )
             )
-            baseline_judge_file_path = (
-                "/root/prompt_injection/baseline_judge_responses.json"
-            )
+            baseline_judge_file_path = "/root/prompt_injection/baseline_judge_responses.json"
+
             TaskFamily.write_judge_responses(
                 baseline_judge_responses, baseline_judge_file_path
             )
