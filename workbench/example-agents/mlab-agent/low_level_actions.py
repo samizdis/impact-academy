@@ -102,7 +102,6 @@ def list_files( dir_path, work_dir = ".", **kwargs):
 @check_file_in_work_dir(["file_name"])
 @record_low_level_step
 def read_file(file_name, work_dir = '.', **kwargs):
-    print(f" READ FILE xxxxxxxxxxxxxxxxxxxx {work_dir=} {file_name=} xxxxxxxxxxxxxxxx", file=sys.stderr)
     try:
         observation = open(os.path.join(work_dir,file_name)).read()
         return observation
@@ -174,8 +173,6 @@ def undo_edit_script( script_name, work_dir = ".", **kwargs):
 @check_file_in_work_dir(["script_name"])
 @record_low_level_step
 def execute_script(script_name, work_dir = ".", **kwargs):
-    print(f" EXECUTE SCRIPT xxxxxxxxxxxxxxxxxxxx {work_dir=} {script_name=} xxxxxxxxxxxxxxxx", file=sys.stderr)
-
     if not os.path.exists(os.path.join(work_dir,script_name)):
         raise EnvException(f"The file {script_name} does not exist.")
     try:

@@ -22,7 +22,6 @@ from utils import Step, Trace, EnvException, TooLongPromptError, LLMError, Enhan
 from utils import complete_text_openai
 from prepare_task import prepare_task, get_task_info
 import logging
-from pathlib import Path
 
 logging.basicConfig(level=logging.INFO)
 
@@ -305,21 +304,21 @@ class Environment:
 
     def execute(self, action):
         """Execute an action and return the observation."""
-        #print(f" :::::: work_dir {self.work_dir} ; _work_dir {self._work_dir} ; {} :::::", file=sys.stderr)
         trace = self._trace
 
         curr_step = len(trace.steps)
         action_name = action.name
         action_input = action.args
-        print(f" ----------------------- before {action_input=} ------------------------------", file=sys.stderr)
+
+        print(f"Current step: {curr_step}", file=sys.stderr)
+        
+        # LLMs sometimes output file names wbere backslashes are escaped. The tools don't like this. The following manually replaces the escaped backslashes.
         if 'file_name' in action_input:
             action_input['file_name'] = action_input['file_name'].replace("\\/", "/")
         if 'dir_name' in action_input:
             action_input['dir_name'] = action_input['dir_name'].replace("\\/", "/")
         if 'script_name' in action_input:
             action_input['script_name'] = action_input['script_name'].replace("\\/", "/")
-
-        print(f" ----------------------- after {action_input=} ------------------------------", file=sys.stderr)
 
         if action_name == "Final Answer":
             # write the submission.txt file that the scoring script expects
