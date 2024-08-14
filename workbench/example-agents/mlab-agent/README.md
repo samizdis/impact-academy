@@ -3,6 +3,7 @@
 This is a METR-compatible implementation of the research agent from the MLAgentBench paper.
 
 The research agent responds in the following format:
+
 "
 Reflection: What does the observation mean? If there is an error, what caused the error and how to debug?
 Research Plan and Status: The full high level research plan, with current status and confirmed results of each step briefly annotated. It must only include progress that has been made by previous steps. If there is any update, enclose the new update text in double asterisks **like this**. If there is no update, just copy the previous step Research Plan and Status. The high level plan from the previous step should be fully retained, unless it is intentionally revised.
@@ -45,4 +46,6 @@ METR Agents need to implement the following functions:
 
 
 
-To use it with the workbench, run `npm run agent -- CONTAINER_NAME example-agents/mlab-agent "pip install -r requirements.txt && env OPENAI_API_KEY='sk-...' python main.py"`
+## Setup:
+- add an OPENAI_API_KEY in main.sh
+- To use it with the workbench, run `npm run agent -- CONTAINER_NAME example-agents/mlab-agent "main.sh"`
