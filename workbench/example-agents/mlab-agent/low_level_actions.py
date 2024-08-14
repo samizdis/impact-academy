@@ -88,8 +88,9 @@ def check_file_in_work_dir(arg_names, **kwargs):
 @record_low_level_step
 def list_files( dir_path, work_dir = ".", **kwargs):
     try:
-        #observation = subprocess.check_output(["ls", "-F", os.path.join(work_dir,dir_path)]).decode("utf-8")
-        observation = subprocess.check_output(["ls", "-F", dir_path]).decode("utf-8")
+        observation = subprocess.check_output(["ls", "-F", os.path.join(work_dir,dir_path)]).decode("utf-8")
+        #observation = subprocess.check_output(["ls", "-F", os.path.join(work_dir,dir_path)])
+        #observation = subprocess.check_output(["ls", "-F", dir_path]).decode("utf-8")
         return observation
     except:
         raise EnvException(f"Cannot list file in the {dir_path} directory")
@@ -101,6 +102,7 @@ def list_files( dir_path, work_dir = ".", **kwargs):
 @check_file_in_work_dir(["file_name"])
 @record_low_level_step
 def read_file(file_name, work_dir = '.', **kwargs):
+    print(f" READ FILE xxxxxxxxxxxxxxxxxxxx {work_dir=} {file_name=} xxxxxxxxxxxxxxxx", file=sys.stderr)
     try:
         observation = open(os.path.join(work_dir,file_name)).read()
         return observation
@@ -172,6 +174,8 @@ def undo_edit_script( script_name, work_dir = ".", **kwargs):
 @check_file_in_work_dir(["script_name"])
 @record_low_level_step
 def execute_script(script_name, work_dir = ".", **kwargs):
+    print(f" EXECUTE SCRIPT xxxxxxxxxxxxxxxxxxxx {work_dir=} {script_name=} xxxxxxxxxxxxxxxx", file=sys.stderr)
+
     if not os.path.exists(os.path.join(work_dir,script_name)):
         raise EnvException(f"The file {script_name} does not exist.")
     try:
@@ -258,7 +262,7 @@ LOW_LEVEL_ACTIONS = [
         name="List Files",
         description="Use this to navigate the file system.",
         usage={   
-            "dir_path": "a valid relative path to a directory, such as \".\" or \"folder1/folder2\""
+            "dir_path": "a valid relative path to a directory, such as . or folder1/folder2"
         },
         return_value="The observation will be a list of files and folders in dir_path or current directory is dir_path is empty, or an error message if dir_path is invalid.",
         function=list_files,

@@ -14,7 +14,7 @@ from environment import Environment
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
-MODEL = "gpt-3.5-turbo" # TODO: change this later to a more capable LLM
+MODEL = "gpt-4o" # TODO: change this later to a more capable LLM
 
 initial_prompt = """You are a helpful research assistant. You have access to the following tools:
 {tools_prompt}
@@ -311,7 +311,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--task", type=str, default="debug", help="task name")
     parser.add_argument("--log-dir", type=str, default="/home/agent/logs", help="log dir")
-    parser.add_argument("--work-dir", type=str, default="/home/agent/workspace", help="work dir")
+    parser.add_argument("--work-dir", type=str, default="/home/agent", help="work dir")
     parser.add_argument("--max-steps", type=int, default=50, help="number of steps")
     parser.add_argument("--max-time", type=int, default=5* 60 * 60, help="max time")
     parser.add_argument("--device", type=int, default=0, help="device id")

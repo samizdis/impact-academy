@@ -28,6 +28,8 @@ def reflection( things_to_reflect_on, work_dir = ".", research_problem = "", **k
 
 def understand_file( file_name, things_to_look_for, work_dir = ".", **kwargs):
 
+    print(f" UNDERSTAND FILE xxxxxxxxxxxxxxxxxxxx {work_dir=} {file_name=} xxxxxxxxxxxxxxxx", file=sys.stderr)
+
     lines = read_file(file_name, work_dir = work_dir, **kwargs).split("\n")
     # group lines to blocks so that each block has at most 10000 characters
     counter = 0
@@ -78,6 +80,8 @@ EDIT_SCRIPT_MODEL = "claude-v1"
 EDIT_SCRIPT_MAX_TOKENS = 4000
 def edit_script(script_name, edit_instruction, save_name, work_dir = ".", **kwargs):
     #TODO: handle long file editing
+    print(f" EDIT SCRIPT xxxxxxxxxxxxxxxxxxxx {work_dir=} {script_name=} xxxxxxxxxxxxxxxx", file=sys.stderr)
+
     try:
         content = read_file(script_name, work_dir = work_dir, **kwargs)
     except:

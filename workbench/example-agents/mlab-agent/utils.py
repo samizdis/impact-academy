@@ -61,7 +61,7 @@ class Trace:
     task_description: str
 
 
-def complete_text_openai(prompt, stop_sequences=["Observation:"], model="gpt-3.5-turbo", max_tokens_to_sample=500, temperature=0.01, log_file=None, **kwargs):
+def complete_text_openai(prompt, stop_sequences=["Observation:"], model="gpt-4o", max_tokens_to_sample=500, temperature=0.01, log_file=None, **kwargs):
         """ Call the OpenAI API to complete a prompt."""
         raw_request = {
             "model": model,

@@ -22,6 +22,7 @@ from utils import Step, Trace, EnvException, TooLongPromptError, LLMError, Enhan
 from utils import complete_text_openai
 from prepare_task import prepare_task, get_task_info
 import logging
+from pathlib import Path
 
 logging.basicConfig(level=logging.INFO)
 
@@ -193,14 +194,11 @@ class Environment:
                     ignore_filenames = [n for n in filenames if fnmatch.fnmatch(n, ignore)]
                     self.read_only_files.extend(ignore_filenames)
         '''
-        print("WORK DIR::::::::::::::::::::: ", work_dir, file=sys.stderr)
-        os.mkdir(work_dir)
+        os.makedirs(work_dir, exist_ok=True)
         # init backup folder and remove all content if it exists
         if os.path.exists(os.path.join(work_dir, "backup")):
-            print("FOUND BACKUP DIRRRRRRRRRRR", file=sys.stderr)
             shutil.rmtree(os.path.join(work_dir, "backup"))
         os.mkdir(os.path.join(work_dir, "backup"))
-        print("BACKUP DIR", os.path.exists(os.path.join(work_dir, "backup")), file=sys.stderr)
 
         
         '''
@@ -307,12 +305,21 @@ class Environment:
 
     def execute(self, action):
         """Execute an action and return the observation."""
-        
+        #print(f" :::::: work_dir {self.work_dir} ; _work_dir {self._work_dir} ; {} :::::", file=sys.stderr)
         trace = self._trace
 
         curr_step = len(trace.steps)
         action_name = action.name
         action_input = action.args
+        print(f" ----------------------- before {action_input=} ------------------------------", file=sys.stderr)
+        if 'file_name' in action_input:
+            action_input['file_name'] = action_input['file_name'].replace("\\/", "/")
+        if 'dir_name' in action_input:
+            action_input['dir_name'] = action_input['dir_name'].replace("\\/", "/")
+        if 'script_name' in action_input:
+            action_input['script_name'] = action_input['script_name'].replace("\\/", "/")
+
+        print(f" ----------------------- after {action_input=} ------------------------------", file=sys.stderr)
 
         if action_name == "Final Answer":
             # write the submission.txt file that the scoring script expects
