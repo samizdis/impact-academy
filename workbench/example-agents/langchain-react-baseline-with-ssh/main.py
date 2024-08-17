@@ -111,7 +111,7 @@ def main(*args):
         callbacks=[AgentCallbackHandler()],
         handle_parsing_errors=True,
         verbose=True,
-        max_iterations=10,
+        max_iterations=30,
     )
 
     agent_executor.invoke({"input": task_string})
