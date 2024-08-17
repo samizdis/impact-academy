@@ -149,7 +149,9 @@ export const amiDetails: AmiDetail[] = [
     baseImageType: 'debian-12',
     sshUsername: 'admin',
     rootVolumeDeviceName: '/dev/xvda',
-    rootVolumeSize: 8, // This is the default root volume size for this AMI.
+    //rootVolumeSize: 8, // This is the default root volume size for this AMI.
+    // Much larger for SWE-bench: https://github.com/princeton-nlp/SWE-bench?tab=readme-ov-file#-usage
+    rootVolumeSize: 130,
   },
   {
     ids: {
