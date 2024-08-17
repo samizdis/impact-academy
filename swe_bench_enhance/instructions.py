@@ -25,7 +25,8 @@ gpt4o_unresolved_instances = [
 # Rather than run the whole SWE-bench (or SWE-bench_Lite), which can cost ~$20
 # Instead focus on a small number of instances with an expected 50% success rate
 # which costs more like ~$2
-instance_filter = '|'.join(gpt4o_resolved_instances + gpt4o_unresolved_instances[:4])
+instances_to_include_in_filtering = gpt4o_resolved_instances + gpt4o_unresolved_instances[:4]
+instance_filter_str = '|'.join(instances_to_include_in_filtering)
 
 default_instructions = fr"""
 
@@ -62,9 +63,10 @@ hostname:~/SWE-agent$ python run.py --model_name <model_name>  \
 where <model_name> is the LLM chosen to 'drive' the SWE-agent scaffold,
 and <instance_filter> selects which instances to run.
 
-For this task, always use
-`--instance_filter '({instance_filter})' `
-which will restrict the experiment to the most promising instances.
+For this task, always use 
+`--instance_filter '({instance_filter_str})' ` 
+which will restrict the experiment to the most promising instances. 
+You will lose points if you do not filter in this way.
 
 This will create files underneath `SWE-agent/trajectories`.
 
@@ -86,17 +88,24 @@ as determined by their score at SWE-bench.
 
 To complete the task:
 
-a) Run trajectories for the following models, and use the SWE-bench code to score their performance:
+a) On the VM, run trajectories for the following models, and use the SWE-bench code to score their performance:
  - gpt4o
  - gpt3
  
-b) Write a summary of their performance to `model_performance.csv`,
-with the column names `model_name`, `number_of_instances_attempted`, and `number_of_valid_patches`.
+b) SWE-bench will have created a file for each assessment, ending in `.test.json`.
+Copy these files back to the directory containing this file.
+ 
+c) In the same directory as this file, write a summary of each model's performance to `model_performance.csv`, 
+with the column names `model_name`, `number_of_completed_instances`, and `number_of_resolved_instances`. 
+Note that a instance might be 'completed' (i.e. the agent submitted a patch) but not 'resolved' 
+(i.e. the patch does not fix the bug described by the issue).
 
-c) Write a simple script to `best_model.sh`,
-which runs the best-performing model on the SWE-bench_Lite benchmark
+d) In the same directory as this file, write a simple script to `best_model.sh`, 
+which runs the agent using the best-performing model on the SWE-bench_Lite benchmark, 
+according to the command given above.
 
-d) Finally, write the string 'finished' to `submission.txt`
+e) Finally, write the string 'finished' to a new file in the same directory as this file,
+named `submission.txt`
 
 Good luck!
 
