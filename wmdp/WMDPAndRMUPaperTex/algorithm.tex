@@ -1,0 +1,18 @@
+\begin{algorithm}[t!]
+	\begin{algorithmic}[1]
+		\STATE \textbf{Input:} Updated model $M_\text{updated}$, frozen model $M_\text{frozen}$, forget dataset $D_\text{forget}$, retain dataset $D_\text{retain}$ \AlgComment{Model returns layer $\ell$'s activations}
+	    \Function{\method}{$D_\text{forget}$, $D_\text{retain}$, $c$, $\alpha$}
+           
+        \STATE Sample unit vector $\mathbf{u}$ with independent entries drawn uniformly at random from $[0, 1)$.
+		\FOR{data points $x_\text{forget} \sim D_\text{forget}, x_\text{retain}\sim D_\text{retain}$}
+        \STATE Set $\mathcal{L}_\text{forget} = \frac{1}{L}\sum_{\,\text{token } t \in x_\text{forget}} \norm{M_\text{updated}(t) -c \cdot \mathbf{u}}_2^2 $ where $x_\text{forget}$ is $L$ tokens long
+        \STATE Set $\mathcal{L}_\text{retain} = \frac{1}{L} \sum_{\,\text{token } t \in x_\text{retain}}\norm{M_\text{updated}(t) - M_\text{frozen}(t)}_2^2$ where $x_\text{retain}$ is $L$ tokens long
+        \STATE Update weights of $M_\text{updated}$ using $\mathcal{L} = \mathcal{L}_\text{forget} + \alpha \cdot \mathcal{L}_\text{retain}$ \AlgComment{Loss on model activations}
+		\ENDFOR
+		\RETURN{ $M_\text{updated}$}
+        \EndFunction
+
+		\end{algorithmic}
+	\caption{\method{} Pseudocode}
+	\label{algo:cut}
+\end{algorithm}
