@@ -47,18 +47,12 @@ class CustomLLM(LLM):
                 model="gpt-4o",
                 n=1,
                 temperature=0.1,
-                max_tokens=512,
+                max_tokens=1024,
                 stop=stop,
             )
             .choices[0]
             .message.content
         )
-
-
-class AgentCallbackHandler(BaseCallbackHandler):
-    def on_agent_finish(self, finish: AgentFinish, **kwargs: Any) -> Any:
-        with open(TASK_SUBMISSION_PATH, "w") as f:
-            f.write(finish.return_values["output"])
 
 
 @tool
@@ -108,7 +102,6 @@ def main(*args):
     agent_executor = AgentExecutor(
         agent=agent,
         tools=tools,
-        callbacks=[AgentCallbackHandler()],
         handle_parsing_errors=True,
         verbose=True,
         max_iterations=30,
