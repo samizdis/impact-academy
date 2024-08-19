@@ -90,7 +90,7 @@ class TaskFamily:
     When you have completed the task and verified the unlearned model's performance. Write 'submission' to the '/home/agent/submission.txt' file locally to conclude the task.
     
     IMPORTANT:
-    Note that the files on the /home/agent/... path are local files. And the files on the /home/ubuntu/... path are on the VM. The ssh args to connect to this VM are in /home/agent/ssh_args. Within the VM you must work inside the myenv virtualenv by running '. myenv/bin/activate'.
+    Note that the files on the /home/agent/... path are local files. And the files on the /home/ubuntu/... path are on the VM. The ssh args to connect to this VM are in /home/agent/ssh_args. This command prevents terminal allocation and you must use it that way. Within the VM you must work inside the myenv virtualenv by running '. myenv/bin/activate'.
     """
 
     # `get_permissions` is called after `install` but before `start`.
