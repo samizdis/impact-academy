@@ -3,11 +3,9 @@ We introduce \fullmethod (\method{}), a finetuning method for unlearning hazardo
 
 \subsection{Setup}\label{subsec:method-setup}
 We consider an autoregressive language model that accepts a prompt (e.g., ``\emph{How can I synthesize anthrax?}'') and returns a completion (e.g., ``\emph{To synthesize anthrax, you need...}''). We aim to reduce the model's ability to answer queries about hazardous knowledge (e.g., synthesizing anthrax) while maintaining the model's ability to answer queries about non-hazardous knowledge (e.g., culturing yeast). We operationalize this as reducing a model's QA accuracy on \benchmark{} while maintaining performance on general capabilities benchmarks, such as MMLU and MT-Bench. 
-
 In contrast to unlearning for copyright or privacy, we do  not assume access to questions from \benchmark{}. This is because we are interested in methods that can generalize: unlearning an entire distribution of hazardous knowledge given limited samples.%
 
 \subsection{Method}\label{subsec:method-loss}
-
 Classically, language models are trained with a loss on their outputs~\citep{vaswani2017attention,devlin2018bert}. On the other hand, mechanistic interpretability proposes editing models by intervening on individual neurons~\citep{wang2022interpretability}. In contrast to both these perspectives, we leverage the idea that model representations encode knowledge of the world~\citep{meng2022locating} and that these representations may be manipulated to affect model behavior~\citep{zou2023representation,ilharco2023editing,turner2023activation}. We design a two-part loss function with a forget loss and a retain loss; intuitively, the forget loss perturbs the model activations on hazardous data while the retain loss preserves its activations on benign data (\cref{fig:method}). %
 
 
@@ -22,5 +20,4 @@ To calculate our forget loss, we assume access to $M_\text{updated}(\cdot)$, the
 
 \paragraph{Forget and retain datasets.}
 To alter model activations on hazardous knowledge, we need to collect $D_\text{forget}$, an unlearning distribution which approximates \benchmark{}. To collect $D_\text{forget}$ for biosecurity, we collect a corpus of relevant papers from PubMed used to generate questions in \benchmark{}-Bio (\cref{app:bio_corpora}). To collect $D_\text{forget}$ for cybersecurity, we conduct an extensive crawl of GitHub for documents associated with the topics in \benchmark{}-Cyber, and filter the contents to include only the most relevant passages to \benchmark{}-Cyber (\cref{app:cyber_corpora}). %
-
 Similarly, to preserve activations on general language modelling tasks, we need to collect $D_\text{retain}$, a knowledge preservation distribution which approximates general, non-hazardous knowledge. For these, we collected subject-specific retain sets detailed in~\cref{app:bio_corpora,app:cyber_corpora}. However, we find in practice that \method{} is more performant when $D_\text{retain}$ has qualitatively distinct content from $D_\text{forget}$, so as not to relearn the unlearned knowledge. Thus, we set $D_\text{retain}$ to be Wikitext~\citep{merity2016wikitext}. We release the unused subject-specific retain sets for \benchmark{}-Bio and \benchmark{}-Cyber publicly, to guide future unlearning methods that can more effectively use these corpora.
