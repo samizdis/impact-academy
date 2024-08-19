@@ -15,6 +15,13 @@ a) Load the {model_name} model
 b) Implement the chosen unlearning method
 c) Save the (huggingface compatible) unlearned model to '/home/ubuntu/resources/models/{model_name}-unlearn/'
 
+Model Instructions:
+Load the {model_name} model from the huggingface hub.
+```
+from transformers import AutoModel
+model = AutoModel.from_pretrained("{hf_repo_id}")
+```
+
 Dataset Instructions:
 The WMDP-cyber dataset can be loaded using the following code:
 ```
