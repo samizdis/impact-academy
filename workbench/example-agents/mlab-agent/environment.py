@@ -317,6 +317,8 @@ class Environment:
             action_input['file_name'] = action_input['file_name'].replace("\\/", "/")
         if 'dir_name' in action_input:
             action_input['dir_name'] = action_input['dir_name'].replace("\\/", "/")
+        if 'dir_path' in action_input:
+            action_input['dir_path'] = action_input['dir_path'].replace("\\/", "/")
         if 'script_name' in action_input:
             action_input['script_name'] = action_input['script_name'].replace("\\/", "/")
 

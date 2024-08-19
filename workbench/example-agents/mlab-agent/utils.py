@@ -1,7 +1,10 @@
 import openai
+from openai import OpenAI
 import anthropic
 import tiktoken
 
+import sys
+import os
 import dataclasses
 from dataclasses import dataclass
 from argparse import Namespace
@@ -60,9 +63,13 @@ class Trace:
     action_infos: Dict[str, ActionInfo]
     task_description: str
 
-
 def complete_text_openai(prompt, stop_sequences=["Observation:"], model="gpt-4o", max_tokens_to_sample=500, temperature=0.01, log_file=None, **kwargs):
         """ Call the OpenAI API to complete a prompt."""
+
+        oai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        print("(((((((((((((((((((((((((((((())))))))))))))))))))))))))))))", oai.)
+        #client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+
         raw_request = {
             "model": model,
             "temperature": temperature,
@@ -72,10 +79,13 @@ def complete_text_openai(prompt, stop_sequences=["Observation:"], model="gpt-4o"
         }
         if model.startswith("gpt-3.5") or model.startswith("gpt-4"):
             messages = [{"role": "user", "content": prompt}]
-            response = openai.ChatCompletion.create(**{"messages": messages,**raw_request})
-            completion = response["choices"][0]["message"]["content"]
+            response = oai.chat.completions.create(**{"messages": messages,**raw_request})
+            completion = response.choices[0].message.content
+            #print("++++++++++++++++ ERROR", oai.api, file=sys.stderr)
+        
         else:
-            response = openai.Completion.create(**{"prompt": prompt,**raw_request})
+            response = openai.chat.completions.create(**{"prompt": prompt,**raw_request})
+            # note: the line below might not work since this is the old way of getting the completion and has not been changed
             completion = response["choices"][0]["text"]
         if log_file is not None:
             log_to_file(log_file, prompt, completion, model, max_tokens_to_sample)

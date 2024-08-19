@@ -5,15 +5,16 @@ import argparse
 import logging
 
 from dotenv import load_dotenv
+from openai import OpenAI
 import openai
 import anthropic
 from agent import Agent
-from utils import Action, complete_text_openai
+from utils import Action, log_to_file, complete_text_openai
 from environment import Environment
 
 load_dotenv()
 
-logging.basicConfig(level=logging.INFO)
+#logging.basicConfig(level=logging.INFO)
 MODEL = "gpt-4o" # TODO: change this later to a more capable LLM
 
 initial_prompt = """You are a helpful research assistant. You have access to the following tools:
@@ -51,6 +52,8 @@ format_prompt_dict = {
     "Action": "the action to take, should be one of the names of the tools",
     "Action Input": "the input to the action as a valid JSON string",
 }
+
+#client = OpenAI(api_key=os.environ['OPENAI_API_KEY'],)
 
 
 class ResearchAgent(Agent):
@@ -352,7 +355,7 @@ def main():
         print("Research problem: ", instructions, file=sys.stderr)
         print("Lower level actions enabled: ", [action.name for action in env.low_level_actions], file=sys.stderr)
         print("High level actions enabled: ", [action.name for action in env.high_level_actions], file=sys.stderr)
-        print("Read only files: ", env.read_only_files, file=sys.stderr)
+        #print("Read only files: ", env.read_only_files, file=sys.stderr)
         print("=====================================")  
 
         agent = ResearchAgent(args, env=env)
