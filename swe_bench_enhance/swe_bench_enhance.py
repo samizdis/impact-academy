@@ -7,7 +7,7 @@ from variants import Task, task_variants
 import logging
 import aux_vm_access
 
-from .instructions import instances_to_include_in_filtering
+from instructions import instances_to_include_in_filtering
 
 
 logging.basicConfig(filename="/home/agent/logfile.log",
