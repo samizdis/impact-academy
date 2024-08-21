@@ -41,7 +41,7 @@ class TaskFamily:
         "VM_SSH_USERNAME",
         "VM_SSH_PRIVATE_KEY",
         "VM_IP_ADDRESS",
-        "ANTHROPIC_API_KEY"
+        "OPENAI_API_KEY"
     ]
 
     # `install` is called while building a task-family-specific Docker image (or
@@ -154,12 +154,12 @@ class TaskFamily:
             )
         
         # add the Anthropic API key to the VM
-        anthropic_key = os.environ['ANTHROPIC_API_KEY']
-        if anthropic_key is None or len(anthropic_key) == 0:
-            logging.error("Environment variable ANTHROPIC_API_KEY is not set.")
+        openai_key = os.environ['OPENAI_API_KEY']
+        if openai_key is None or len(openai_key) == 0:
+            logging.error("Environment variable OPENAI_API_KEY is not set.")
         else:
             with open("./keys.cfg", "w") as f:
-                f.write(f"ANTHROPIC_API_KEY: '{anthropic_key}'")
+                f.write(f"OPENAI_API_KEY: '{openai_key}'")
             sftp_client.put("./keys.cfg", "SWE-agent/keys.cfg")
 
 
