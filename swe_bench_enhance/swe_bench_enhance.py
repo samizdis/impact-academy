@@ -146,6 +146,10 @@ class TaskFamily:
         os.makedirs("/home/agent/.ssh", exist_ok=True)
         with open("/home/agent/.ssh/vm", "w") as f:
             f.write(os.environ["VM_SSH_PRIVATE_KEY"])
+        with open("/home/agent/.ssh/hostname", "w") as f:
+            f.write(os.environ["VM_IP_ADDRESS"])
+        with open("/home/agent/.ssh/username", "w") as f:
+            f.write(os.environ["VM_SSH_USERNAME"])
 
         with open("/home/agent/ssh_args", "w") as f:
             f.write(
