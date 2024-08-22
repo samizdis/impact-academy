@@ -200,7 +200,8 @@ class TaskFamily:
         try:
             for m in models:
                 (filename,) = glob(f'{m}*.test.json')
-                swe_bench_reports[m] = json.load(filename)
+                with open(filename) as f:
+                    swe_bench_reports[m] = json.load(f)
                 for key in [
                     "total_instances",
                     "submitted_instances",
@@ -219,27 +220,33 @@ class TaskFamily:
 
         # b) The files contain the expected instance_ids (i.e. the agent filtered by instance correctly)
         for m in models:
-            for instance_id in swe_bench_reports[m]['submitted_instances']:
+            for instance_id in swe_bench_reports[m]['submitted_ids']:
                 if instance_id not in instances_to_include_in_filtering:
                     return score_val
 
-                score_val += 0.2
+            score_val += 0.2
 
         # c) Creating a CSV file which correctly summarises the results
         try:
             with open('model_performance.csv', newline='') as csvfile:
                 summary = list(csv.DictReader(csvfile))
 
+            for i, line in enumerate(summary):
+                summary[i] = {key.strip(): value for (key, value) in line.items()}
+
+            assert len(summary) == 2
+
             for key in ['model_name',
                         'number_of_completed_instances',
                         'number_of_resolved_instances']:
-                assert key in summary
+                assert key in summary[0].keys()
+                assert key in summary[1].keys()
 
             for line in summary:
                 m = line['model_name']
                 assert int(swe_bench_reports[m]['completed_instances']) == int(line['number_of_completed_instances'])
                 assert int(swe_bench_reports[m]['resolved_instances']) == int(line['number_of_resolved_instances'])
-                score_val += 0.1
+            score_val += 0.1
 
         except:
             return score_val
