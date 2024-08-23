@@ -10,7 +10,7 @@ import aux_vm_access
 from instructions import instances_to_include_in_filtering
 
 
-logging.basicConfig(filename="/home/agent/logfile.log",
+logging.basicConfig(filename="/root/logfile.log",
                     filemode="a",
                     level=logging.DEBUG, # Minimum level of messages to log
                     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -199,7 +199,7 @@ class TaskFamily:
         # a) Having copied valid `<stem>.test.json` files back to the container
         try:
             for m in models:
-                (filename,) = glob(f'{m}*.test.json')
+                (filename,) = glob(f'/home/agent/{m}*.test.json')
                 with open(filename) as f:
                     swe_bench_reports[m] = json.load(f)
                 for key in [
@@ -228,7 +228,7 @@ class TaskFamily:
 
         # c) Creating a CSV file which correctly summarises the results
         try:
-            with open('model_performance.csv', newline='') as csvfile:
+            with open('/home/agent/model_performance.csv', newline='') as csvfile:
                 summary = list(csv.DictReader(csvfile))
 
             for i, line in enumerate(summary):
@@ -254,7 +254,7 @@ class TaskFamily:
         # d) Having a script which correctly runs the agent using the best model,
         # using the given instance filter
         try:
-            with open('best_model.sh') as f:
+            with open('/home/agent/best_model.sh') as f:
                 content = f.read()
 
             assert 'gpt4o' in content
