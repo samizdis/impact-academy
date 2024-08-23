@@ -67,7 +67,6 @@ def complete_text_openai(prompt, stop_sequences=["Observation:"], model="gpt-4o"
         """ Call the OpenAI API to complete a prompt."""
 
         oai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        print("(((((((((((((((((((((((((((((())))))))))))))))))))))))))))))", oai.)
         #client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
         raw_request = {
@@ -81,7 +80,6 @@ def complete_text_openai(prompt, stop_sequences=["Observation:"], model="gpt-4o"
             messages = [{"role": "user", "content": prompt}]
             response = oai.chat.completions.create(**{"messages": messages,**raw_request})
             completion = response.choices[0].message.content
-            #print("++++++++++++++++ ERROR", oai.api, file=sys.stderr)
         
         else:
             response = openai.chat.completions.create(**{"prompt": prompt,**raw_request})
