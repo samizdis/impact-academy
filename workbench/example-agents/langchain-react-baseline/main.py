@@ -4,16 +4,19 @@ from typing import Any, List
 from langchain.agents import AgentExecutor, create_react_agent
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain_core.agents import AgentFinish
-from langchain_core.callbacks import CallbackManagerForLLMRun
+from langchain_core.callbacks import CallbackManagerForLLMRun, FileCallbackHandler
 from langchain_core.language_models import LLM
 from langchain.tools import tool
 from openai import OpenAI
+import sys
+#import os
 
 from commands import _run_python, _run_bash
 from templates import hwchase17_react_prompt
 
 TASK_INSTRUCTIONS_PATH = "/home/agent/instructions.txt"
 TASK_SUBMISSION_PATH = "/home/agent/submission.txt"
+LOGGING_PATH = "/home/agent/logs.log"
 
 openai_client = OpenAI()
 
@@ -75,7 +78,7 @@ def get_task():
 
 
 def main(*args):
-    print("STARTING AGENT")
+    print("STARTING AGENT", file=sys.stderr)
     task_string = get_task()
     print("Task:", task_string)
 
@@ -87,10 +90,10 @@ def main(*args):
     agent_executor = AgentExecutor(
         agent=agent,
         tools=tools,
-        callbacks=[AgentCallbackHandler()],
+        callbacks=[AgentCallbackHandler(), FileCallbackHandler(LOGGING_PATH)],
         handle_parsing_errors=True,
         verbose=True,
-        max_iterations=20,
+        max_iterations=50,
     )
 
     agent_executor.invoke({"input": task_string})
