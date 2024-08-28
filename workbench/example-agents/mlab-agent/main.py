@@ -367,4 +367,8 @@ def main():
 
 
 if __name__ == "__main__":
+    import time
+    start = time.time()
     main()
+    end = time.time()
+    print(f"Time taken in minutes: {(end - start) / 60}")
