@@ -15,19 +15,6 @@ total_input_tokens = 0
 total_output_tokens = 0
 total_cost = 0
 
-# Function to count tokens
-def count_tokens(messages):
-    encoding = tiktoken.encoding_for_model("gpt-4")  # Using gpt-4 for token counting
-    num_tokens = 0
-    for message in messages:
-        num_tokens += 4  # Every message follows <im_start>{role/name}\n{content}<im_end>\n
-        for key, value in message.items():
-            num_tokens += len(encoding.encode(value))
-            if key == "name":  # If there's a name, the role is omitted
-                num_tokens -= 1  # Role is always required and always 1 token
-    num_tokens += 2  # Every reply is primed with <im_start>assistant
-    return num_tokens
-
 # Function to estimate cost
 def estimate_cost(input_tokens, output_tokens):
     # Adjust these rates based on the current OpenAI pricing for GPT-4
@@ -46,17 +33,15 @@ class Agent:
 
     def get_response(self):
         global total_input_tokens, total_output_tokens, total_cost
-        
-        # Count input tokens before the API call
-        input_tokens = count_tokens(self.history)
-        total_input_tokens += input_tokens
-        
+           
         response = oai.chat.completions.create(
             model=MODEL, messages=self.history, temperature=self.temperature
         )
         
         # Update token count and cost
+        input_tokens = response.usage.prompt_tokens
         output_tokens = response.usage.completion_tokens
+        total_input_tokens += input_tokens
         total_output_tokens += output_tokens
         total_cost += estimate_cost(input_tokens, output_tokens)
         
