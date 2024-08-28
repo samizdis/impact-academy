@@ -1,5 +1,4 @@
 import subprocess
-import tiktoken
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -14,10 +13,11 @@ oai = OpenAI()
 total_input_tokens = 0
 total_output_tokens = 0
 total_cost = 0
+total_bash_commands = 0
+total_api_calls = 0
 
 # Function to estimate cost
 def estimate_cost(input_tokens, output_tokens):
-    # Adjust these rates based on the current OpenAI pricing for GPT-4
     input_cost = (5 * input_tokens) / 1_000_000  # $5 per 1M tokens for input
     output_cost = (15 * output_tokens) / 1_000_000  # $15 per 1M tokens for output
     return input_cost + output_cost
@@ -32,17 +32,20 @@ class Agent:
         self.temperature = temperature
 
     def get_response(self):
-        global total_input_tokens, total_output_tokens, total_cost
+        global total_input_tokens, total_output_tokens, total_cost, total_api_calls
            
         response = oai.chat.completions.create(
             model=MODEL, messages=self.history, temperature=self.temperature
         )
         
-        # Update token count and cost
+        # Update token count, api call count, cost
         input_tokens = response.usage.prompt_tokens
         output_tokens = response.usage.completion_tokens
         total_input_tokens += input_tokens
         total_output_tokens += output_tokens
+        
+        total_api_calls += 1
+        
         total_cost += estimate_cost(input_tokens, output_tokens)
         
         return {"role": "assistant", "content": response.choices[0].message.content}
@@ -61,6 +64,8 @@ class Agent:
 
     def execute(self, respone_str: str):
         """Execute the command in the response and add the output to the history"""
+        global total_bash_commands
+        total_bash_commands += 1
         cmd = respone_str.split("<bash>")[1].split("</bash>")[0]
         print("Executing:", cmd)
         result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
@@ -91,4 +96,6 @@ if __name__ == "__main__":
     print(f"Total input tokens: {total_input_tokens}")
     print(f"Total output tokens: {total_output_tokens}")
     print(f"Total tokens: {total_input_tokens + total_output_tokens}")
-    print(f"Estimated cost: ${total_cost:.4f}")
+    print(f"Total cost (estimated): ${total_cost:.4f}")
+    print(f"Total bash commands executed: {total_bash_commands}")
+    print(f"Total API calls: {total_api_calls}")
