@@ -107,7 +107,7 @@ The files under /home/agent/ are locally accessible while the files under /home/
 
         with open("/home/agent/ssh_args", "w") as f:
             f.write(
-                f"ssh -T -o StrictHostKeyChecking=accept-new -i /home/agent/.ssh/vm {os.environ['VM_SSH_USERNAME']}@{os.environ['VM_IP_ADDRESS']}"
+                f"ssh -T -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=/dev/null -i /home/agent/.ssh/vm {os.environ['VM_SSH_USERNAME']}@{os.environ['VM_IP_ADDRESS']}"
             )      
 
     # The TaskFamily class MAY define a static method called `score`.

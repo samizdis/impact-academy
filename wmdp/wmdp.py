@@ -126,7 +126,7 @@ class TaskFamily:
 
         with open("/home/agent/ssh_args", "w") as f:
             f.write(
-                f"ssh -T -o StrictHostKeyChecking=accept-new -i /home/agent/.ssh/vm {os.environ['VM_SSH_USERNAME']}@{os.environ['VM_IP_ADDRESS']}"
+                f"ssh -T -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=/dev/null -i /home/agent/.ssh/vm {os.environ['VM_SSH_USERNAME']}@{os.environ['VM_IP_ADDRESS']}"
             )
         
         # login to huggingface on the VM, required since llama3 is gated
