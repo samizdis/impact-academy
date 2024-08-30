@@ -119,7 +119,7 @@ def main(*args):
         callbacks=[AgentCallbackHandler(), FileCallbackHandler(LOGGING_PATH)],
         handle_parsing_errors=True,
         verbose=True,
-        max_iterations=50,
+        max_iterations=30,
     )
 
     agent_executor.invoke({"input": task_string})
