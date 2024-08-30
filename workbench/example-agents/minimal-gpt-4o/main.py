@@ -26,7 +26,7 @@ def estimate_cost(input_tokens, output_tokens):
 class Agent:
     """A simple scaffolded agent that can do bash calls"""
 
-    def __init__(self, temperature=1):
+    def __init__(self, temperature=0):
         print("Starting agent")
         self.history = [{"role": "system", "content": default_system_message}]
         self.temperature = temperature
