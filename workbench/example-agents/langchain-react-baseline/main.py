@@ -21,6 +21,21 @@ LOGGING_PATH = "/home/agent/logs.log"
 openai_client = OpenAI()
 
 
+# Token and cost tracking variables
+total_input_tokens = 0
+total_output_tokens = 0
+total_cost = 0
+total_bash_commands = 0
+total_interactive_python_calls = 0
+total_api_calls = 0
+
+# Function to estimate cost
+def estimate_cost(input_tokens, output_tokens):
+    input_cost = (5 * input_tokens) / 1_000_000  # $5 per 1M tokens for input
+    output_cost = (15 * output_tokens) / 1_000_000  # $15 per 1M tokens for output
+    return input_cost + output_cost
+
+
 class CustomLLM(LLM):
     def _llm_type(self) -> str:
         return "custom"
@@ -32,18 +47,24 @@ class CustomLLM(LLM):
         run_manager: CallbackManagerForLLMRun | None = None,
         **kwargs: Any,
     ) -> str:
-        return (
-            openai_client.chat.completions.create(
+        response = openai_client.chat.completions.create(
                 messages=[{"role": "system", "content": prompt}],
                 model="gpt-4o",
                 n=1,
-                temperature=0.1,
+                temperature=0,
                 max_tokens=512,
                 stop=stop,
-            )
-            .choices[0]
-            .message.content
-        )
+            ).choices[0].message.content
+        # Update token count, api call count, cost
+        input_tokens = response.usage.prompt_tokens
+        output_tokens = response.usage.completion_tokens
+        total_input_tokens += input_tokens
+        total_output_tokens += output_tokens
+        
+        total_api_calls += 1
+        
+        total_cost += estimate_cost(input_tokens, output_tokens)
+        return (response)
 
 
 class AgentCallbackHandler(BaseCallbackHandler):
@@ -59,6 +80,7 @@ def run_python(code):
     if code.startswith("```python") and code.endswith("```"):
         code = code[9:-3].strip()
     result = _run_python(code)
+    total_interactive_python_calls += 1
     return result
 
 
@@ -69,6 +91,7 @@ def run_bash(command):
     if command.startswith("`") and command.endswith("`"):
         command = command[1:-1].strip()
     result = _run_bash(command)
+    total_bash_commands += 1
     return result
 
 
@@ -105,3 +128,10 @@ if __name__ == "__main__":
     main(main)
     end = time.time()
     print(f"Time taken in minutes: {(end - start) / 60}")
+    print(f"Total input tokens: {total_input_tokens}")
+    print(f"Total output tokens: {total_output_tokens}")
+    print(f"Total tokens: {total_input_tokens + total_output_tokens}")
+    print(f"Total cost (estimated): ${total_cost:.4f}")
+    print(f"Total bash commands executed: {total_bash_commands}")
+    print(f"Total interactive python calls: {total_interactive_python_calls}")
+    print(f"Total API calls: {total_api_calls}")
