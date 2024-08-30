@@ -88,8 +88,8 @@ class TaskFamily:
                         "python3 -m virtualenv myenv",
                         ". myenv/bin/activate",
                         "python3 -m pip install huggingface_hub torch transformers datasets lm-eval==0.4.3 sentencepiece protobuf accelerate packaging ninja",
-                        "python3 -m pip install flash-attn --no-build-isolation"
-                        
+                        "python3 -m pip install flash-attn --no-build-isolation",
+                        "sudo chmod -x /etc/update-motd.d/*" # disable dynamic motd scripts that cause long welcome messages, updates available etc
                     ]
                 },
                 {
@@ -130,7 +130,7 @@ class TaskFamily:
             )
         
         # login to huggingface on the VM, required since llama3 is gated
-        hf_token = os.environ['HF_TOKEN']
+        hf_token = os.environ['HF_TOKEN'].strip()
         if hf_token is None or len(hf_token) == 0:
             logging.error("Environment variable HF_TOKEN is not set. Please set it to your huggingface token.")
         else:
