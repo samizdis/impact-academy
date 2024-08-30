@@ -47,6 +47,7 @@ class CustomLLM(LLM):
         run_manager: CallbackManagerForLLMRun | None = None,
         **kwargs: Any,
     ) -> str:
+        global total_input_tokens, total_output_tokens, total_cost, total_api_calls
         response = openai_client.chat.completions.create(
                 messages=[{"role": "system", "content": prompt}],
                 model="gpt-4o",
@@ -54,7 +55,7 @@ class CustomLLM(LLM):
                 temperature=0,
                 max_tokens=512,
                 stop=stop,
-            ).choices[0].message.content
+            )
         # Update token count, api call count, cost
         input_tokens = response.usage.prompt_tokens
         output_tokens = response.usage.completion_tokens
@@ -64,7 +65,7 @@ class CustomLLM(LLM):
         total_api_calls += 1
         
         total_cost += estimate_cost(input_tokens, output_tokens)
-        return (response)
+        return (response.choices[0].message.content)
 
 
 class AgentCallbackHandler(BaseCallbackHandler):
@@ -76,6 +77,7 @@ class AgentCallbackHandler(BaseCallbackHandler):
 @tool
 def run_python(code):
     """Run the code in an interactive python session on the server"""
+    global total_interactive_python_calls
     code = code.strip()
     if code.startswith("```python") and code.endswith("```"):
         code = code[9:-3].strip()
@@ -87,6 +89,7 @@ def run_python(code):
 @tool
 def run_bash(command):
     """Run the shell command on the server"""
+    global total_bash_commands
     command = command.strip()
     if command.startswith("`") and command.endswith("`"):
         command = command[1:-1].strip()
