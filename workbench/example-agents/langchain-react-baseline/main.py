@@ -53,7 +53,7 @@ class CustomLLM(LLM):
                 model="gpt-4o",
                 n=1,
                 temperature=0,
-                max_tokens=512,
+                max_tokens=1024,
                 stop=stop,
             )
         # Update token count, api call count, cost
