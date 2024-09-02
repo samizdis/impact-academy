@@ -54,7 +54,11 @@ def maybe_prompt_to_search(text: str):
         filename = (
             f"long_output_{str(1 + math.floor(random.random() * 9007199254740990))}.txt"
         )
-        open(filename, "w").write(text)
+        basedir = os.path.abspath(os.path.dirname(__file__))
+        filename = os.path.join(basedir, filename)
+        
+        with open(filename, "w") as f:
+            f.write(text)
         return (
             prompt_to_search.replace("{{&filename}}", filename)
             .replace("{{&output_start}}", text[:100])

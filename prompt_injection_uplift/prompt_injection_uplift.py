@@ -94,7 +94,7 @@ class TaskFamily:
         # Change this number to change the percentage of prompts reserved for
         # uplift task scoring
         HOLDOUT_PERCENTAGE = 20
-        UPLIFT_PERCENTAGE = 20
+        UPLIFT_PERCENTAGE = 80
 
         with open("data/prompt_injection/prompt_injection.json", "r") as f:
             prompts = json.load(f)
@@ -106,18 +106,17 @@ class TaskFamily:
 
         run_command(f"mkdir -p /home/agent/resources")
         run_command(f"mkdir -p /home/agent/resources/prompt_injection/runs")
-        run_command(f"mkdir -p /root/utils")
-        run_command(f"mkdir -p /root/prompt_injection")
-        run_command(f"mkdir -p /root/utils/prompt_injection/runs")
+        # run_command(f"mkdir -p /root/prompt_injection")
+        run_command(f"mkdir -p /root/evaluation/runs")
 
-        with open("/root/utils/prompt_injection_holdout.json", "w") as f:
+        with open("/root/evaluation/prompt_injection_holdout.json", "w") as f:
             json.dump(holdout_prompts, f, indent=4)
         with open("/home/agent/resources/uplift_evaluation_dataset.json", "w") as f:
             json.dump(uplift_evaluation_prompts, f, indent=4)
 
         run_command(f"cp -a ./resources/. /home/agent/resources/")
         run_command(
-            f"cp ./resources/main.py /root/utils/main.py"
+            f"cp ./resources/main.py /root/evaluation/main.py"
         )  # used to measure baseline
         run_command(f"chmod +x /home/agent/resources/evaluation.py")
         run_command(f"cp ./.env /home/agent/resources/.env")
@@ -234,18 +233,17 @@ class TaskFamily:
         successful, unsuccessful = 0, 0
 
       
-
         if baseline_agent == None:
             # evaluating improved agent
             REFERENCE_AGENT_RESPONSE_PATH = (
-                "/home/agent/resources/prompt_injection/runs/evaluation"
+                "/home/agent/resources/prompt_injection/runs"
             )
             REFERENCE_AGENT_PATH = "/home/agent/resources/main.py"
             # TODO: add a log here
         else:
             # evaluating baseline agent
             REFERENCE_AGENT_RESPONSE_PATH = (
-                "/root/utils/prompt_injection/runs/evaluation"
+                "/root/evaluation/runs"
             )
             REFERENCE_AGENT_PATH = baseline_agent
 
@@ -258,18 +256,20 @@ class TaskFamily:
             risk_category = prompt["risk_category"]
             speaking_language = prompt["speaking_language"]
 
-            command_string = 'python {REFERENCE_AGENT_PATH} \"{model_name}\" \"{test_case_prompt}\" \"{user_input}\" \"{run_id}\" \"{prompt_index}\"'.format(
+            command_string = 'python {REFERENCE_AGENT_PATH} \"{model_name}\" \"{test_case_prompt}\" \"{user_input}\" \"{run_id}\" \"{prompt_index}\"  \"{output_path}\" \"{temperature}\"'.format(
                 REFERENCE_AGENT_PATH=REFERENCE_AGENT_PATH,
                 model_name=model_name,
                 test_case_prompt=test_case_prompt.replace('"', "'"),
                 user_input=user_input.replace('"', "'"),
                 run_id="evaluation",
                 prompt_index=index,
+                output_path=REFERENCE_AGENT_RESPONSE_PATH,
+                temperature=0,
             )
 
             run_command(command_string)
 
-            with open("{REFERENCE_AGENT_RESPONSE_PATH}/model_response_{prompt_index}.txt".format(REFERENCE_AGENT_RESPONSE_PATH=REFERENCE_AGENT_RESPONSE_PATH, prompt_index=index) , "r") as f:
+            with open("{REFERENCE_AGENT_RESPONSE_PATH}/{run_id}/model_response_{prompt_index}.txt".format(REFERENCE_AGENT_RESPONSE_PATH=REFERENCE_AGENT_RESPONSE_PATH, run_id="evaluation", prompt_index=index) , "r") as f:
                 response = f.read()
 
             judge_verdict = TaskFamily.get_judge_verdict(
@@ -386,21 +386,21 @@ class TaskFamily:
             print("Error: evaluation directory already exists in /home/agent. Running in evaluation mode but directory with run_id evaluation already exists.")
             
         try:
-            os.makedirs("/root/prompt_injection/runs/evaluation/", exist_ok=False)
+            os.makedirs("/root/evaluation/runs/evaluation/", exist_ok=False)
         except OSError as e:
             print("Error: evaluation directory already exists in /root. Running in evaluation mode but directory with run_id evaluation already exists.")
 
-        with open("/root/utils/prompt_injection_holdout.json", "r") as f:
+        with open("/root/evaluation/prompt_injection_holdout.json", "r") as f:
             prompts = json.load(f)
         total_test_cases = len(prompts)
 
-        baseline_agent = "/root/utils/main.py"
+        baseline_agent = "/root/evaluation/main.py"
         baseline_agent_exists = TaskFamily.baseline_agent_exists(baseline_agent)
 
         judge_responses, successful, unsuccessful = TaskFamily.run_evaluation(
             prompts, model_name, judge_llm, judge_temperature
         )
-        judge_file_path = "/root/prompt_injection/judge_responses.json"
+        judge_file_path = "/root/evaluation/runs/evaluation/judge_responses.json"
         TaskFamily.write_judge_responses(judge_responses, judge_file_path)
 
         stats = {}
@@ -410,7 +410,7 @@ class TaskFamily:
                     prompts, model_name, judge_llm, judge_temperature, baseline_agent
                 )
             )
-            baseline_judge_file_path = "/root/prompt_injection/baseline_judge_responses.json"
+            baseline_judge_file_path = "/root/evaluation/runs/evaluation/baseline_judge_responses.json"
 
             TaskFamily.write_judge_responses(
                 baseline_judge_responses, baseline_judge_file_path
@@ -428,7 +428,7 @@ class TaskFamily:
             stats = TaskFamily.compute_stats(
                 model_name, successful, unsuccessful, total_test_cases
             )
-        stats_file_path = "/root/prompt_injection/stats.json"
+        stats_file_path = "/root/evaluation/runs/evaluation/stats.json"
 
         TaskFamily.write_stats(stats, stats_file_path)
 

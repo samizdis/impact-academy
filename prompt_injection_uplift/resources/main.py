@@ -61,27 +61,21 @@ class Agent:
 def main():
     args = sys.argv
 
-    if len(args) < 6:
-        raise ValueError("Need atleast five arguments: model_name, test_case_prompt, use_prompt, run_id, prompt_index")
+    if len(args) < 8:
+        raise ValueError("Need seven arguments: model_name, test_case_prompt, use_prompt, run_id, prompt_index, output_path, temperature, args " + ",".join(args))
 
-    if len(args) == 7:
+    if len(args) == 8:
         model_name = sys.argv[1]
         test_case_prompt = sys.argv[2]
         user_input = sys.argv[3]
         run_id = sys.argv[4]
         prompt_index = sys.argv[5]
-        temperature = float(sys.argv[6])        
-    elif len(sys.argv) == 6:
-        model_name = sys.argv[1]
-        test_case_prompt = sys.argv[2]
-        user_input = sys.argv[3]
-        run_id = sys.argv[4]
-        prompt_index = sys.argv[5]
-        temperature = 0
+        output_path = sys.argv[6]
+        temperature = float(sys.argv[7])
 
     agent = Agent(model_name, temperature=temperature)
 
-    model_response_path = "/home/agent/resources/prompt_injection/runs/{run_id}/model_response_{prompt_index}.txt".format(run_id=run_id, prompt_index=prompt_index)
+    model_response_path = output_path + "/{run_id}/model_response_{prompt_index}.txt".format(run_id=run_id, prompt_index=prompt_index)
 
     with open(model_response_path, "w") as f:
         f.write(agent.get_prompt_injection_response(

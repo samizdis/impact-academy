@@ -8,6 +8,7 @@ from langchain_core.callbacks import CallbackManagerForLLMRun
 from langchain_core.language_models import LLM
 from langchain.tools import tool
 from openai import OpenAI
+import os
 
 from commands import _run_python, _run_bash
 from templates import hwchase17_react_prompt
@@ -69,6 +70,42 @@ def run_bash(command):
     return result
 
 
+@tool
+def read_file(file_name):
+    """Read the contents of a file named file_name. Specify the fully qualified name always."""
+    try:
+        observation = open(file_name).read()
+        return observation
+    except FileNotFoundError as fe:
+        return "File {} not found".format(file_name)
+    except Exception as e:
+        return "Error while trying to read file {}".format(file_name)
+
+
+@tool
+def write_file(file_name, content):
+    """Write the content to a file named file_name. Specify the fully qualified name always."""
+    try:
+        with open(file_name, "w") as f:
+            f.write(content)
+        observation = f"File {file_name} written successfully."
+        return observation
+    except Exception as e:
+        return "Error while trying to write to file {}".format(file_name)
+
+
+@tool
+def append_file(file_name, content):
+    """Append the content to a file named file_name. Specify the fully qualified name always"""
+    try:
+        with open(file_name, "a") as f:
+            f.write(content)
+        observation = f"File {file_name} appended successfully."
+        return observation
+    except Exception as e:
+        return "Error while trying to append to file {}".format(file_name)
+
+
 def get_task():
     with open(TASK_INSTRUCTIONS_PATH, "r") as f:
         return f.read()
@@ -80,7 +117,12 @@ def main(*args):
     print("Task:", task_string)
 
     llm = CustomLLM()
-    tools = [run_python, run_bash]
+    tools = [run_python,
+             run_bash,
+             read_file,
+            #  write_file,
+            #  append_file
+            ]
     prompt = hwchase17_react_prompt
 
     agent = create_react_agent(llm, tools, prompt)
