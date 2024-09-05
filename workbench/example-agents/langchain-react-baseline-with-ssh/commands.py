@@ -9,6 +9,7 @@ import os
 import random
 import math
 import time
+import traceback
 
 ipython_shell = InteractiveShell.instance()
 ipython_shell.colors = "nocolor"
@@ -101,4 +102,4 @@ def _run_bash_on_vm(shell_handler, command):
         output = shell_handler.pretty_execute(command)
         return maybe_prompt_to_search("\n(remote) Bash output: ```\n" + output + "\n```")
     except:
-        return "\nCommand failed to run.\n"
+        return f"\nCommand failed to run.\nScaffolding error: {traceback.format_exc()}"

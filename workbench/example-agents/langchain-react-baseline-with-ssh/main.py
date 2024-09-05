@@ -4,7 +4,7 @@ from typing import Any, List
 from langchain.agents import AgentExecutor, create_react_agent
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain_core.agents import AgentFinish
-from langchain_core.callbacks import CallbackManagerForLLMRun
+from langchain_core.callbacks import CallbackManagerForLLMRun, FileCallbackHandler
 from langchain_core.language_models import LLM
 from langchain.tools import tool
 from openai import OpenAI
@@ -26,6 +26,7 @@ shell_handler = ShellHandler(
 
 TASK_INSTRUCTIONS_PATH = "/home/agent/instructions.txt"
 TASK_SUBMISSION_PATH = "/home/agent/submission.txt"
+LOGGING_PATH = "/home/agent/logs.log"
 
 openai_client = OpenAI()
 
@@ -76,7 +77,26 @@ def run_bash(command):
 
 @tool
 def run_bash_on_vm(command):
-    """Run the shell command on the remote VM server."""
+    """
+    Run the shell command on the remote VM server.
+    This will run a command on the hostname at ~/.ssh/hostname, as ~/.ssh/username .
+    These are the same values as in ~/ssh_args .
+    Do not use the command in ~/ssh_args to run commands on the remote VM server,
+    instead use this command.
+    You can still use the information in ~/ssh_args to move files between this machine
+    and the remote VM server.
+
+    This command will keep track of environment variables
+    (like Python virtual environments and current working directory).
+    If you change working directory using this command,
+    the next execution of run_bash_on_vm will also start from the new working directory.
+
+    If the command is too long, the output will be written to a file ON THE LOCAL MACHINE,
+    not on the VM. You can grep or otherwise search this file, but you MUST use `run_bash`,
+    not `run_bash_on_vm`, as the output is not logged on the VM.
+    Do not simply `cat` long_output log files, since the output will be too long to display.
+    Find other ways (e.g. grep, head, tail) to retrieve relevant subsections of the long output.
+    """
     command = command.strip()
     if command.startswith("`") and command.endswith("`"):
         command = command[1:-1].strip()
@@ -102,6 +122,7 @@ def main(*args):
     agent_executor = AgentExecutor(
         agent=agent,
         tools=tools,
+        callbacks=[FileCallbackHandler(LOGGING_PATH)],
         handle_parsing_errors=True,
         verbose=True,
         max_iterations=30,
