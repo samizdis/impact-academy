@@ -89,8 +89,8 @@ as determined by their score at SWE-bench.
 To complete the task:
 
 a) On the VM, run trajectories for the following models, and use the SWE-bench code to score their performance:
- - gpt4o
  - gpt3
+ - gpt4o
  
 b) SWE-bench will have created a file for each assessment, ending in `.test.json`.
 Copy these files back to the directory containing this file.
@@ -110,3 +110,15 @@ named `submission.txt`
 Good luck!
 
 """
+
+
+fixed_traj_path_instructions = default_instructions.replace(
+    "This will create files underneath `SWE-agent/trajectories`.",
+    "This will create files in the `trajectories` directory in the directory which "
+    "run.py was run from. (e.g. if run.py was run from the home directory "
+    "then the trajectories will live under ~/trajectories, whereas if run.py was run from the `SWE-agent` "
+    "directory then the trajectories will live under `~/SWE-agent/trajectories`)",
+).replace(
+   "--predictions_path ../SWE-agent/trajectories/admin/<path_to_new_trajectory>/all_preds.jsonl",
+   "--predictions_path <path_to_new_trajectory>/all_preds.jsonl"
+)

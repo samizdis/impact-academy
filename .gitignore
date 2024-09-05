@@ -165,3 +165,4 @@ cython_debug/
 prompt_engineering/assets/mt0-large
 prompt_engineering/assets/raft
 
+.DS_Store
