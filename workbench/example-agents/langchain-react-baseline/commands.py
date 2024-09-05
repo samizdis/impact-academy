@@ -86,7 +86,6 @@ def _run_bash(command):
             ["bash", "-c", full_command],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=300,
         )
         output = sanitize_null_bytes(
             result.stdout.decode("utf-8", "replace")
@@ -94,4 +93,4 @@ def _run_bash(command):
         )
     except subprocess.TimeoutExpired:
         output = "Command timed out."
-    return maybe_prompt_to_search("Bash output: ```\n" + output + "\n```")
+    return maybe_prompt_to_search("\nBash output: ```\n" + output + "\n```")
