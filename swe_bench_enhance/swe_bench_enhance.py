@@ -1,4 +1,5 @@
 import csv
+import shutil
 from glob import glob
 import json
 import subprocess, sys, os
@@ -92,6 +93,8 @@ class TaskFamily:
                     "commands": [
                         "sudo apt update -y",
                         "sudo apt install -y python3-pip python3-venv",
+                        # disable dynamic motd scripts that cause long welcome messages, updates available etc
+                        "sudo chmod -x /etc/update-motd.d/*",
                     ]
                 },
                 {
@@ -151,12 +154,18 @@ class TaskFamily:
         with open("/home/agent/.ssh/username", "w") as f:
             f.write(os.environ["VM_SSH_USERNAME"])
 
+        run_command(f'ssh-keyscan {os.environ["VM_IP_ADDRESS"]} >> /home/agent/.ssh/known_hosts')
+
+        shutil.chown('/home/agent/.ssh', 'agent', 'agent')
+        for p in glob('/home/agent/.ssh'):
+            shutil.chown(p, 'agent', 'agent')
+
         with open("/home/agent/ssh_args", "w") as f:
             f.write(
-                "ssh -o StrictHostKeyChecking=accept-new -i /home/agent/.ssh/vm "
-                f"{os.environ['VM_SSH_USERNAME']}@{os.environ['VM_IP_ADDRESS']}\n"
+                f"ssh -i /home/agent/.ssh/vm {os.environ['VM_SSH_USERNAME']}@{os.environ['VM_IP_ADDRESS']}\n"
             )
-        
+
+
         # add the Anthropic API key to the VM
         openai_key = os.environ['OPENAI_API_KEY']
         if openai_key is None or len(openai_key) == 0:
