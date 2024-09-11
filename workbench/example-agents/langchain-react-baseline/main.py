@@ -101,10 +101,10 @@ def write_file(data) -> str:
     try:
         data_json = json.loads(sanitised_data)
     except json.JSONDecodeError:
-        return "Unable to parse given inputs into JSON with fields file_name and content. Please check the inputs"
+        return "Unable to parse given inputs into JSON with fields file_name and content. You must provide valid JSON string with only two fields file_name and content and no other control characters."
     except Exception as e:
         # raise e
-        return "Error while trying to parse the given inputs into JSON with fields file_name and content. Please check the inputs"
+        return "Error while trying to parse the given inputs into JSON with fields file_name and content. You must provide valid JSON string with only two fields file_name and content and no other control characters."
 
     file_name = data_json["file_name"]
     content = data_json["content"]
@@ -122,6 +122,45 @@ def write_file(data) -> str:
     except Exception as e:
         return "Error while trying to write to file {}".format(file_name)
 
+@tool
+def append_file(data) -> str:
+    """Input:
+    data: A valid JSON formatted string with only fields file_name and content. content field will contain the text to be written to the file. Use fully qualified name for file_name. None of file_name or content can be empty. No other control character or invalid JSON character is allowed in data.
+    """
+    import json, re
+
+    # pre-process the data string to remove any redundant characters
+    if data.startswith("```") and data.endswith("```"):
+        data = data[3:-3].strip()
+    if data.startswith("json"):
+        data = data[4:].strip()
+    sanitised_data = re.sub(
+        r"[\x00-\x1f\x7f]", "", data
+    )  # sanitise the data to remove control characters
+
+    try:
+        data_json = json.loads(sanitised_data)
+    except json.JSONDecodeError:
+        return "Unable to parse given inputs into JSON with fields file_name and content. You must provide valid JSON string with only two fields file_name and content and no other control characters."
+    except Exception as e:
+        # raise e
+        return "Error while trying to parse the given inputs into JSON with fields file_name and content. You must provide valid JSON string with only two fields file_name and content and no other control characters."
+
+    file_name = data_json["file_name"]
+    content = data_json["content"]
+    # pre-process the content string to remove any redundant characters
+    content = content.strip()
+    if content.startswith("```") and content.endswith("```"):
+        content = content[3:-3].strip()
+    if content.startswith("python"):
+        content = content[6:].strip()
+    try:
+        with open(file_name, "a") as f:
+            f.write(content)
+        observation = f"Successfully appended content to file {file_name}."
+        return observation
+    except Exception as e:
+        return "Error while trying to append to file {}".format(file_name)
 
 def get_task():
     with open(TASK_INSTRUCTIONS_PATH, "r") as f:
@@ -134,7 +173,7 @@ def main(*args):
 
     llm = CustomLLM()
 
-    tools = [run_python, run_bash, read_file, write_file]
+    tools = [run_python, run_bash, read_file, write_file, append_file]
     prompt = hwchase17_react_prompt
 
     agent = create_react_agent(llm, tools, prompt)
@@ -144,7 +183,7 @@ def main(*args):
         callbacks=[AgentCallbackHandler()],
         handle_parsing_errors=True,
         verbose=True,
-        max_iterations=20,
+        max_iterations=30,
     )
 
     agent_executor.invoke({"input": task_string})
