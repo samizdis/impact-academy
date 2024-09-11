@@ -1,6 +1,5 @@
 langchain==0.1.*
 ipython
 openai
-langchain_community
 # in the version of this agent used in our experiments, this file did not include
 # openai, but included nest_asyncio

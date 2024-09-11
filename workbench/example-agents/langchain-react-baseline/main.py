@@ -1,5 +1,4 @@
 # Based on https://python.langchain.com/docs/modules/agents/agent_types/react
-from langchain_community.agent_toolkits import FileManagementToolkit
 from typing import Any, List
 
 from langchain.agents import AgentExecutor, create_react_agent
@@ -71,52 +70,57 @@ def run_bash(command):
     return result
 
 
-# @tool
-# def read_file(file_name):
-#     """Read the contents of a file named file_name. Specify the fully qualified name always."""
-#     try:
-#         observation = open(file_name).read()
-#         return observation
-#     except FileNotFoundError as fe:
-#         return "File {} not found".format(file_name)
-#     except Exception as e:
-#         return "Error while trying to read file {}".format(file_name)
+@tool
+def read_file(file_name):
+    """Read the contents of a file named file_name. Specify the fully qualified name always."""
+    try:
+        observation = open(file_name).read()
+        return observation
+    except FileNotFoundError as fe:
+        return "File {} not found".format(file_name)
+    except Exception as e:
+        return "Error while trying to read file {}".format(file_name)
 
 
-# @tool
-# def write_file(file_name: str, content: str) -> str:
-#     """Write the content to a file named file_name. Specify the fully qualified name always.
-#     Content must NOT be enclosed in any tick marks (`). Just write the content without any tick marks."""
-#     content = content.strip()
-#     if content.startswith("```") and content.endswith("```"):
-#         content = content[3:-3].strip()
-#     if content.startswith("python"):
-#         content = content[6:].strip()
-#     try:
-#         with open(file_name, "w") as f:
-#             f.write(content)
-#         observation = f"File {file_name} written successfully."
-#         return observation
-#     except Exception as e:
-#         return "Error while trying to write to file {}".format(file_name)
+@tool
+def write_file(data) -> str:
+    """Input:
+    data: A valid JSON formatted string with only fields file_name and content. content field will contain the text to be written to the file. Use fully qualified name for file_name. None of file_name or content can be empty. No other control character or invalid JSON character is allowed in data.
+    """
+    import json, re
 
+    # pre-process the data string to remove any redundant characters
+    if data.startswith("```") and data.endswith("```"):
+        data = data[3:-3].strip()
+    if data.startswith("json"):
+        data = data[4:].strip()
+    sanitised_data = re.sub(
+        r"[\x00-\x1f\x7f]", "", data
+    )  # sanitise the data to remove control characters
 
-# @tool
-# def append_file(file_name: str, content: str) -> str:
-#     """Append the content to a file named file_name. Specify the fully qualified name always"""
-#     content = content.strip()
-#     if content.startswith("```") and content.endswith("```"):
-#         content = content[3:-3].strip()
-#     if content.startswith("python"):
-#         content = content[6:].strip()
+    try:
+        data_json = json.loads(sanitised_data)
+    except json.JSONDecodeError:
+        return "Unable to parse given inputs into JSON with fields file_name and content. Please check the inputs"
+    except Exception as e:
+        # raise e
+        return "Error while trying to parse the given inputs into JSON with fields file_name and content. Please check the inputs"
 
-#     try:
-#         with open(file_name, "a") as f:
-#             f.write(content)
-#         observation = f"File {file_name} appended successfully."
-#         return observation
-#     except Exception as e:
-#         return "Error while trying to append to file {}".format(file_name)
+    file_name = data_json["file_name"]
+    content = data_json["content"]
+    # pre-process the content string to remove any redundant characters
+    content = content.strip()
+    if content.startswith("```") and content.endswith("```"):
+        content = content[3:-3].strip()
+    if content.startswith("python"):
+        content = content[6:].strip()
+    try:
+        with open(file_name, "w") as f:
+            f.write(content)
+        observation = f"File {file_name} written successfully."
+        return observation
+    except Exception as e:
+        return "Error while trying to write to file {}".format(file_name)
 
 
 def get_task():
@@ -130,9 +134,7 @@ def main(*args):
 
     llm = CustomLLM()
 
-    fs_mgmt_toolkit = FileManagementToolkit()
-
-    tools = [run_python, run_bash, *fs_mgmt_toolkit.get_tools()]
+    tools = [run_python, run_bash, read_file, write_file]
     prompt = hwchase17_react_prompt
 
     agent = create_react_agent(llm, tools, prompt)
