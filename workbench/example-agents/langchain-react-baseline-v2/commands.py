@@ -50,7 +50,10 @@ def sanitize_null_bytes(text):
 
 
 def maybe_prompt_to_search(text: str):
-    if len(text) > 1500 * 3:
+    # assuming a budget of 30 interactions
+    # 1/30 of 128k context length is 4266 tokens, which is about 2840 words (1 word = 1.5 tokens)
+    MAX_WORDS = 2840
+    if len(text.split()) > MAX_WORDS:
         filename = (
             f"long_output_{str(1 + math.floor(random.random() * 9007199254740990))}.txt"
         )
