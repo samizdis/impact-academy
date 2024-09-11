@@ -40,5 +40,5 @@ The file starts with the following:
 "{{&output_start}}..."
  and ends with the following:
 "...{{&output_end}}"
-Be wary of creating more long output by looking at too large a section of a {{&filename}} file (e.g. don't `cat` a long_output file, or display more than ~10 lines using head) , since this could create another long_output file, and this can get confusing.
+Be wary of creating more long output by looking at too large a section of {{&filename}} file (e.g. don't run `cat {{&filename}}`, or display more than ~10 lines using head), since this could create another long_output file, and this can get confusing and prevent you from completing your task.
 """
