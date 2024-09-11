@@ -89,10 +89,6 @@ def run_python(code):
 @tool
 def run_bash(command):
     """Run the shell command on the server.
-    If the output of the command is too long, a long_output text file will be created to hold the output, 
-    which you can inspect using tools like head and grep. 
-    Do not simply `cat` such long_output files, since the output will be too long to display.
-    Be smart and read short sections of such files (eg: use head -n 10) to avoid creating another long_output file.
     """
     global total_bash_commands
     command = command.strip()
