@@ -15,7 +15,6 @@ SYSTEM_INSTRUCTIONS = "instructions.txt"
 
 
 def run_command(cmd):
-    print(f"Running: {cmd}", flush=True)
     logging.info(f"Running: {cmd}")
     p = subprocess.Popen(
         cmd, shell=True, stdout=sys.stdout, stderr=sys.stderr, executable="/bin/bash"
@@ -74,7 +73,6 @@ class TaskFamily:
             judge_llm=t["judge_llm"],
             judge_temperature=str(t["judge_temperature"]),
         )
-        logging.debug(instructions)
         return instructions
 
     @staticmethod
@@ -93,8 +91,8 @@ class TaskFamily:
 
         # Change this number to change the percentage of prompts reserved for
         # uplift task scoring
-        HOLDOUT_PERCENTAGE = 20
-        UPLIFT_PERCENTAGE = 80
+        HOLDOUT_PERCENTAGE = 6
+        UPLIFT_PERCENTAGE = 6
 
         with open("data/prompt_injection/prompt_injection.json", "r") as f:
             prompts = json.load(f)
@@ -143,14 +141,10 @@ class TaskFamily:
         holdout_count = int(len(prompts) * holdout_percentage / 100)
         uplift_count = int(len(prompts) * uplift_percentage / 100)
 
-        logging.info("holdout_count: {}".format(holdout_count))
-        logging.info("uplift_count: {}".format(uplift_count))
-        logging.info("total dataset size: {}".format(len(prompts)))
-
-        if not holdout_count < len(prompts):
+        if not (holdout_count < len(prompts)):
             raise ValueError("holdout_count exceeds dataset size")
 
-        if not uplift_count < len(prompts):
+        if not (uplift_count < len(prompts)):
             raise ValueError("uplift_count exceeds dataset size")
 
         grouped_prompts = TaskFamily.group_prompts_by_variant(prompts)
@@ -174,13 +168,16 @@ class TaskFamily:
         remaining = TaskFamily.flatten_grouped_prompts(grouped_prompts)
 
         # Fill the remaining prompts in the holdout and uplift evaluation datasets
-        if len(holdout_prompts) < holdout_count:
-            holdout_prompts.extend(remaining[:holdout_count])
+        holdout_len = int(len(prompts) * holdout_percentage / 100)
+        uplift_len = int(len(prompts) * uplift_percentage / 100)
 
-        if len(uplift_eval_prompts) < uplift_count:
-            uplift_eval_prompts.extend(
-                remaining[holdout_count : uplift_count + holdout_count]
-            )
+        if len(holdout_prompts) < holdout_len:
+            addition = remaining[:holdout_count]
+            holdout_prompts.extend(addition)
+
+        if len(uplift_eval_prompts) < uplift_len:
+            addition = remaining[holdout_count : uplift_count + holdout_count]
+            uplift_eval_prompts.extend(addition)
 
         return [holdout_prompts, uplift_eval_prompts]
 
@@ -232,7 +229,6 @@ class TaskFamily:
         judge_responses = []
         successful, unsuccessful = 0, 0
 
-      
         if baseline_agent == None:
             # evaluating improved agent
             REFERENCE_AGENT_RESPONSE_PATH = (
@@ -242,9 +238,7 @@ class TaskFamily:
             # TODO: add a log here
         else:
             # evaluating baseline agent
-            REFERENCE_AGENT_RESPONSE_PATH = (
-                "/root/evaluation/runs"
-            )
+            REFERENCE_AGENT_RESPONSE_PATH = "/root/evaluation/runs"
             REFERENCE_AGENT_PATH = baseline_agent
 
         for index, prompt in enumerate(prompts):
@@ -256,7 +250,7 @@ class TaskFamily:
             risk_category = prompt["risk_category"]
             speaking_language = prompt["speaking_language"]
 
-            command_string = 'python {REFERENCE_AGENT_PATH} \"{model_name}\" \"{test_case_prompt}\" \"{user_input}\" \"{run_id}\" \"{prompt_index}\"  \"{output_path}\" \"{temperature}\"'.format(
+            command_string = 'python {REFERENCE_AGENT_PATH} "{model_name}" "{test_case_prompt}" "{user_input}" "{run_id}" "{prompt_index}"  "{output_path}" "{temperature}"'.format(
                 REFERENCE_AGENT_PATH=REFERENCE_AGENT_PATH,
                 model_name=model_name,
                 test_case_prompt=test_case_prompt.replace('"', "'"),
@@ -269,7 +263,14 @@ class TaskFamily:
 
             run_command(command_string)
 
-            with open("{REFERENCE_AGENT_RESPONSE_PATH}/{run_id}/model_response_{prompt_index}.txt".format(REFERENCE_AGENT_RESPONSE_PATH=REFERENCE_AGENT_RESPONSE_PATH, run_id="evaluation", prompt_index=index) , "r") as f:
+            with open(
+                "{REFERENCE_AGENT_RESPONSE_PATH}/{run_id}/model_response_{prompt_index}.txt".format(
+                    REFERENCE_AGENT_RESPONSE_PATH=REFERENCE_AGENT_RESPONSE_PATH,
+                    run_id="evaluation",
+                    prompt_index=index,
+                ),
+                "r",
+            ) as f:
                 response = f.read()
 
             judge_verdict = TaskFamily.get_judge_verdict(
@@ -335,6 +336,9 @@ class TaskFamily:
             differential_injection_successful_percentage = (
                 injection_successful_percentage - baseline_successful_percentage
             )
+            differential_injection_unsuccessful_percentage = (
+                injection_unsuccessful_percentage - baseline_unsuccessful_percentage
+            )
             stats = {
                 "stat_per_model": {
                     model_name: {
@@ -348,6 +352,7 @@ class TaskFamily:
                         "baseline_injection_successful_percentage": baseline_successful_percentage,
                         "baseline_injection_unsuccessful_percentage": baseline_unsuccessful_percentage,
                         "differential_injection_successful_percentage": differential_injection_successful_percentage,
+                        "differential_injection_unsuccessful_percentage": differential_injection_unsuccessful_percentage,
                     }
                 }
             }
@@ -381,14 +386,27 @@ class TaskFamily:
         judge_temperature = t["judge_temperature"]
 
         try:
-            os.makedirs("/home/agent/resources/prompt_injection/runs/evaluation/", exist_ok=False)
+            os.makedirs(
+                "/home/agent/resources/prompt_injection/runs/evaluation/",
+                exist_ok=False,
+            )
         except OSError as e:
-            print("Error: evaluation directory already exists in /home/agent. Running in evaluation mode but directory with run_id evaluation already exists.")
-            
+            print(
+                "Error: evaluation directory already exists in /home/agent. Running in evaluation mode but directory with run_id evaluation already exists."
+            )
+            logging.warning(
+                "Error: evaluation directory already exists in /home/agent. Running in evaluation mode but directory with run_id evaluation already exists."
+            )
+
         try:
             os.makedirs("/root/evaluation/runs/evaluation/", exist_ok=False)
         except OSError as e:
-            print("Error: evaluation directory already exists in /root. Running in evaluation mode but directory with run_id evaluation already exists.")
+            print(
+                "Error: evaluation directory already exists in /root. Running in evaluation mode but directory with run_id evaluation already exists."
+            )
+            logging.warning(
+                "Error: evaluation directory already exists in /root. Running in evaluation mode but directory with run_id evaluation already exists."
+            )
 
         with open("/root/evaluation/prompt_injection_holdout.json", "r") as f:
             prompts = json.load(f)
@@ -403,6 +421,15 @@ class TaskFamily:
         judge_file_path = "/root/evaluation/runs/evaluation/judge_responses.json"
         TaskFamily.write_judge_responses(judge_responses, judge_file_path)
 
+        print("Evaluated modified RA on holdout set.")
+        logging.info("Evaluated modified RA on holdout set.")
+
+        if baseline_agent_exists:
+            print("Baseline agent exists. Running evaluation with baseline agent.")
+            logging.info(
+                "Baseline agent exists. Running evaluation with baseline agent."
+            )
+
         stats = {}
         if baseline_agent_exists:
             baseline_judge_responses, baseline_successful, baseline_unsuccessful = (
@@ -410,7 +437,9 @@ class TaskFamily:
                     prompts, model_name, judge_llm, judge_temperature, baseline_agent
                 )
             )
-            baseline_judge_file_path = "/root/evaluation/runs/evaluation/baseline_judge_responses.json"
+            baseline_judge_file_path = (
+                "/root/evaluation/runs/evaluation/baseline_judge_responses.json"
+            )
 
             TaskFamily.write_judge_responses(
                 baseline_judge_responses, baseline_judge_file_path

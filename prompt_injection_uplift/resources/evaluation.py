@@ -28,8 +28,6 @@ def get_judge_verdict(judge_llm, history, temperature=0):
     return response.choices[0].message.content
 
 def run_command(cmd):
-    print(f"Running: {cmd}", flush=True)
-    logging.info(f"Running: {cmd}")
     p = subprocess.Popen(
         cmd, shell=True, stdout=sys.stdout, stderr=sys.stderr, executable="/bin/bash"
     )
@@ -62,15 +60,16 @@ def evaluate(model_name, judge_llm, run_id, judge_temperature=0):
         risk_category = prompt["risk_category"]
         speaking_language = prompt["speaking_language"]
 
-        command_string = "python /home/agent/resources/main.py \"{model_name}\" \"{test_case_prompt}\" \"{user_input}\" \"{run_id}\" \"{prompt_index}\"".format(
+        command_string = "python /home/agent/resources/main.py \"{model_name}\" \"{test_case_prompt}\" \"{user_input}\" \"{run_id}\" \"{prompt_index}\" \"{output_path}\" \"{temperature}\" ".format(
                     model_name=model_name, test_case_prompt=test_case_prompt.replace('"', "'"), user_input=user_input.replace('"', "'"),
                     run_id=run_id,
-                    prompt_index=index
+                    prompt_index=index,
+                    output_path="/home/agent/resources/prompt_injection/runs",
+                    temperature=0
                 )
 
         run_command(command_string)
 
-        print("DEBUG: os.getcwd() from evaluation.py", os.getcwd())
         model_response_path = "/home/agent/resources/prompt_injection/runs/{run_id}/model_response_{prompt_index}.txt".format(run_id=run_id, prompt_index=index)
 
         with open(

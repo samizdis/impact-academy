@@ -1,4 +1,5 @@
 # Based on https://python.langchain.com/docs/modules/agents/agent_types/react
+from langchain_community.agent_toolkits import FileManagementToolkit
 from typing import Any, List
 
 from langchain.agents import AgentExecutor, create_react_agent
@@ -35,7 +36,7 @@ class CustomLLM(LLM):
                 messages=[{"role": "system", "content": prompt}],
                 model="gpt-4o",
                 n=1,
-                temperature=0.1,
+                temperature=0,
                 max_tokens=512,
                 stop=stop,
             )
@@ -70,40 +71,52 @@ def run_bash(command):
     return result
 
 
-@tool
-def read_file(file_name):
-    """Read the contents of a file named file_name. Specify the fully qualified name always."""
-    try:
-        observation = open(file_name).read()
-        return observation
-    except FileNotFoundError as fe:
-        return "File {} not found".format(file_name)
-    except Exception as e:
-        return "Error while trying to read file {}".format(file_name)
+# @tool
+# def read_file(file_name):
+#     """Read the contents of a file named file_name. Specify the fully qualified name always."""
+#     try:
+#         observation = open(file_name).read()
+#         return observation
+#     except FileNotFoundError as fe:
+#         return "File {} not found".format(file_name)
+#     except Exception as e:
+#         return "Error while trying to read file {}".format(file_name)
 
 
-@tool
-def write_file(file_name, content):
-    """Write the content to a file named file_name. Specify the fully qualified name always."""
-    try:
-        with open(file_name, "w") as f:
-            f.write(content)
-        observation = f"File {file_name} written successfully."
-        return observation
-    except Exception as e:
-        return "Error while trying to write to file {}".format(file_name)
+# @tool
+# def write_file(file_name: str, content: str) -> str:
+#     """Write the content to a file named file_name. Specify the fully qualified name always.
+#     Content must NOT be enclosed in any tick marks (`). Just write the content without any tick marks."""
+#     content = content.strip()
+#     if content.startswith("```") and content.endswith("```"):
+#         content = content[3:-3].strip()
+#     if content.startswith("python"):
+#         content = content[6:].strip()
+#     try:
+#         with open(file_name, "w") as f:
+#             f.write(content)
+#         observation = f"File {file_name} written successfully."
+#         return observation
+#     except Exception as e:
+#         return "Error while trying to write to file {}".format(file_name)
 
 
-@tool
-def append_file(file_name, content):
-    """Append the content to a file named file_name. Specify the fully qualified name always"""
-    try:
-        with open(file_name, "a") as f:
-            f.write(content)
-        observation = f"File {file_name} appended successfully."
-        return observation
-    except Exception as e:
-        return "Error while trying to append to file {}".format(file_name)
+# @tool
+# def append_file(file_name: str, content: str) -> str:
+#     """Append the content to a file named file_name. Specify the fully qualified name always"""
+#     content = content.strip()
+#     if content.startswith("```") and content.endswith("```"):
+#         content = content[3:-3].strip()
+#     if content.startswith("python"):
+#         content = content[6:].strip()
+
+#     try:
+#         with open(file_name, "a") as f:
+#             f.write(content)
+#         observation = f"File {file_name} appended successfully."
+#         return observation
+#     except Exception as e:
+#         return "Error while trying to append to file {}".format(file_name)
 
 
 def get_task():
@@ -114,15 +127,12 @@ def get_task():
 def main(*args):
     print("STARTING AGENT")
     task_string = get_task()
-    print("Task:", task_string)
 
     llm = CustomLLM()
-    tools = [run_python,
-             run_bash,
-             read_file,
-            #  write_file,
-            #  append_file
-            ]
+
+    fs_mgmt_toolkit = FileManagementToolkit()
+
+    tools = [run_python, run_bash, *fs_mgmt_toolkit.get_tools()]
     prompt = hwchase17_react_prompt
 
     agent = create_react_agent(llm, tools, prompt)
