@@ -73,29 +73,51 @@ class TaskFamily:
     # `get_aux_vm_spec` is called after `install` but before `start`.
     @staticmethod
     def get_aux_vm_spec(t: Task) -> VMSpec | None:
+        common_commands = {
+            "type": "shell",
+            "commands": [
+                "sudo apt update -y",
+                "sudo apt install -y python3-pip python3-virtualenv",
+                "python3 -m virtualenv myenv",
+                ". myenv/bin/activate",
+                "python3 -m pip install huggingface_hub torch transformers datasets lm-eval==0.4.3 sentencepiece protobuf accelerate packaging ninja",
+                "python3 -m pip install flash-attn --no-build-isolation",
+                "sudo chmod -x /etc/update-motd.d/*" # disable dynamic motd scripts that cause long welcome messages, updates available etc
+            ]
+        }
+        if t["difficulty"] == "easy":
+            return VMSpec(
+                cpu_count_range=(8, 8),
+                cpu_architecture="x64",
+                ram_gib_range=(32, 32),
+                gpu_spec=GPUSpec(count_range=(1,1), model="a10"),
+                base_image_type="ubuntu-20.04-cuda",
+                build_steps=[
+                    common_commands,
+                    {
+                        "type": "file",
+                        "source": "./assets",
+                        "destination": "resources"
+                    },
+                ]
+            )
         return VMSpec(
-            cpu_count_range=(8, 8),
+            cpu_count_range=(48, 48),
             cpu_architecture="x64",
-            ram_gib_range=(32, 32),
-            gpu_spec=GPUSpec(count_range=(1,1), model="a10"),
+            ram_gib_range=(192, 192),
+            gpu_spec=GPUSpec(count_range=(4,4), model="t4"),
             base_image_type="ubuntu-20.04-cuda",
             build_steps=[
+                common_commands,
                 {
-                    "type": "shell",
-                    "commands": [
-                        "sudo apt update -y",
-                        "sudo apt install -y python3-pip python3-virtualenv",
-                        "python3 -m virtualenv myenv",
-                        ". myenv/bin/activate",
-                        "python3 -m pip install huggingface_hub torch transformers datasets lm-eval==0.4.3 sentencepiece protobuf accelerate packaging ninja",
-                        "python3 -m pip install flash-attn --no-build-isolation",
-                        "sudo chmod -x /etc/update-motd.d/*" # disable dynamic motd scripts that cause long welcome messages, updates available etc
-                    ]
+                    "type": "file",
+                    "source": "assets/utils.py",
+                    "destination": "resources/utils.py"
                 },
                 {
                     "type": "file",
-                    "source": "./assets",
-                    "destination": "resources"
+                    "source": "assets/eval.py",
+                    "destination": "resources/eval.py"
                 },
             ]
         )
