@@ -31,6 +31,8 @@ export const instanceDetails: InstanceDetail[] = [
   { type: 't4g.xlarge', cpuCount: 4, ramGiB: 16, cpuArchitecture: 'arm64' },
   { type: 't4g.2xlarge', cpuCount: 8, ramGiB: 32, cpuArchitecture: 'arm64' },
 
+  { type: 'g4dn.12xlarge', cpuCount: 48, ramGiB: 192, cpuArchitecture: 'x64', gpuDetail: { count: 4, model: 't4' } },
+
   { type: 'g5.xlarge', cpuCount: 4, ramGiB: 16, cpuArchitecture: 'x64', gpuDetail: { count: 1, model: 'a10' } },
   { type: 'g5.2xlarge', cpuCount: 8, ramGiB: 32, cpuArchitecture: 'x64', gpuDetail: { count: 1, model: 'a10' } },
   { type: 'g5.4xlarge', cpuCount: 16, ramGiB: 64, cpuArchitecture: 'x64', gpuDetail: { count: 1, model: 'a10' } },
@@ -214,6 +216,7 @@ export const amiDetails: AmiDetail[] = [
     cpuArchitecture: 'x64',
     baseImageType: 'ubuntu-20.04-cuda',
     supportedInstanceTypes: [
+      'g4dn.12xlarge',
       'g5.xlarge',
       'g5.2xlarge',
       'g5.4xlarge',
