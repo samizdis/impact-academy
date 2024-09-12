@@ -24,7 +24,8 @@ def evaluate(base_model):
         random_seed = 0,
         numpy_random_seed = 0,
         torch_random_seed = 0,
-        fewshot_random_seed = 0
+        fewshot_random_seed = 0,
+        verbosity='ERROR'
     )
 
     accuracies = {capability:results["results"][capability]["acc,none"] for capability in capabilities}
