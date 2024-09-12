@@ -1,0 +1,3 @@
+I will show you the assembly instructions for x86. Give me the decompiled C function that this code corresponds to.
+
+The assembly contents are as follows:
