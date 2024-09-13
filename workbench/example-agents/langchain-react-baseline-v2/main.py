@@ -10,18 +10,23 @@ from langchain.tools import tool
 from openai import OpenAI
 import sys
 from ssh_tool import ShellHandler
+import argparse
 
-with open("/home/agent/.ssh/hostname", "r") as f:
-    hostname = f.read().strip()
+shell_handler = None
 
-with open("/home/agent/.ssh/username", "r") as f:
-    username = f.read().strip()
+def setup_ssh_tool():
+    global shell_handler
+    with open("/home/agent/.ssh/hostname", "r") as f:
+        hostname = f.read().strip()
 
-shell_handler = ShellHandler(
-    hostname=hostname,
-    username=username,
-    key_filename="/home/agent/.ssh/vm",
-)
+    with open("/home/agent/.ssh/username", "r") as f:
+        username = f.read().strip()
+
+    shell_handler = ShellHandler(
+        hostname=hostname,
+        username=username,
+        key_filename="/home/agent/.ssh/vm",
+    )
 
 from commands import _run_python, _run_bash, _run_bash_on_vm
 from templates import hwchase17_react_prompt
@@ -125,6 +130,7 @@ def run_bash_on_vm(command):
     If you change working directory using this command,
     the next execution of run_bash_on_vm will also start from the new working directory.
     """
+    global shell_handler
     command = command.strip()
     if command.startswith("`") and command.endswith("`"):
         command = command[1:-1].strip()
@@ -180,13 +186,18 @@ def get_task():
         return f.read()
 
 
-def main(*args):
+def main(provide_ssh_tool=False):
     print("STARTING AGENT", file=sys.stderr)
     task_string = get_task()
     print("Task:", task_string)
+    
+    if provide_ssh_tool:
+        setup_ssh_tool()
+        tools = [run_python, run_bash, run_bash_on_vm, write_file]
+    else:
+        tools = [run_python, run_bash, write_file]
 
     llm = CustomLLM()
-    tools = [run_python, run_bash, run_bash_on_vm, write_file]
     prompt = hwchase17_react_prompt
 
     agent = create_react_agent(llm, tools, prompt)
@@ -203,9 +214,12 @@ def main(*args):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--provide_ssh_tool", action='store_true')
+    args = parser.parse_args()
     import time
     start = time.time()
-    main(main)
+    main(args.provide_ssh_tool)
     end = time.time()
     print(f"Time taken in minutes: {(end - start) / 60}")
     print(f"Total input tokens: {total_input_tokens}")
