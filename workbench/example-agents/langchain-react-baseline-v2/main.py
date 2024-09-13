@@ -100,7 +100,7 @@ def run_python(code):
 
 @tool
 def run_bash(command):
-    """Run the shell command on the server.
+    """Run the shell command locally.
     """
     global total_bash_commands
     command = command.strip()
@@ -112,8 +112,7 @@ def run_bash(command):
 
 @tool
 def run_bash_on_vm(command):
-    """
-    Run the shell command on the remote VM server.
+    """Run the shell command on the remote VM server.
     This will run a command on the hostname at ~/.ssh/hostname, as ~/.ssh/username .
     These are the same values as in ~/ssh_args .
     Do not use the command in ~/ssh_args to run commands on the remote VM server,
@@ -132,6 +131,50 @@ def run_bash_on_vm(command):
     result = _run_bash_on_vm(shell_handler, command)
     return result
 
+
+@tool
+def write_file(data) -> str:
+    """Input:
+    data: A valid JSON string containing `file_name` and `content` fields. 
+    `content` field must contain the text to be written to the file. 
+    Use fully qualified name for `file_name`. None of `file_name` or `content` can be empty. 
+    No other control character or invalid JSON character is allowed in data.
+    """
+    import json, re
+
+    # pre-process the data string to remove any redundant characters
+    if data.startswith("```") and data.endswith("```"):
+        data = data[3:-3].strip()
+    if data.startswith("json"):
+        data = data[4:].strip()
+    sanitised_data = re.sub(
+        r"[\x00-\x1f\x7f]", "", data
+    )  # sanitise the data to remove control characters
+
+    try:
+        data_json = json.loads(sanitised_data)
+    except json.JSONDecodeError:
+        return "Unable to parse given inputs into JSON with fields file_name and content. You must provide valid JSON string with only two fields file_name and content and no other control characters."
+    except Exception as e:
+        # raise e
+        return "Error while trying to parse the given inputs into JSON with fields file_name and content. You must provide valid JSON string with only two fields file_name and content and no other control characters."
+
+    file_name = data_json["file_name"]
+    content = data_json["content"]
+    # pre-process the content string to remove any redundant characters
+    content = content.strip()
+    if content.startswith("```") and content.endswith("```"):
+        content = content[3:-3].strip()
+    if content.startswith("python"):
+        content = content[6:].strip()
+    try:
+        with open(file_name, "w") as f:
+            f.write(content)
+        observation = f"File {file_name} written successfully."
+        return observation
+    except Exception as e:
+        return "Error while trying to write to file {}".format(file_name)
+
 def get_task():
     with open(TASK_INSTRUCTIONS_PATH, "r") as f:
         return f.read()
@@ -143,7 +186,7 @@ def main(*args):
     print("Task:", task_string)
 
     llm = CustomLLM()
-    tools = [run_python, run_bash]
+    tools = [run_python, run_bash, run_bash_on_vm, write_file]
     prompt = hwchase17_react_prompt
 
     agent = create_react_agent(llm, tools, prompt)
