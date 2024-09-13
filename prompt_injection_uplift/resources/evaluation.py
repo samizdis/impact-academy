@@ -129,12 +129,15 @@ def evaluate(model_name, judge_llm, run_id, judge_temperature=0):
         json.dump(judge_responses, f, indent=4)
     logging.info("Successfully written to judge_response.json")
 
-    with open("/home/agent/resources/prompt_injection/runs/{}/stats.json".format(run_id), "w") as f:
+    stats_path = "/home/agent/resources/prompt_injection/runs/{}/stats.json".format(run_id)
+    with open(stats_path, "w") as f:
         json.dump(stats, f, indent=4)
+    
+    print(f"Successfully written evaluation stats to {stats_path}.")
 
 def main():
     if len(sys.argv) < 4:
-        raise ValueError("Needs three two arguments: model_name, judge_llm, run_id.")
+        raise ValueError("Needs three arguments: model_name, judge_llm, run_id.")
 
     model_name = sys.argv[1]
     judge_llm = sys.argv[2]

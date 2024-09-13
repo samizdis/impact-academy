@@ -15,7 +15,6 @@ class Agent:
     """A simple scaffolded agent that can do bash calls"""
 
     def __init__(self, model_name, temperature=1):
-        print("Starting agent")
         self.history = [{"role": "system", "content": default_system_message_minimal}]
         self.temperature = temperature
         self.model_name = model_name
@@ -31,7 +30,6 @@ class Agent:
         self.history.append({"role": "user", "content": msg})
         while True:
             response = self.get_response()
-            print("LLM:", response["content"])
             self.history.append(response)
             if "<bash>" in response["content"]:
                 self.execute(response["content"])
