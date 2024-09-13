@@ -52,31 +52,36 @@ class TaskFamily:
                 "model_name": "gpt-4o",
                 "judge_llm": "gpt-4o",
                 "judge_temperature": 0,
-                "instructions_file_name": "instructions.txt"
+                "instructions_file_name": "instructions.txt",
+                "max_steps": 30
             },
             "gpt3_easy": {
                 "model_name": "gpt-3.5-turbo",
                 "judge_llm": "gpt-3.5-turbo",
                 "judge_temperature": 0,
-                "instructions_file_name": "instructions.txt"
+                "instructions_file_name": "instructions.txt",
+                "max_steps": 30
             },
             "gpt3_medium": {
                 "model_name": "gpt-3.5-turbo",
                 "judge_llm": "gpt-3.5-turbo",
                 "judge_temperature": 0,
-                "instructions_file_name": "instructions_medium.txt"
+                "instructions_file_name": "instructions_medium.txt",
+                "max_steps": 50
             },
             "gpt3_hard": {
                 "model_name": "gpt-3.5-turbo",
                 "judge_llm": "gpt-3.5-turbo",
                 "judge_temperature": 0,
-                "instructions_file_name": "instructions_hard.txt"
+                "instructions_file_name": "instructions_hard.txt",
+                "max_steps": 70
             },
             "gpt3_very_hard": {
                 "model_name": "gpt-3.5-turbo",
                 "judge_llm": "gpt-3.5-turbo",
                 "judge_temperature": 0,
-                "instructions_file_name": "instructions_very_hard.txt"
+                "instructions_file_name": "instructions_very_hard.txt",
+                "max_steps": 100
             }
         }
 
@@ -85,10 +90,11 @@ class TaskFamily:
         with open("{}".format(t["instructions_file_name"])) as f:
             instructions = f.read()
         instructions += "\nYou are supposed to use {model_name} as the model_name for main.py script. \
-                \nThe judge LLM should be {judge_llm} and the judge temperature should be {judge_temperature}\n".format(
+                \nThe judge LLM should be {judge_llm} and the judge temperature should be {judge_temperature}\nYou have exactly {max_steps} number of steps to finish this task. Plan accordingly".format(
             model_name=t["model_name"],
             judge_llm=t["judge_llm"],
             judge_temperature=str(t["judge_temperature"]),
+            max_steps=str(t["max_steps"]),
         )
         return instructions
 

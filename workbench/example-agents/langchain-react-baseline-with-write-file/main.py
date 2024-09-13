@@ -85,29 +85,27 @@ def read_file(file_name):
 @tool
 def write_file(data) -> str:
     """Input:
-    data: A valid JSON formatted string with only fields file_name and content. content field will contain the text to be written to the file. Use fully qualified name for file_name. None of file_name or content can be empty. No other control character or invalid JSON character is allowed in data.
+    data: A string containing file name and the content enclosed in <filename></filename> and <content></content> respectively. For example,
+    <filename>...</filename><content>...</content> is a valid data input without any other redundant characters. Only use fully qualified name for the file name.
+    Note that </content> is optional. If not present, then the full string is written
     """
-    import json, re
+    import re
 
-    # pre-process the data string to remove any redundant characters
-    if data.startswith("```") and data.endswith("```"):
-        data = data[3:-3].strip()
-    if data.startswith("json"):
-        data = data[4:].strip()
-    sanitised_data = re.sub(
-        r"[\x00-\x1f\x7f]", "", data
-    )  # sanitise the data to remove control characters
+    # match for <filename> </filename> in data and extract the string inside these tags
+    file_name = re.search(r"<filename>(.*?)</filename>", data)
+    if file_name:
+        file_name = file_name.group(1)
+    else:
+        return "Error: No file name provided in the input data. Make sure that you are enclosing the file name inside <filename> tags and not generating any redundant characters"
 
-    try:
-        data_json = json.loads(sanitised_data)
-    except json.JSONDecodeError:
-        return "Unable to parse given inputs into JSON with fields file_name and content. You must provide valid JSON string with only two fields file_name and content and no other control characters."
-    except Exception as e:
-        # raise e
-        return "Error while trying to parse the given inputs into JSON with fields file_name and content. You must provide valid JSON string with only two fields file_name and content and no other control characters."
+    # if the closing content tag is missing even then it should match till end of string
+    # if both tags are present, then extract the string within the tags
+    content = re.search(r"<content>(.*?)(</content>)?", data)
+    if content:
+        content = content.group(1)
+    else:
+        return "Error: No content provided in the input data. Make sure that you are enclosing the content inside <content> tags and not generating any redundant characters"   
 
-    file_name = data_json["file_name"]
-    content = data_json["content"]
     # pre-process the content string to remove any redundant characters
     content = content.strip()
     if content.startswith("```") and content.endswith("```"):
@@ -125,29 +123,24 @@ def write_file(data) -> str:
 @tool
 def append_file(data) -> str:
     """Input:
-    data: A valid JSON formatted string with only fields file_name and content. content field will contain the text to be written to the file. Use fully qualified name for file_name. None of file_name or content can be empty. No other control character or invalid JSON character is allowed in data.
+    data: A string containing file name and the content enclosed in <filename></filename> and <content></content> respectively. For example,
+    <filename>...</filename><content>...</content> is a valid data input without any other redundant characters. Only use fully qualified name for the file name.
+    Note that </content> is optional. If not present, then the full string is written
     """
     import json, re
+    # match for <filename> </filename> in data and extract the string inside these tags
+    file_name = re.search(r"<filename>(.*?)</filename>", data)
+    if file_name:
+        file_name = file_name.group(1)
+    else:
+        return "Error: No file name provided in the input data. Make sure that you are enclosing the file name inside <filename> tags and not generating any redundant characters"
 
-    # pre-process the data string to remove any redundant characters
-    if data.startswith("```") and data.endswith("```"):
-        data = data[3:-3].strip()
-    if data.startswith("json"):
-        data = data[4:].strip()
-    sanitised_data = re.sub(
-        r"[\x00-\x1f\x7f]", "", data
-    )  # sanitise the data to remove control characters
+    content = re.search(r"<content>(.*?)(</content>)?", data)
+    if content:
+        content = content.group(1)
+    else:
+        return "Error: No content provided in the input data. Make sure that you are enclosing the content inside <content> tags and not generating any redundant characters"   
 
-    try:
-        data_json = json.loads(sanitised_data)
-    except json.JSONDecodeError:
-        return "Unable to parse given inputs into JSON with fields file_name and content. You must provide valid JSON string with only two fields file_name and content and no other control characters."
-    except Exception as e:
-        # raise e
-        return "Error while trying to parse the given inputs into JSON with fields file_name and content. You must provide valid JSON string with only two fields file_name and content and no other control characters."
-
-    file_name = data_json["file_name"]
-    content = data_json["content"]
     # pre-process the content string to remove any redundant characters
     content = content.strip()
     if content.startswith("```") and content.endswith("```"):
@@ -157,10 +150,10 @@ def append_file(data) -> str:
     try:
         with open(file_name, "a") as f:
             f.write(content)
-        observation = f"Successfully appended content to file {file_name}."
+        observation = f"\nSuccessfully appended to {file_name}."
         return observation
     except Exception as e:
-        return "Error while trying to append to file {}".format(file_name)
+        return "\nError while trying to append to file {}".format(file_name)
 
 def get_task():
     with open(TASK_INSTRUCTIONS_PATH, "r") as f:
@@ -170,10 +163,9 @@ def get_task():
 def main(*args):
     print("STARTING AGENT")
     task_string = get_task()
-
     llm = CustomLLM()
 
-    tools = [run_python, run_bash, read_file, write_file, append_file]
+    tools = [run_python, run_bash, read_file]
     prompt = hwchase17_react_prompt
 
     agent = create_react_agent(llm, tools, prompt)
@@ -183,7 +175,7 @@ def main(*args):
         callbacks=[AgentCallbackHandler()],
         handle_parsing_errors=True,
         verbose=True,
-        max_iterations=30,
+        max_iterations=os.environ["MAX_STEPS"],
     )
 
     agent_executor.invoke({"input": task_string})
