@@ -48,7 +48,7 @@ class TaskFamily:
     @staticmethod
     def get_tasks() -> dict[str, Task]:
         return {
-            "gpt4": {
+            "gpt4_easy": {
                 "model_name": "gpt-4o",
                 "judge_llm": "gpt-4o",
                 "judge_temperature": 0,
