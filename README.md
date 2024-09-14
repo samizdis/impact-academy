@@ -17,3 +17,11 @@ The shell then shows you the docker commands needed to view the task environment
 ```
 npm run agent -- $CONTAINER_NAME example-agents\langchain-react-baseline "pip install -r requirements.txt && env OPENAI_API_KEY='sk-xxx' python main.py"
 ```
+
+# Reproducing results
+
+To run the code for the experiments in AutoEnhance, follow the readmes in the following folders:
+- For the SWE-bench task: `swe_bench_enhance`
+- For the ML Agent Bench task: `mlagentbench`
+- For the CyberSecEvals2 prompt injection task: `prompt_injection_uplift`
+- For the WMDP unlearding task: `wmdp`
