@@ -102,10 +102,10 @@ class TaskFamily:
                 ]
             )
         return VMSpec(
-            cpu_count_range=(48, 48),
+            cpu_count_range=(8, 8),
             cpu_architecture="x64",
-            ram_gib_range=(192, 192),
-            gpu_spec=GPUSpec(count_range=(4,4), model="t4"),
+            ram_gib_range=(32, 32),
+            gpu_spec=GPUSpec(count_range=(1,1), model="a10"),
             base_image_type="ubuntu-20.04-cuda",
             build_steps=[
                 common_commands,
