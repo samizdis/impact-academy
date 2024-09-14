@@ -9,6 +9,7 @@ import os
 import random
 import math
 import time
+import traceback
 
 ipython_shell = InteractiveShell.instance()
 ipython_shell.colors = "nocolor"
@@ -97,3 +98,10 @@ def _run_bash(command):
     except subprocess.TimeoutExpired:
         output = "Command timed out."
     return maybe_prompt_to_search("\nBash output: ```\n" + output + "\n```")
+
+def _run_bash_on_vm(shell_handler, command):
+    try:
+        output = shell_handler.pretty_execute(command)
+        return maybe_prompt_to_search("\n(remote) Bash output: ```\n" + output + "\n```")
+    except:
+        return f"\nCommand failed to run.\nScaffolding error: {traceback.format_exc()}"

@@ -9,9 +9,26 @@ from langchain_core.language_models import LLM
 from langchain.tools import tool
 from openai import OpenAI
 import sys
-#import os
+from ssh_tool import ShellHandler
+import argparse
 
-from commands import _run_python, _run_bash
+shell_handler = None
+
+def setup_ssh_tool():
+    global shell_handler
+    with open("/home/agent/.ssh/hostname", "r") as f:
+        hostname = f.read().strip()
+
+    with open("/home/agent/.ssh/username", "r") as f:
+        username = f.read().strip()
+
+    shell_handler = ShellHandler(
+        hostname=hostname,
+        username=username,
+        key_filename="/home/agent/.ssh/vm",
+    )
+
+from commands import _run_python, _run_bash, _run_bash_on_vm
 from templates import hwchase17_react_prompt
 
 TASK_INSTRUCTIONS_PATH = "/home/agent/instructions.txt"
@@ -88,7 +105,7 @@ def run_python(code):
 
 @tool
 def run_bash(command):
-    """Run the shell command on the server.
+    """Run the shell command locally.
     """
     global total_bash_commands
     command = command.strip()
@@ -98,19 +115,45 @@ def run_bash(command):
     total_bash_commands += 1
     return result
 
+@tool
+def run_bash_on_vm(command):
+    """Run the shell command on the remote VM server.
+    This will run a command on the hostname at ~/.ssh/hostname, as ~/.ssh/username .
+    These are the same values as in ~/ssh_args .
+    Do not use the command in ~/ssh_args to run commands on the remote VM server,
+    instead use this command.
+    You can still use the information in ~/ssh_args to move files between this machine
+    and the remote VM server.
+
+    This command will keep track of environment variables
+    (like Python virtual environments and current working directory).
+    If you change working directory using this command,
+    the next execution of run_bash_on_vm will also start from the new working directory.
+    """
+    global shell_handler
+    command = command.strip()
+    if command.startswith("`") and command.endswith("`"):
+        command = command[1:-1].strip()
+    result = _run_bash_on_vm(shell_handler, command)
+    return result
 
 def get_task():
     with open(TASK_INSTRUCTIONS_PATH, "r") as f:
         return f.read()
 
 
-def main(*args):
+def main(provide_ssh_tool=False):
     print("STARTING AGENT", file=sys.stderr)
     task_string = get_task()
     print("Task:", task_string)
+    
+    if provide_ssh_tool:
+        setup_ssh_tool()
+        tools = [run_python, run_bash, run_bash_on_vm]
+    else:
+        tools = [run_python, run_bash]
 
     llm = CustomLLM()
-    tools = [run_python, run_bash]
     prompt = hwchase17_react_prompt
 
     agent = create_react_agent(llm, tools, prompt)
@@ -127,9 +170,12 @@ def main(*args):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--provide_ssh_tool", action='store_true')
+    args = parser.parse_args()
     import time
     start = time.time()
-    main(main)
+    main(args.provide_ssh_tool)
     end = time.time()
     print(f"Time taken in minutes: {(end - start) / 60}")
     print(f"Total input tokens: {total_input_tokens}")
