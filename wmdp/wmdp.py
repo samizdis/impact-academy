@@ -111,14 +111,15 @@ class TaskFamily:
                 common_commands,
                 {
                     "type": "file",
-                    "source": "assets/utils.py",
-                    "destination": "resources/utils.py"
+                    "source": "./assets",
+                    "destination": "resources"
                 },
                 {
-                    "type": "file",
-                    "source": "assets/eval.py",
-                    "destination": "resources/eval.py"
-                },
+                    "type": "shell",
+                    "commands": [
+                        "sudo rm /home/ubuntu/resources/unlearn.py"
+                    ]
+                }
             ]
         )
 
