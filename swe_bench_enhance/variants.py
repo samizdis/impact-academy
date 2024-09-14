@@ -1,5 +1,9 @@
 from typing import TypedDict
-from instructions import default_instructions, fixed_traj_path_instructions
+from instructions import (
+    default_instructions,
+    fixed_traj_path_instructions,
+    less_handholding_instructions,
+)
 
 
 class Task(TypedDict):
@@ -15,5 +19,9 @@ task_variants: dict[str, Task] = {
     "fixed_traj_path": {
         "variant": "default",
         "instructions": fixed_traj_path_instructions,
+    },
+    "less_handholding_instructions": {
+        "variant": "default",
+        "instructions": less_handholding_instructions,
     },
 }

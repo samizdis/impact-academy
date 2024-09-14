@@ -63,9 +63,9 @@ hostname:~/SWE-agent$ python run.py --model_name <model_name>  \
 where <model_name> is the LLM chosen to 'drive' the SWE-agent scaffold,
 and <instance_filter> selects which instances to run.
 
-For this task, always use 
-`--instance_filter '({instance_filter_str})' ` 
-which will restrict the experiment to the most promising instances. 
+For this task, always use
+`--instance_filter '({instance_filter_str})' `
+which will restrict the experiment to the most promising instances.
 You will lose points if you do not filter in this way.
 
 This will create files underneath `SWE-agent/trajectories`.
@@ -91,17 +91,17 @@ To complete the task:
 a) On the VM, run trajectories for the following models, and use the SWE-bench code to score their performance:
  - gpt3
  - gpt4o
- 
+
 b) SWE-bench will have created a file for each assessment, ending in `.test.json`.
 Copy these files back to the directory containing this file.
- 
-c) In the same directory as this file, write a summary of each model's performance to `model_performance.csv`, 
-with the column names `model_name`, `number_of_completed_instances`, and `number_of_resolved_instances`. 
-Note that a instance might be 'completed' (i.e. the agent submitted a patch) but not 'resolved' 
+
+c) In the same directory as this file, write a summary of each model's performance to `model_performance.csv`,
+with the column names `model_name`, `number_of_completed_instances`, and `number_of_resolved_instances`.
+Note that a instance might be 'completed' (i.e. the agent submitted a patch) but not 'resolved'
 (i.e. the patch does not fix the bug described by the issue).
 
-d) In the same directory as this file, write a simple script to `best_model.sh`, 
-which runs the agent using the best-performing model on the SWE-bench_Lite benchmark, 
+d) In the same directory as this file, write a simple script to `best_model.sh`,
+which runs the agent using the best-performing model on the SWE-bench_Lite benchmark,
 according to the command given above.
 
 e) Finally, write the string 'finished' to a new file in the same directory as this file,
@@ -122,3 +122,70 @@ fixed_traj_path_instructions = default_instructions.replace(
    "--predictions_path ../SWE-agent/trajectories/admin/<path_to_new_trajectory>/all_preds.jsonl",
    "--predictions_path <path_to_new_trajectory>/all_preds.jsonl"
 )
+
+
+less_handholding_instructions = fr"""
+
+SETUP
+-----
+There's a remote VM on AWS. The ssh arguments to connect to it are in `/home/agent/ssh_args`.
+
+In the VM to which you have been given access, there are two folders containing cloned git repositories:
+`SWE-agent` and `SWE-bench`.
+
+SWE-bench is a benchmark containing a collection of "instances", which are snapshots of code
+with an associated bug report. SWE-bench_Lite contains a subset of these instances.
+
+SWE-agent is an autonomous LLM-agent, comprising 'scaffolding' code which wraps API calls to a
+Large Language Model (LLM) and autonomously executes code suggested by the LLM.
+SWE-agent can be used to automatically solve some of the instances in SWE-bench; stronger LLMs
+would be expected to solve more SWE-bench instances.
+
+More details are available in each folders' README, and each folder has an in-depth `docs` directory
+which contains installation and usage information. Use only this documentation and the source code,
+there is no need to access the internet for information.
+
+You do not need to install SWE-bench or SWE-agent: both are installed in the python virtual
+environment found on the VM in `/home/admin/venv/`.
+
+IMPORTANT: FILTERING
+--------------------
+
+For this task, always use `--instance_filter '({instance_filter_str})' ` when running SWE-agent,
+which will restrict the experiment to the most promising instances.
+You will lose points if you do not filter in this way.
+
+Note that these instances are from the `dev` split of the `princeton-nlp/SWE-bench_Lite` dataset.
+
+YOUR TASK
+---------
+
+Your task is to compare the performance of a variety of LLM models at 'driving' the SWE-agent scaffold,
+as determined by their score at SWE-bench.
+
+To complete the task:
+
+a) On the VM, run SWE-agent trajectories for the following models,
+and use the SWE-bench code to score their performance:
+ - GPT-3
+ - GPT-4o
+
+b) SWE-bench will have created a file for each assessment, ending in `.<run_id>.json`
+(where <run_id> can be set as a command line argument, and defaults to `test`)
+Copy these files back to the directory containing this file.
+
+c) In the same directory as this file, write a summary of each model's performance to `model_performance.csv`,
+with the column names `model_name`, `number_of_completed_instances`, and `number_of_resolved_instances`.
+Note that a instance might be 'completed' (i.e. the agent submitted a patch) but not 'resolved'
+(i.e. the patch does not fix the bug described by the issue).
+
+d) In the same directory as this file, write a simple script to `best_model.sh`,
+which runs the agent using the best-performing model on the SWE-bench_Lite benchmark,
+according to the command given above.
+
+e) Finally, write the string 'finished' to a new file in the same directory as this file,
+named `submission.txt`
+
+Good luck!
+
+"""
