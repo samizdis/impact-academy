@@ -24,4 +24,4 @@ To run the code for the experiments in AutoEnhance, follow the readmes in the fo
 - For the SWE-bench task: `swe_bench_enhance`
 - For the ML Agent Bench task: `mlagentbench`
 - For the CyberSecEvals2 prompt injection task: `prompt_injection_uplift`
-- For the WMDP unlearding task: `wmdp`
+- For the WMDP unlearning task: `wmdp`
