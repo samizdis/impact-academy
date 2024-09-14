@@ -1,3 +1,4 @@
 1. Follow the steps from ["AWS Setup" listed by METR](https://taskdev.metr.org/implementation/auxiliary-virtual-machines/#aws-setup) (can skip steps 2 and 3 if you already have the access key for your IAM profile).
 2. Create ```.env``` file inside ```impact-academy/workbench/``` with ```HF_TOKEN=your_hf_access_token``` as an entry in the file. You can get the access token from [here](https://huggingface.co/settings/tokens).
 3. Run ```npm run task -- ..\wmdp unlearn_main_easy``` for easy variant and ```npm run task -- ..\wmdp unlearn_main_hard``` for hard variant of the task.
+4. Now, to run a ReAct agent on this task, inside the same folder,  run ```npm run agent -- $CONTAINER_NAME example-agents\langchain-react-baseline "pip install -r requirements.txt && env OPENAI_API_KEY='sk-xxx' python -u main.py"```
