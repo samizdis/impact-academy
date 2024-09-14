@@ -139,28 +139,49 @@ def run_bash_on_vm(command):
 
 
 @tool
-def write_file(file_content: str, file_name: str, append: bool = False) -> str:
+def write_file(data) -> str:
     """
-    Writes the given content to the file with the given name locally.
+    Write the given content to a file.
     
-    Example:
-        write_file("import numpy\nx = numpy.array([1, 2, 3])\nprint(\"Success.\")", "/home/agent/resources/example.py")
-        
-    Args:
-        file_content (str): The content to write to the file.
-        file_name (str): The name of the file to write to.
-        append (bool): Whether to append the content to the file. Default is False.
+    data:   
+        A valid JSON string containing `file_name` and `content` fields. 
+        `content` field must contain the text to be written to the file. 
+        Use fully qualified name for `file_name`. None of `file_name` or `content` can be empty. 
+        No other control character or invalid JSON character is allowed in data.
 
     Returns:
         str: A message indicating the outcome of the operation.
     """
+    import json, re
+
+    # pre-process the data string to remove any redundant characters
+    if data.startswith("```") and data.endswith("```"):
+        data = data[3:-3].strip()
+    if data.startswith("json"):
+        data = data[4:].strip()
+    sanitised_data = re.sub(
+        r"[\x00-\x1f\x7f]", "", data
+    )  # sanitise the data to remove control characters
     try:
-        mode = 'a' if append else 'w'
-        with open(file_name, mode, encoding="utf-8") as f:
-            f.write(file_content)
-        # We don't need to return the file name here, as we are writing to
-        # the file specified by the user.
-        observation = "File written successfully."
+        data_json = json.loads(sanitised_data)
+    except json.JSONDecodeError:
+        return "Unable to parse given inputs into JSON with fields file_name and content. You must provide valid JSON string with only two fields file_name and content and no other control characters."
+    except Exception as e:
+        # raise e
+        return "Error while trying to parse the given inputs into JSON with fields file_name and content. You must provide valid JSON string with only two fields file_name and content and no other control characters."
+
+    file_name = data_json["file_name"]
+    content = data_json["content"]
+    # pre-process the content string to remove any redundant characters
+    content = content.strip()
+    if content.startswith("```") and content.endswith("```"):
+        content = content[3:-3].strip()
+    if content.startswith("python"):
+        content = content[6:].strip()
+    try:
+        with open(file_name, "w") as f:
+            f.write(content)
+        observation = f"File {file_name} written successfully."
         return observation
     except Exception as e:
         return "Error while trying to write to file {}".format(file_name)
