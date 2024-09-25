@@ -1,5 +1,5 @@
 import subprocess, sys, os
-from metr_task_standard.types import VMSpec, GPUSpec
+from metr_task_standard.types import VMSpec
 from typing import TypedDict
 import logging
 from metr_task_standard import aux_vm_access
