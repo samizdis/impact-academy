@@ -6,7 +6,7 @@ import subprocess, sys, os
 from metr_task_standard.types import VMSpec
 from variants import Task, task_variants
 import logging
-import aux_vm_access
+from metr_task_standard import aux_vm_access
 
 from instructions import instances_to_include_in_filtering
 

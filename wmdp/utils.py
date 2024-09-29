@@ -11,11 +11,6 @@ llama3_8b = {
     'hf_repo_id':"meta-llama/Meta-Llama-3-8B", 
 }
 
-smol_lm_360m = {
-    'name':"SmolLM-360M",
-    'hf_repo_id':"HuggingFaceTB/SmolLM-360M",
-}
-
 wmdp = "wmdp"
 commonsense_qa_bm = "commonsense_qa"
 mmlu_bm = "mmlu"

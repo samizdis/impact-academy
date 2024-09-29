@@ -1,0 +1,7 @@
+langchain 
+langgraph 
+openai 
+langchain-openai 
+langchain-community 
+wikipedia 
+langgraph-checkpoint-sqlite

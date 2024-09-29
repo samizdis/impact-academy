@@ -1,10 +1,8 @@
 import subprocess, sys, os
 from metr_task_standard.types import VMSpec, GPUSpec
-from typing import TypedDict
-from pathlib import Path
 from utils import Task, task_variants
 import logging
-import aux_vm_access
+from metr_task_standard import aux_vm_access
 
 logging.basicConfig(filename="/home/agent/logfile.log",
                     filemode="a",
@@ -26,10 +24,6 @@ class TaskFamily:
     # which declares which version of the Task Standard this TaskFamily adheres to.
     standard_version = "0.2.3"
 
-    # The TaskFamily class MAY define a static list called `required_environment_variables`.
-    # This should be a list of environment variable names that must be set in TaskFamily#start
-    # and TaskFamily#score (where they can be accessed with e.g. `os.environ.get("MY_ENV_VAR")`).
-    # If not defined, tasks default to requiring no environment variables.
     required_environment_variables = [
         "VM_SSH_USERNAME",
         "VM_SSH_PRIVATE_KEY",
@@ -37,40 +31,22 @@ class TaskFamily:
         "HF_TOKEN"
     ]
 
-    # `install` is called while building a task-family-specific Docker image (or
-    # VM) according to the Standard"s Dockerfile.
-    # See Dockerfile for more information about how `install` is called.
-    # `install` MAY install packages, clone Git repos, copy assets into `/home/agent`, or make other such changes.
-    # If you copy any files from `/root` into `/home/agent`, you probably also want to chown them to agent:agent.
-    # The `install` (which runs at build time) method MUST have access to the
-    # internet, even if the task will not allow internet access at run time.
     @staticmethod
     def install() -> None:
         aux_vm_access.install()
 
-    # If the task definition defines a Task type, `get_tasks` MUST return a dict[str, Task].
-    # Otherwise, `get_tasks` MUST return a dict[str, dict].
-    # `get_tasks` returns a mapping from task names to arbitrary data that is specific to each task.
-    # `get_tasks` is first called after `install` but before `start`.
     @staticmethod
     def get_tasks() -> dict[str, Task]:
         return task_variants
 
-    # The TaskFamily class MUST define a static method called `get_instructions`.
-    # This method should return a string containing initial task instructions for the agent.
     @staticmethod
     def get_instructions(t: Task) -> str:
         return t["instructions"]
 
-    # `get_permissions` is called after `install` but before `start`.
-    # Returns either the empty list or a list containing only the string "full_internet".
-    # If not defined, the task"s permissions default to the empty list.
-    # See README.md for more information about permissions.
     @staticmethod
     def get_permissions(t: Task) -> list[str]:
         return ["full_internet"]
 
-    # `get_aux_vm_spec` is called after `install` but before `start`.
     @staticmethod
     def get_aux_vm_spec(t: Task) -> VMSpec | None:
         common_commands = {
@@ -164,12 +140,6 @@ class TaskFamily:
             else:
                 logging.info(f"Failed to log in to huggingface. Error: {stderr.readlines()}")
         
-        
-
-    # The TaskFamily class MAY define a static method called `score`.
-    # `score` is called after the agent submits a solution.
-    # `score` should return a float between 0 and 1, or `None` to indicate that manual scoring is required.
-    # If not defined, the score defaults to `None`.
     @staticmethod
     def score(t: Task, submission: str) -> float | None:
         hf_repo_id = t["model"]["hf_repo_id"]
@@ -195,9 +165,6 @@ class TaskFamily:
         
         return score
 
-    # The TaskFamily class MAY define a static method called `teardown`.
-    # Task Standard implementations MAY call teardown to clean up external resources created during task
-    # environment setup.
     @staticmethod
     def teardown(t: Task) -> None:
         pass
