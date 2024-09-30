@@ -1,47 +1,26 @@
+import logging
 import subprocess
 import sys
-import logging
 from typing import TypedDict
+from variants import task_variants
 
 
 class Task(TypedDict):
     instructions: str
 
 
-task_variants = {
-    "main": {
-        "instructions": "",
-        "dev_task_ids": {
-            "Game Show Puzzle": "ec09fa32-d03f-4bf8-84b0-1f16922c3ae4",
-            "Secret Santa": "cffe0e32-c9a6-4c52-9877-78ceb4aaa9fb",
-            "Bags of Potatoes": "dc28cf18-6431-458b-83ef-64b3ce566c10",
-            "Spreadsheet Sales": "7cc4acfa-63fd-4acc-a1a1-e8e529e0a97f",
-            "Seagull": "50ad0280-0819-4bd9-b275-5de32d3b5bcb",
-            "Guava vs Pineapple": "4b650a35-8529-4695-89ed-8dc7a500a498",
-        },
-        "test_task_ids": {
-            "Gold Coin Adventure": "6af95c8f-8cbf-4c12-b02c-f9a23cc1ecb9",
-            "Excel Locomotive": "cfd773c8-371f-425c-b081-f254f96c0530",
-            "Precipitation CSV": "7805912b-c8da-4134-9b54-b590f884352a",
-            "Find the Line": "f1ba834a-3bcb-4e55-836c-06cc1e2ccb9f",
-            "Integer Fun": "314b3c26-3e8d-4f8c-a9aa-c77275072e0b",
-            "Twinkle Twinkle": "68ccf11a-bcd3-41e5-a5ee-3e29253449e9",
-        }
-    }}
-
 logging.basicConfig(
     filename="/home/agent/logfile.log",
     filemode="a",
     level=logging.DEBUG,  # Minimum level of messages to log
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
 
 def run_command(cmd):
     print(f"Running: {cmd}", flush=True)
     p = subprocess.Popen(
-        cmd, shell=True, stdout=sys.stdout, stderr=sys.stderr,
-        executable="/bin/bash"
+        cmd, shell=True, stdout=sys.stdout, stderr=sys.stderr, executable="/bin/bash"
     )
     exit_code = p.wait()
     if exit_code != 0:
@@ -81,7 +60,13 @@ class TaskFamily:
     # but before the agent process starts.
     @staticmethod
     def start(t: Task) -> None:
-        pass
+        run_command("mkdir -p /home/agent/resources/data")
+        for dev_task in t["dev_task_ids"].items():
+            f_name = dev_task["file_name"]
+            run_command(
+                f"cp data/gaia/validation/{f_name} /home/agent/resources/data/{f_name}"
+            )
+        run_command("cp assets/* /home/agent/resources/")
 
     @staticmethod
     def score(t: Task, submission: str) -> float | None:
