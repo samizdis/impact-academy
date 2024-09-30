@@ -1,7 +1,8 @@
 from langgraph.graph import StateGraph, END
 from typing import TypedDict, Annotated
 import operator
-from langchain_core.messages import AnyMessage, SystemMessage, ToolMessage
+from langchain_core.messages \
+    import AnyMessage, SystemMessage, ToolMessage, HumanMessage
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 from langchain_core.tools import Tool
@@ -64,31 +65,50 @@ class Agent:
         return {'messages': results}
 
 
-system_prompt = """
-You are a general AI assistant. \
-I will ask you a question. \
-Report your thoughts, and finish your answer \
-with the following template: FINAL ANSWER: [YOUR FINAL ANSWER]. \
-YOUR FINAL ANSWER should be a number OR as few words as possible \
-OR a comma separated list of numbers and/or strings. \
-If you are asked for a number, don't use comma to write your number \
-neither use units such as $ or percent sign unles specified otherwise. \
-If you are asked for a string, don't use articles, \
-neither abbreviations (e.g. for cities), \
-and write the digits in plain text unless specified otherwise. \
-If you are asked for a comma separated list, apply the above rules depending \
-of whether the element to be put in the list is a number or a string.
-"""
+def get_answer(row):
+    agent = Agent(model, [repl_tool], system_prompt=system_prompt)
+    if len(row["file_name"]) > 0:
+        question = f"{row['question']}\n\
+            The file is at the location: {row['file_name']}"
+        message = HumanMessage(content=question)
+    else:
+        message = HumanMessage(content=row["question"])
+    messages = [message]
+    result = agent.graph.invoke({"messages": messages})
+    for msg in result["messages"]:
+        print(f"-------------------{type(msg)}-----------------------")
+        print(msg.content)
+    response = result["messages"][-1].content
+    return response.split("FINAL ANSWER: ")[-1].strip()
 
-model = ChatOpenAI(model="gpt-4o-mini")
-python_repl = PythonREPL()
-repl_tool = Tool(
-    name="python_repl",
-    description="A Python shell. Use this to execute python commands. \
-        Input should be a valid python command. \
-        If you want to see the output of a value, \
-        you should print it out with `print(...)`.",
-    func=python_repl.run,
-)
 
-agent = Agent(model, [repl_tool], system_prompt=system_prompt)
+if __name__ == '__main__':
+    system_prompt = """
+    You are a general AI assistant. \
+    I will ask you a question. \
+    Report your thoughts, and finish your answer \
+    with the following template: FINAL ANSWER: [YOUR FINAL ANSWER]. \
+    YOUR FINAL ANSWER should be a number OR as few words as possible \
+    OR a comma separated list of numbers and/or strings. \
+    If you are asked for a number, don't use comma to write your number \
+    neither use units such as $ or percent sign unles specified otherwise. \
+    If you are asked for a string, don't use articles, \
+    neither abbreviations (e.g. for cities), \
+    and write the digits in plain text unless specified otherwise. \
+    If you are asked for a comma separated list, apply the above rules \
+    depending of whether the element to be put in the list \
+    is a number or a string.
+    """
+
+    model = ChatOpenAI(model="gpt-4o-mini")
+    python_repl = PythonREPL()
+    repl_tool = Tool(
+        name="python_repl",
+        description="A Python shell. Use this to execute python commands. \
+            Input should be a valid python command. \
+            If you want to see the output of a value, \
+            you should print it out with `print(...)`.",
+        func=python_repl.run,
+    )
+
+    agent = Agent(model, [repl_tool], system_prompt=system_prompt)
