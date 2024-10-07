@@ -1,5 +1,5 @@
 from langgraph.graph import StateGraph, END
-from typing import TypedDict, Annotated
+from typing import TypedDict, Annotated, Any
 import operator
 from langchain_core.messages \
     import AnyMessage, SystemMessage, ToolMessage, HumanMessage
@@ -65,14 +65,14 @@ class Agent:
         return {'messages': results}
 
 
-def get_answer(row):
+def get_answer(task) -> str:
     agent = Agent(model, [repl_tool], system_prompt=system_prompt)
-    if len(row["file_name"]) > 0:
-        question = f"{row['question']}\n\
-            The file is at the location: {row['file_name']}"
+    if len(task["file_name"]) > 0:
+        question = f"{task['question']}\n\
+            The file is at the location: {task['file_name']}"
         message = HumanMessage(content=question)
     else:
-        message = HumanMessage(content=row["question"])
+        message = HumanMessage(content=task["question"])
     messages = [message]
     result = agent.graph.invoke({"messages": messages})
     for msg in result["messages"]:
