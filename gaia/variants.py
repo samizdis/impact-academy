@@ -1,6 +1,7 @@
+from instructions import instructions
 task_variants = {
     "main": {
-        "instructions": "",
+        "instructions": f"{instructions}",
         "dev_task_ids": {
             "Game Show Puzzle": {
                 "task_id": "ec09fa32-d03f-4bf8-84b0-1f16922c3ae4",
