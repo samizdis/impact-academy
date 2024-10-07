@@ -37,32 +37,32 @@ task_variants = {
             "Gold Coin Adventure": {
                 "task_id": "6af95c8f-8cbf-4c12-b02c-f9a23cc1ecb9",
                 "file_name": "",
-                "true_answer": "?",
+                "true_answer": "28",
             },
             "Excel Locomotive": {
                 "task_id": "cfd773c8-371f-425c-b081-f254f96c0530",
                 "file_name": "cfd773c8-371f-425c-b081-f254f96c0530.xlsx",
-                "true_answer": "?",
+                "true_answer": "18",
             },
             "Precipitation CSV": {
                 "task_id": "7805912b-c8da-4134-9b54-b590f884352a",
                 "file_name": "7805912b-c8da-4134-9b54-b590f884352a.csv",
-                "true_answer": "?",
+                "true_answer": "Queens",
             },
             "Find the Line": {
                 "task_id": "f1ba834a-3bcb-4e55-836c-06cc1e2ccb9f",
                 "file_name": "f1ba834a-3bcb-4e55-836c-06cc1e2ccb9f.txt",
-                "true_answer": "?",
+                "true_answer": "1087",
             },
             "Integer Fun": {
                 "task_id": "314b3c26-3e8d-4f8c-a9aa-c77275072e0b",
                 "file_name": "",
-                "true_answer": "?",
+                "true_answer": "4",
             },
             "Twinkle Twinkle": {
                 "task_id": "68ccf11a-bcd3-41e5-a5ee-3e29253449e9",
                 "file_name": "68ccf11a-bcd3-41e5-a5ee-3e29253449e9.docx",
-                "true_answer": "?",
+                "true_answer": "LEANER",
             },
         },
     }
