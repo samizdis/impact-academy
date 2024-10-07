@@ -20,7 +20,11 @@ logging.basicConfig(
 def run_command(cmd):
     print(f"Running: {cmd}", flush=True)
     p = subprocess.Popen(
-        cmd, shell=True, stdout=sys.stdout, stderr=sys.stderr, executable="/bin/bash"
+        cmd,
+        shell=True,
+        stdout=sys.stdout,
+        stderr=sys.stderr,
+        executable="/bin/bash"
     )
     exit_code = p.wait()
     if exit_code != 0:
@@ -64,7 +68,10 @@ class TaskFamily:
         for dev_task in t["dev_task_ids"].items():
             f_name = dev_task["file_name"]
             run_command(
-                f"cp data/gaia/validation/{f_name} /home/agent/resources/data/{f_name}"
+                (
+                    f"cp data/gaia/validation/{f_name} "
+                    f"/home/agent/resources/data/{f_name}"
+                )
             )
         run_command("cp assets/* /home/agent/resources/")
 
