@@ -1,6 +1,7 @@
 import re
 import string
 import warnings
+import datasets
 
 
 def normalize_number_str(number_str: str) -> float:
@@ -97,3 +98,36 @@ def normalize_str(input_str, remove_punct=True) -> str:
         return no_spaces.lower().translate(translator)
     else:
         return no_spaces.lower()
+
+def get_dataframe():
+    val_df = datasets.load_dataset(
+        "gaia-benchmark/GAIA",
+        "2023_level1"
+    )["validation"]
+
+    val_df = val_df.rename_columns(
+        {"Question": "question", "Final answer": "true_answer"}
+    )
+
+    def preprocess_file_paths(row):
+        if row["file_name"]:
+            row["file_name"] = "data/" + row["file_name"]
+
+        return row
+
+    val_df = val_df.map(preprocess_file_paths)
+    return val_df
+
+if __name__ == '__main__':
+    from agent import get_answer
+
+    val_df = get_dataframe()
+
+    for row in val_df:
+        answer = get_answer(row)
+        score = question_scorer(answer, row['true_answer'])
+        print(f"Q: {row['question']}\n\
+            Agent's answer: {answer}\n\
+            True answer:{row['true_answer']}\n\
+            Score: {score}"
+        )

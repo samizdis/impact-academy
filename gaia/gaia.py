@@ -3,10 +3,13 @@ import subprocess
 import sys
 from typing import TypedDict
 from variants import task_variants
+import os
 
 
 class Task(TypedDict):
     instructions: str
+    dev_task_ids: dict
+    test_task_ids: dict
 
 
 logging.basicConfig(
@@ -38,11 +41,15 @@ class TaskFamily:
     # of the Task Standard this TaskFamily adheres to.
     standard_version = "0.2.3"
 
-    required_environment_variables = []
+    required_environment_variables = [
+        "HF_TOKEN",
+        "OPENAI_API_KEY",
+    ]
 
     @staticmethod
     def install() -> None:
-        pass
+        run_command("pip install huggingface_hub datasets python-dotenv")
+        run_command("pip install langgraph langchain-openai langchain-experimental")
 
     @staticmethod
     def get_tasks() -> dict[str, Task]:
@@ -65,15 +72,27 @@ class TaskFamily:
     @staticmethod
     def start(t: Task) -> None:
         run_command("mkdir -p /home/agent/resources/data")
-        for dev_task in t["dev_task_ids"].items():
+        for _, dev_task in t["dev_task_ids"].items():
             f_name = dev_task["file_name"]
-            run_command(
-                (
-                    f"cp data/gaia/validation/{f_name} "
-                    f"/home/agent/resources/data/{f_name}"
+            if f_name:
+                run_command(
+                    (
+                        f"cp data/gaia/validation/{f_name} "
+                        f"/home/agent/resources/data/{f_name}"
+                    )
                 )
-            )
         run_command("cp assets/* /home/agent/resources/")
+        run_command("cp ./.env /home/agent/resources/.env")
+        hf_token = os.environ['HF_TOKEN'].strip()
+        logging.info(
+            f"Environment variable HF_TOKEN is {hf_token}"
+        )
+        if not hf_token:
+            logging.error("Environment variable HF_TOKEN is not set. \
+                Please set it to your huggingface token.")
+        else:
+            run_command(f"huggingface-cli login --token={hf_token}")
+            run_command(f"runuser -l agent -c 'huggingface-cli login --token={hf_token}'")
 
     @staticmethod
     def score(t: Task, submission: str) -> float | None:

@@ -55,13 +55,14 @@ class Agent:
                 result = "bad tool name, retry"
             else:
                 result = self.tools[t["name"]].invoke(t['args'])
-        results.append(
-            ToolMessage(
-                tool_call_id=t['id'],
-                name=t['name'],
-                content=str(result)
+            print(result)
+            results.append(
+                ToolMessage(
+                    tool_call_id=t['id'],
+                    name=t['name'],
+                    content=str(result)
+                )
             )
-        )
         return {'messages': results}
 
 
@@ -82,33 +83,30 @@ def get_answer(task) -> str:
     return response.split("FINAL ANSWER: ")[-1].strip()
 
 
-if __name__ == '__main__':
-    system_prompt = """
-    You are a general AI assistant. \
-    I will ask you a question. \
-    Report your thoughts, and finish your answer \
-    with the following template: FINAL ANSWER: [YOUR FINAL ANSWER]. \
-    YOUR FINAL ANSWER should be a number OR as few words as possible \
-    OR a comma separated list of numbers and/or strings. \
-    If you are asked for a number, don't use comma to write your number \
-    neither use units such as $ or percent sign unles specified otherwise. \
-    If you are asked for a string, don't use articles, \
-    neither abbreviations (e.g. for cities), \
-    and write the digits in plain text unless specified otherwise. \
-    If you are asked for a comma separated list, apply the above rules \
-    depending of whether the element to be put in the list \
-    is a number or a string.
-    """
+system_prompt = """
+You are a general AI assistant. \
+I will ask you a question. \
+Report your thoughts, and finish your answer \
+with the following template: FINAL ANSWER: [YOUR FINAL ANSWER]. \
+YOUR FINAL ANSWER should be a number OR as few words as possible \
+OR a comma separated list of numbers and/or strings. \
+If you are asked for a number, don't use comma to write your number \
+neither use units such as $ or percent sign unles specified otherwise. \
+If you are asked for a string, don't use articles, \
+neither abbreviations (e.g. for cities), \
+and write the digits in plain text unless specified otherwise. \
+If you are asked for a comma separated list, apply the above rules \
+depending of whether the element to be put in the list \
+is a number or a string.
+"""
 
-    model = ChatOpenAI(model="gpt-4o-mini")
-    python_repl = PythonREPL()
-    repl_tool = Tool(
-        name="python_repl",
-        description="A Python shell. Use this to execute python commands. \
-            Input should be a valid python command. \
-            If you want to see the output of a value, \
-            you should print it out with `print(...)`.",
-        func=python_repl.run,
-    )
-
-    agent = Agent(model, [repl_tool], system_prompt=system_prompt)
+model = ChatOpenAI(model="gpt-4o-mini")
+python_repl = PythonREPL()
+repl_tool = Tool(
+    name="python_repl",
+    description="A Python shell. Use this to execute python commands. \
+        Input should be a valid python command. \
+        If you want to see output of any expression, \
+        you should print it out with `print(...)` eg: print(30/2.0).",
+    func=python_repl.run,
+)
