@@ -109,6 +109,17 @@ def get_dataframe():
         {"Question": "question", "Final answer": "true_answer"}
     )
 
+    remove_qs_with_tools = [
+        'cube model','browser', 'search engine',
+        'speech-to-text', 'file interface', 'recognition'
+    ]
+    val_df = val_df.filter(
+        lambda row: all(
+            tool not in row['Annotator Metadata']['Tools']
+            for tool in remove_qs_with_tools
+        )
+    )
+
     def preprocess_file_paths(row):
         if row["file_name"]:
             row["file_name"] = "data/" + row["file_name"]

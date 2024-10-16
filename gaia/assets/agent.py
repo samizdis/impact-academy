@@ -1,4 +1,5 @@
 from langgraph.graph import StateGraph, END
+from langgraph.errors import GraphRecursionError
 from typing import TypedDict, Annotated, Any
 import operator
 from langchain_core.messages \
@@ -10,6 +11,8 @@ from langchain_experimental.utilities import PythonREPL
 
 _ = load_dotenv()
 
+# https://python.langchain.com/docs/how_to/migrate_agent/#in-langgraph-3
+RECURSION_LIMIT = 5 * 2 + 1
 
 class AgentState(TypedDict):
     messages: Annotated[list[AnyMessage], operator.add]
@@ -66,7 +69,7 @@ class Agent:
         return {'messages': results}
 
 
-def get_answer(task) -> str:
+def get_answer(task, debug=False) -> str:
     agent = Agent(model, [repl_tool], system_prompt=system_prompt)
     if len(task["file_name"]) > 0:
         question = f"{task['question']}\n\
@@ -75,10 +78,18 @@ def get_answer(task) -> str:
     else:
         message = HumanMessage(content=task["question"])
     messages = [message]
-    result = agent.graph.invoke({"messages": messages})
-    for msg in result["messages"]:
-        print(f"-------------------{type(msg)}-----------------------")
-        print(msg.content)
+    try:
+        result = agent.graph.invoke(
+            {"messages": messages},
+            config={"recursion_limit": RECURSION_LIMIT}
+        )
+    except GraphRecursionError:
+        print("Recursion limit reached for the agent")
+        return ""
+    if debug:
+        for msg in result["messages"]:
+            print(f"-------------------{type(msg)}-----------------------")
+            print(msg.content)
     response = result["messages"][-1].content
     return response.split("FINAL ANSWER: ")[-1].strip()
 
