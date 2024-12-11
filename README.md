@@ -1,5 +1,8 @@
 # Auto-Enhance
 
+![image](https://github.com/user-attachments/assets/24f50197-e7d9-47be-9449-a6599a5e4dec)
+
+
 This repo contains the first tasks towards our meta-benchmark, Auto-Enhance. We measure the capability of top-level agents (i.e. agents that we test) to improve other reference agents. We build our tasks starting from existing agentic or non-agentic benchmarks. 
 We build the tasks as [METR tasks](https://github.com/METR/task-standard). 
 
