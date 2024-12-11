@@ -41,3 +41,18 @@ git clone https://github.com/samizdis/impact-academy
 cd drivers && npm install
 cd ..\workbench && npm install
 ``` 
+
+Instructions on running tasks are available in the task implementation directories.
+
+## Citations
+If you find our work helpful, please use the following citations.
+```
+@inproceedings{
+    brown2024autoenhance,
+    title={Auto-{E}nhance: Towards a Meta-Benchmark to Evaluate AI Agents' Ability to Improve Other Agents},
+    author={Samuel F. Brown and Basil Labib and Codruta Lugoj and Sai Sasank Y.},
+    booktitle={Socially Responsible Language Modelling Research (SoLaR) @ NeurIPS 2024},
+    year={2024},
+    url={https://openreview.net/forum?id=8WM3sqWdQ4}
+}
+```
