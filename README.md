@@ -47,11 +47,11 @@ Instructions on running tasks are available in the task implementation directori
 ## Citations
 If you find our work helpful, please use the following citations.
 ```
-@inproceedings{
+@misc{
     brown2024autoenhance,
-    title={Auto-{E}nhance: Towards a Meta-Benchmark to Evaluate AI Agents' Ability to Improve Other Agents},
+    title={Auto-{E}nhance: Towards a Meta-Benchmark to Evaluate {AI} Agents' Ability to Improve Other Agents},
     author={Samuel F. Brown and Basil Labib and Codruta Lugoj and Sai Sasank Y.},
-    booktitle={Socially Responsible Language Modelling Research (SoLaR) @ NeurIPS 2024},
+    booktitle={Socially Responsible Language Modelling Research ({SoLaR}) Workshop @ NeurIPS 2024},
     year={2024},
     url={https://openreview.net/forum?id=8WM3sqWdQ4}
 }
