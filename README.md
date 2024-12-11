@@ -20,7 +20,7 @@ Task: improve another agent's resilience to prompt injection attacks. Based on t
 ### WMDP
 Task: perform unlearning of cybersecurity knowledge on Llama3 8B using the RMU algorithm. Based on the [WMDP](https://arxiv.org/abs/2403.03218) benchmark. 
 
-[Task Implemnetation](./wmdp/README.md)
+[Task Implementation](./wmdp/README.md)
 
 ### MLAgentBench (MLAB)
 Task: make improvements to the scaffolding of the MLAgentBench research agent. Based on the [MLAgentBench](https://arxiv.org/abs/2310.03302) benchmark.
