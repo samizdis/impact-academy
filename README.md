@@ -28,7 +28,7 @@ Task: make improvements to the scaffolding of the MLAgentBench research agent. B
 [Task Implementation](./mlagentbench/README.md)
 
 ### SWE-Bench
-Task: select the LLM which achieves best performance at operating a given scaffold to solve Github issues. Based on the [SWE-bench](https://arxiv.org/abs/2310.06770) benchmark.
+Task: select the LLM which achieves best performance when operating a given scaffold to solve Github issues. Based on the [SWE-bench](https://arxiv.org/abs/2310.06770) benchmark.
 
 [Task Implementation](./swe_bench_enhance/README.md)
 
